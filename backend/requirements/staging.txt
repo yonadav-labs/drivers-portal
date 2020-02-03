@@ -1,0 +1,8 @@
+-r common.txt
+
+raven==5.31.0
+sentry-sdk==0.7.2
+
+# uWSGI
+uwsgi==2.0.15
+

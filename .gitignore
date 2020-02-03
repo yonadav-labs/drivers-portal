@@ -1,0 +1,18 @@
+# Postgres + Docker storage
+dbdata
+
+# Python
+*.pyc
+
+# Js / Ts
+
+# Misc
+.vscode
+
+# Project
+Pipfile
+Pipfile.lock
+documents
+static/
+static_root/
+media_root/
