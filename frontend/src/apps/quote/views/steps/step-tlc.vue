@@ -16,6 +16,7 @@
                     type='text'
                     placeholder='000000'
                     :readonly="isConfirmStep"
+                    icon="id-card"
                     >
                     </basic-input>
                 </div>
@@ -58,7 +59,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
-import { Getter, Action } from 'vuex-class';
+import { Getter, Action, namespace } from 'vuex-class';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
@@ -72,6 +73,8 @@ import { Colors } from '@/utils/colors'
 import { TLCStepLicenseName } from '../../../../@types/quote';
 
 
+const quoteTLC = namespace('QuoteTlc')
+
 // First Step 
 
 @Component({
@@ -82,19 +85,19 @@ import { TLCStepLicenseName } from '../../../../@types/quote';
 })
 export default class StepTLC extends Vue {
 
-  @Getter('Quote/tlcStepLicenseName')
+  @quoteTLC.Getter
   tlcStepLicenseName?: TLCStepLicenseName
 
-  @Getter('Quote/tlcLicenseNameError')
+  @quoteTLC.Getter
   tlcLicenseNameError?: Error
 
-  @Getter('Quote/tlcLicenseNameSuccess')
+  @quoteTLC.Getter
   tlcLicenseNameSuccess!: boolean
 
-  @Action('Quote/retrieveTLCName')
+  @quoteTLC.Action
   retrieveTLCName!: (licenseNumber: string) => Promise<void>
 
-  @Action('Quote/resetTlc')
+  @quoteTLC.Action
   resetTlc!: () => void
 
   tlcValue = ''
@@ -184,7 +187,7 @@ export default class StepTLC extends Vue {
       opacity: 0.8;
     }
     .form-input__tlc {
-      width: 8rem;
+      width: 8.5rem;
 
       .error {
         font-size: $fs-xs;

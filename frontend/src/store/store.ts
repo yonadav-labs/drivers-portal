@@ -3,12 +3,12 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-import Quote from './quote/quote'
+import QuoteModules from './quote'
 
 export const store = new Vuex.Store({
   strict: true,
   state: {},
   modules: {
-    Quote,
+    ...QuoteModules,
   },
 });

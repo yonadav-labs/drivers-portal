@@ -5,7 +5,7 @@ import { APIProperty, APIState } from '@/store/api'
 import { getTLCLicenseName } from './api'
 
 @Module({ namespaced: true })
-export default class QuoteVuexModule extends VuexModule {
+export default class QuoteTLCVuexModule extends VuexModule {
   tlcLicenseNameProperty: APIProperty<TLCStepLicenseName> = APIState.state<TLCStepLicenseName>();
 
   get tlcStepLicenseName(): TLCStepLicenseName | undefined {

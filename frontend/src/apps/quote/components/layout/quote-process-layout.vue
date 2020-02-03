@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .icon--grey-darker {
     color: $grey-darker;
   }

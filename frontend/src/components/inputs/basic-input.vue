@@ -34,9 +34,12 @@
 <script lang="ts">
 import { Component, Prop, Vue, Model, Emit } from 'vue-property-decorator';
 
+import IconCar from '@/components/icons/icon-car.vue'
 import IconIdCard from '@/components/icons/icon-id-card.vue'
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
 import { VueConstructor } from 'vue';
+
+type Icon = 'car' | 'id-card';
 
 @Component({
   components: {
@@ -63,8 +66,8 @@ export default class BasicInput extends Vue {
   @Prop({ default: 'text' })
   type?: string;
 
-  @Prop({ default: 'id-card' })
-  icon?: 'id-card';
+  @Prop()
+  icon?: Icon;
   
   @Prop()
   minlength?: number;
@@ -89,6 +92,8 @@ export default class BasicInput extends Vue {
     switch (this.icon) {
       case 'id-card':
         return IconIdCard;
+      case 'car':
+        return IconCar;
       default:
         return undefined;
     }
@@ -127,7 +132,7 @@ export default class BasicInput extends Vue {
   margin-right: auto;
   justify-content: space-between;
   position: relative;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 0.75rem;
   &.wrong {
     animation: wrong-log 0.3s;
     border: 1px solid $orange;
@@ -139,7 +144,7 @@ export default class BasicInput extends Vue {
   input {
     color: $blue-dark;
     font-size: $fs-lg;
-    width: 85%;
+    width: calc(100% - 1.5rem);
     &::placeholder {
       color: $grey;
     }
