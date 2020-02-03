@@ -19,7 +19,7 @@
                     >
                     </basic-input>
                 </div>
-                <error-message class="error" v-if="!!vinError" slot="error">We couldn't find any record. Please, try again</error-message>
+                <error-message class="error" v-if="hasErrors" slot="error">We couldn't find any record. Please, try again</error-message>
             </div>
           </div>
           <basic-button
@@ -55,29 +55,28 @@
       <div class="vin-content vin-content--success">
         <div class="search-result">
           <p class="search-result__label">VIN</p>
-          <p class="search-result__result">2454654213775421</p>
+          <p class="search-result__result">{{ fhvInfo.vehicle_vin }}</p>
         </div>
         <div class="search-result-divider"></div>
         <div class="search-result">
           <p class="search-result__label">Vehicle License Plate</p>
-          <p class="search-result__result">T927007C</p>
+          <p class="search-result__result">{{ fhvInfo.license_plate }}</p>
         </div>
         <div class="search-result">
           <p class="search-result__label">Vehicle Owner</p>
-          <p class="search-result__result">Erlich Bachman</p>
+          <p class="search-result__result">{{ prettifyName(fhvInfo.vehicle_owner) }}</p>
         </div>
         <div class="search-result">
           <p class="search-result__label">Current Insurance and Policy</p>
-          <p class="search-result__result">Hereford (580398)</p>
+          <p class="search-result__result">{{ prettifyName(insuranceInfo.insurance_carrier_name) }} ({{ insuranceInfo.insurance_policy_number }})</p>
         </div>
         <div class="search-result">
           <p class="search-result__label">Base Name and Number</p>
-          <p class="search-result__result">G.T.N.Y. CAR SERVICE, INC. (B02847)</p>
+          <p class="search-result__result">{{ fhvInfo.base_name }} ({{ fhvInfo.base_number }})</p>
         </div>
       </div>
       <div class="vin-container__yes-no">
         <basic-button
-          @click.stop.prevent="onIsMe"
           text='Yes'
           :color='colorBlue'
           >
@@ -99,6 +98,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
+import { Route } from 'vue-router';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
@@ -108,13 +108,21 @@ import IconCross from '@/components/icons/icon-cross.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
 
+import { capitalize } from '@/utils/text'
 import { Colors } from '@/utils/colors'
-import { TLCStepLicenseName } from '../../../../@types/quote';
 
+import { TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo } from '../../../../@types/quote';
 
-const quoteTLC = namespace('QuoteTlc')
+import { QuoteRouteNames } from '@/router/quote'
 
 // Second Step 
+
+const quoteTLC = namespace('QuoteTlc')
+const quoteVIN = namespace('QuoteVin')
+
+Component.registerHooks([
+  'beforeRouteEnter'
+])
 
 @Component({
   components: {
@@ -127,10 +135,28 @@ export default class StepVIN extends Vue {
   @quoteTLC.Getter
   tlcStepLicenseName?: TLCStepLicenseName
 
-  success = false
-  vinError = true
-  vinValue = ''
+  @quoteVIN.Getter
+  hasErrors: boolean
 
+  @quoteVIN.Getter
+  fhvInfo: VINStepFHVInfo | undefined
+  
+  @quoteVIN.Getter
+  insuranceInfo: VINStepInsuranceInfo | undefined
+
+  @quoteVIN.Action
+  retrieveFHVInfo!: (vehicle_vin_number: string) => void
+
+  @quoteVIN.Action
+  retrieveInsuranceInfo!: (vin: string) => void
+
+  @quoteVIN.Action
+  resetFHVInfo!: () => void;
+  
+  @quoteVIN.Action
+  resetInsuranceInfo!: () => void;
+
+  vinValue = ''
 
   get colorBlue(): string {
     return Colors.Blue
@@ -138,6 +164,37 @@ export default class StepVIN extends Vue {
 
   get colorOrange(): string {
     return Colors.Orange
+  }
+
+  get success(): boolean {
+    return !!this.fhvInfo && !!this.insuranceInfo
+  }
+
+  onNext(): void {
+    this.retrieveFHVInfo(this.vinValue);
+    this.retrieveInsuranceInfo(this.vinValue);
+  }
+
+  onNotMe(): void {
+    this.resetState();
+  }
+
+  prettifyName(name: string): string {
+    return capitalize(name)
+  }
+
+  resetState(): void {
+    this.resetFHVInfo();
+    this.resetInsuranceInfo();
+    this.vinValue = ''
+  }
+
+  beforeRouteEnter (to: Route, from: Route, next: any) {
+    next((vm: StepVIN) => {
+      if (from.name == QuoteRouteNames.TLC) {
+        vm.resetState();
+      }
+    })
   }
 
   created(): void {

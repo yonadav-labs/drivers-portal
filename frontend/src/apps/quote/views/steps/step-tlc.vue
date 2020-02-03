@@ -70,7 +70,11 @@ import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-lay
 import ErrorMessage from '@/components/error-message.vue'
 
 import { Colors } from '@/utils/colors'
+import { capitalize } from '@/utils/text'
+
 import { TLCStepLicenseName } from '../../../../@types/quote';
+
+import { QuoteRouteNames } from '@/router/quote'
 
 
 const quoteTLC = namespace('QuoteTlc')
@@ -140,11 +144,11 @@ export default class StepTLC extends Vue {
   }
 
   onIsMe(): void {
-    this.$router.push({ name: 'quoteVin' })
+    this.$router.push({ name: QuoteRouteNames.VIN })
   }
 
   prettifyName(name: string): string {
-    return name.split(',').map(x => x.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')).join(', ')
+    return capitalize(name)
   }
 }
 </script>
