@@ -13,6 +13,7 @@
         :required="required"
         :maxlength="maxlength"
         :value="value"
+        :readonly="readonly"
         @input="input"
         @keyup="$emit('keyup')"
         @keyup.enter="$emit('keyupEnter')">
@@ -52,6 +53,9 @@ export default class BasicInput extends Vue {
 
   @Prop({ default: false })
   required?: boolean;
+
+  @Prop({ default: false })
+  readonly?: boolean;
 
   @Prop()
   inputName!: string;

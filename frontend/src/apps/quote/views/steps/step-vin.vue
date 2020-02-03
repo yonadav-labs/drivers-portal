@@ -1,57 +1,6 @@
 <template>
   <quote-process-layout>
-    <div class='form'>
-        <p class='form__explain'>To start, we need your TLC number.</p>
-        <form id='tlcForm' @submit.prevent.stop="onNext">
-          <div class="form-input">
-            <div class="form-input__container">
-                <div class='form-input__input'>
-                  <span class='form-input__label'>TLC license number</span>
-                  <basic-input
-                    id='tlcLicenseField'
-                    class='form-input__tlc'
-                    v-model="tlcValue"
-                    :minlength='6'
-                    :maxlength='7'
-                    type='text'
-                    placeholder='000000'
-                    :readonly="isConfirmStep"
-                    >
-                    </basic-input>
-                </div>
-                <error-message class="error" v-if="!!tlcError" slot="error">We couldn't find any record. Please, try again</error-message>
-            </div>
-            <div class="form__result" v-if="isConfirmStep">
-              We found <span>{{ prettifyName(tlcLicenseName) }}</span> associated with that TLC Number. Are you this driver?
-            </div>
-          </div>
-          <basic-button
-            v-if="!isConfirmStep"
-            text='Next Step'
-            :disabled="tlcValue.length < 6"
-            :color='colorBlue'
-            >
-            <icon-arrow-right size='16' class='icon--blue'></icon-arrow-right>
-          </basic-button>
-          <div class="form__yes-no" v-else>
-            <basic-button
-              @click.stop.prevent="onIsMe"
-              text='Yes'
-              :color='colorBlue'
-              >
-              <icon-check size='16' class='icon--blue'></icon-check>
-            </basic-button>
-            <basic-button
-              text='No'
-              :color='colorOrange'
-              @click.stop.prevent="onNotMe"
-              >
-              <icon-cross size='16' class='icon--orange'></icon-cross>
-            </basic-button>
-
-          </div>        
-      </form>
-    </div>
+    VIN
   </quote-process-layout>
 </template>
 
@@ -80,7 +29,7 @@ import { TLCStepLicenseName } from '../../../../@types/quote';
     ErrorMessage, IconCheck, IconCross
   }
 })
-export default class StepTLC extends Vue {
+export default class StepVIN extends Vue {
 
   @Getter('Quote/tlcStepLicenseName')
   tlcStepLicenseName?: TLCStepLicenseName
@@ -134,10 +83,6 @@ export default class StepTLC extends Vue {
   onNotMe(): void {
     this.resetTlc();
     this.tlcValue = '';
-  }
-
-  onIsMe(): void {
-    this.$router.push({ name: 'quoteVin' })
   }
 
   prettifyName(name: string): string {
@@ -196,7 +141,6 @@ export default class StepTLC extends Vue {
   .form__yes-no {
     align-items: center;
     display: flex;
-    flex-direction: row-reverse;
     justify-content: center;
   }
 

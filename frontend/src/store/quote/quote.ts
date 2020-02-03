@@ -8,7 +8,7 @@ import { getTLCLicenseName } from './api'
 export default class QuoteVuexModule extends VuexModule {
   tlcLicenseNameProperty: APIProperty<TLCStepLicenseName> = APIState.state<TLCStepLicenseName>();
 
-  get tlcLicenseName(): TLCStepLicenseName | undefined {
+  get tlcStepLicenseName(): TLCStepLicenseName | undefined {
     return this.tlcLicenseNameProperty.data
   }
 
@@ -21,7 +21,12 @@ export default class QuoteVuexModule extends VuexModule {
   }
 
   get tlcLicenseNameValid(): boolean {
-    return !!this.tlcLicenseName
+    return !!this.tlcStepLicenseName
+  }
+
+  @Mutation
+  setTlcStepLicenseBlank(): void {
+    this.tlcLicenseNameProperty = APIState.state<TLCStepLicenseName>();
   }
 
   @Mutation
@@ -44,6 +49,10 @@ export default class QuoteVuexModule extends VuexModule {
     } catch (e) {
       this.context.commit('setTlcStepLicense', e);
     }
+  }
 
+  @Action
+  resetTlc(): void {
+    this.context.commit('setTlcStepLicenseBlank')
   }
 }
