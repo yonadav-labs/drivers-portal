@@ -66,11 +66,36 @@ class ForHireVehicleSerializer(serializers.ModelSerializer):
         )
 
 class RetrieveTLCNameSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(read_only=True)
-    license_number = serializers.CharField(read_only=True)
 
     class Meta:
         model = FHVActiveDriver
         fields = (
             'license_number', 'name',
         )
+        read_only_fields = (
+          'license_number', 'name',  
+        )
+
+class RetrieveVINInfoFHVSerializer(serializers.ModelSerializer):
+
+    class Meta:
+      model = ForHireVehicle
+      fields = (
+        'name', 'dmv_license_plate_number', 'base_number',
+        'vehicle_year', 'vehicle_vin_number', 'base_name'
+      )
+      read_only_fields = (
+        'name', 'dmv_license_plate_number', 'base_number',
+        'vehicle_year', 'vehicle_vin_number', 'base_name'
+      )
+
+class RetrieveVINInfoInsuranceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+      model = VehicleInsuranceInformation
+      fields = (
+        'automobile_insurance_name', 'automobile_insurance_policy_number'
+      )
+      read_only_fields = (
+        'automobile_insurance_name', 'automobile_insurance_policy_number'
+      )

@@ -46,17 +46,22 @@ class QuoteProcess(BaseModel):
         verbose_name='License Plate #',
         max_length=20
     )
+    base_name = models.CharField(
+        verbose_name='Base Name',
+        max_length=511
+    )
     base_number = models.CharField(
         verbose_name='Base Number',
         max_length=6
     )
     base_type = models.CharField(
         verbose_name='Base Type',
-        max_length=255
+        max_length=255,
+        blank=True,
+        null=True
     )
-    vehicle_year = models.CharField(
+    vehicle_year = models.PositiveIntegerField(
         verbose_name='Vehicle Year',
-        max_length=4,
         validators=[RegexValidator('^[1,2][0,9]\d{2}$')]
     )
     vehicle_weight = models.CharField(
