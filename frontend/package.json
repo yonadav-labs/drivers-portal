@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@commite/ajax-client": "^0.3.2",
+    "@types/axios": "^0.14.0",
     "@types/vue-router": "^2.0.0",
+    "axios": "^0.19.2",
     "child-replace-with-polyfill": "^1.0.1",
     "core-js": "^2.6.9",
     "custom-event-polyfill": "^1.0.7",

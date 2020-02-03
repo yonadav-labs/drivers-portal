@@ -12,6 +12,7 @@
         :id="id"
         :required="required"
         :maxlength="maxlength"
+        :value="value"
         @input="input"
         @keyup="$emit('keyup')"
         @keyup.enter="$emit('keyupEnter')">
