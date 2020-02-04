@@ -51,7 +51,7 @@ export default class QuoteVINVuexModule extends VuexModule {
   }
 
   @Action
-  async retrieveFHVInfo(vehicle_vin_number: string) {
+  async retrieveFHVInfo(vehicle_vin_number: string): Promise<void> {
     this.context.commit('setApiFHVInfoPending');
   
     try {
@@ -63,7 +63,7 @@ export default class QuoteVINVuexModule extends VuexModule {
   }
 
   @Action
-  async retrieveInsuranceInfo(vin: string) {
+  async retrieveInsuranceInfo(vin: string): Promise<void> {
     this.context.commit('setApiInsuranceInfoPending');
   
     try {

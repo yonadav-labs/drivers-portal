@@ -136,7 +136,7 @@ export default class StepVIN extends Vue {
   tlcStepLicenseName?: TLCStepLicenseName
 
   @quoteVIN.Getter
-  hasErrors: boolean
+  hasErrors!: boolean
 
   @quoteVIN.Getter
   fhvInfo: VINStepFHVInfo | undefined
@@ -189,9 +189,9 @@ export default class StepVIN extends Vue {
     this.vinValue = ''
   }
 
-  beforeRouteEnter (to: Route, from: Route, next: any) {
+  beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: StepVIN) => {
-      if (from.name == QuoteRouteNames.TLC) {
+      if (from.name === QuoteRouteNames.TLC) {
         vm.resetState();
       }
     })
