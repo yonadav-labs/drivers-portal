@@ -8,7 +8,8 @@ from base.models import BaseModel
 
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
-    QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES
+    QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
+    FAULT_ACCIDENTS_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
 
@@ -100,6 +101,11 @@ class QuoteProcess(BaseModel):
         verbose_name='Driver points in last 36 months',
         max_length=4,
         choices=POINTS_CHOICES
+    )
+    fault_accidents_last_months = models.CharField(
+        verbose_name='Fault accidents in last 36 months',
+        max_length=2,
+        choices=FAULT_ACCIDENTS_CHOICES
     )
     defensive_driving_certificate = models.BooleanField(
         verbose_name='Defensive driving certificate',

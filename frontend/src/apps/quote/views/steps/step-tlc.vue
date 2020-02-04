@@ -49,7 +49,6 @@
               >
               <icon-cross size='16' class='icon--orange'></icon-cross>
             </basic-button>
-
           </div>        
       </form>
     </div>
@@ -74,9 +73,10 @@ import { capitalize } from '@/utils/text'
 
 import { TLCStepLicenseName } from '../../../../@types/quote';
 
-import { QuoteRouteNames } from '@/router/quote'
+import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 
+const quote = namespace('Quote')
 const quoteTLC = namespace('QuoteTlc')
 
 // First Step 
@@ -97,6 +97,9 @@ export default class StepTLC extends Vue {
 
   @quoteTLC.Getter
   tlcLicenseNameSuccess!: boolean
+
+  @quote.Action
+  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
 
   @quoteTLC.Action
   retrieveTLCName!: (licenseNumber: string) => Promise<void>
@@ -141,10 +144,12 @@ export default class StepTLC extends Vue {
   onNotMe(): void {
     this.resetTlc();
     this.tlcValue = '';
+    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: false});
   }
 
   onIsMe(): void {
-    this.$router.push({ name: QuoteRouteNames.VIN })
+    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true});
+    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
   }
 
   prettifyName(name: string): string {
@@ -205,6 +210,10 @@ export default class StepTLC extends Vue {
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
+    
+    > button {
+      flex-grow: 1;
+    }
   }
 
   .form__result {

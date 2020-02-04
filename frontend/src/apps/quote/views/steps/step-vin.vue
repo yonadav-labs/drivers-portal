@@ -28,24 +28,7 @@
             :color='colorBlue'
             >
             <icon-arrow-right size='16' class='icon--blue'></icon-arrow-right>
-          </basic-button>
-          <!-- <div class="form__yes-no" v-else>
-            <basic-button
-              @click.stop.prevent="onIsMe"
-              text='Yes'
-              :color='colorBlue'
-              >
-              <icon-check size='16' class='icon--blue'></icon-check>
-            </basic-button>
-            <basic-button
-              text='No'
-              :color='colorOrange'
-              @click.stop.prevent="onNotMe"
-              >
-              <icon-cross size='16' class='icon--orange'></icon-cross>
-            </basic-button>
-
-          </div>         -->
+          </basic-button>    
       </form>
     </div>
     <div v-else class="vin-container">
@@ -73,12 +56,13 @@
         <div class="search-result">
           <p class="search-result__label">Base Name and Number</p>
           <p class="search-result__result">{{ fhvInfo.base_name }} ({{ fhvInfo.base_number }})</p>
-        </div>
+        </div>  
       </div>
       <div class="vin-container__yes-no">
         <basic-button
           text='Yes'
           :color='colorBlue'
+          @click.stop.prevent="onIsMe"
           >
           <icon-check size='16' class='icon--blue'></icon-check>
         </basic-button>
@@ -89,7 +73,7 @@
           >
           <icon-cross size='16' class='icon--orange'></icon-cross>
         </basic-button>
-      </div>        
+      </div>      
     </div> 
   </quote-process-layout>
 </template>
@@ -113,16 +97,13 @@ import { Colors } from '@/utils/colors'
 
 import { TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo } from '../../../../@types/quote';
 
-import { QuoteRouteNames } from '@/router/quote'
+import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 // Second Step 
 
+const quote = namespace('Quote')
 const quoteTLC = namespace('QuoteTlc')
 const quoteVIN = namespace('QuoteVin')
-
-Component.registerHooks([
-  'beforeRouteEnter'
-])
 
 @Component({
   components: {
@@ -131,6 +112,9 @@ Component.registerHooks([
   }
 })
 export default class StepVIN extends Vue {
+
+  @quote.Getter
+  stepCompletedByName!: (route: QuoteRouteNames) => boolean
 
   @quoteTLC.Getter
   tlcStepLicenseName?: TLCStepLicenseName
@@ -143,6 +127,9 @@ export default class StepVIN extends Vue {
   
   @quoteVIN.Getter
   insuranceInfo: VINStepInsuranceInfo | undefined
+
+  @quote.Action
+  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
 
   @quoteVIN.Action
   retrieveFHVInfo!: (vehicle_vin_number: string) => void
@@ -175,6 +162,11 @@ export default class StepVIN extends Vue {
     this.retrieveInsuranceInfo(this.vinValue);
   }
 
+  onIsMe(): void {
+    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true});
+    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
+  }
+
   onNotMe(): void {
     this.resetState();
   }
@@ -184,6 +176,7 @@ export default class StepVIN extends Vue {
   }
 
   resetState(): void {
+    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: false});
     this.resetFHVInfo();
     this.resetInsuranceInfo();
     this.vinValue = ''
@@ -191,76 +184,16 @@ export default class StepVIN extends Vue {
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: StepVIN) => {
-      if (from.name === QuoteRouteNames.TLC) {
+      if (!from.name || QuoteProcessRouter.isBefore(from.name as QuoteRouteNames, vm.$route.name! as QuoteRouteNames)) {
         vm.resetState();
+      }
+
+      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name! as QuoteRouteNames))) {
+        vm.resetState();
+        vm.$router.push(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
       }
     })
   }
-
-  created(): void {
-    if (!this.tlcStepLicenseName) {
-      this.$router.push({ name: 'quoteTlc' })
-    }
-  }
-
-  // @Getter('Quote/tlcLicenseNameError')
-  // tlcLicenseNameError?: Error
-
-  // @Getter('Quote/tlcLicenseNameSuccess')
-  // tlcLicenseNameSuccess!: boolean
-
-  // @Action('Quote/retrieveTLCName')
-  // retrieveTLCName!: (licenseNumber: string) => Promise<void>
-
-  // @Action('Quote/resetTlc')
-  // resetTlc!: () => void
-
-  // tlcValue = ''
-
-  // created(): void {
-  //   this.tlcValue = this.tlcLicenseNumber || ''
-  // }
-
-  // get colorBlue(): string {
-  //   return Colors.Blue
-  // }
-
-  // get colorOrange(): string {
-  //   return Colors.Orange
-  // }
-
-  // get isConfirmStep(): boolean {
-  //   return this.tlcLicenseName.length > 0
-  // }
-
-  // get tlcLicenseNumber(): string {
-  //   return this.tlcStepLicenseName ? this.tlcStepLicenseName.license_number:''
-  // }
-
-  // get tlcLicenseName(): string {
-  //   return this.tlcStepLicenseName ? this.tlcStepLicenseName.name:''
-  // }
-
-  // get tlcError(): boolean {
-  //   return !!this.tlcLicenseNameError
-  // }
-
-  // async onNext(): Promise<void> {
-  //   await this.retrieveTLCName(this.tlcValue);
-  // }
-
-  // onNotMe(): void {
-  //   this.resetTlc();
-  //   this.tlcValue = '';
-  // }
-
-  // onIsMe(): void {
-  //   this.$router.push({ name: 'quoteVin' })
-  // }
-
-  // prettifyName(name: string): string {
-  //   return name.split(',').map(x => x.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')).join(', ')
-  // }
 }
 </script>
 
@@ -283,9 +216,12 @@ export default class StepVIN extends Vue {
   .vin-container__yes-no {
     align-items: center;
     display: flex;
-    flex: 1;
     flex-direction: row-reverse;
     justify-content: center;
+
+    > button {
+      flex-grow: 1;
+    }
   }
 
   .vin-content {
