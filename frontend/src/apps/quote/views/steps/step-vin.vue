@@ -129,7 +129,7 @@ export default class StepVIN extends Vue {
   insuranceInfo: VINStepInsuranceInfo | undefined
 
   @quote.Action
-  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
+  updateStepStatus!: (payload: { step: string, value: boolean }) => void;
 
   @quoteVIN.Action
   retrieveFHVInfo!: (vehicle_vin_number: string) => void
@@ -163,8 +163,8 @@ export default class StepVIN extends Vue {
   }
 
   onIsMe(): void {
-    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true});
-    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
+    this.updateStepStatus({ step: this.$route.name!, value: true});
+    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
   }
 
   onNotMe(): void {
@@ -176,7 +176,7 @@ export default class StepVIN extends Vue {
   }
 
   resetState(): void {
-    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: false});
+    this.updateStepStatus({ step: this.$route.name!, value: false});
     this.resetFHVInfo();
     this.resetInsuranceInfo();
     this.vinValue = ''
@@ -184,13 +184,13 @@ export default class StepVIN extends Vue {
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: StepVIN) => {
-      if (!from.name || QuoteProcessRouter.isBefore(from.name as QuoteRouteNames, vm.$route.name! as QuoteRouteNames)) {
+      if (!from.name || QuoteProcessRouter.isBefore(from.name, vm.$route.name!)) {
         vm.resetState();
       }
 
-      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name! as QuoteRouteNames))) {
+      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name!))) {
         vm.resetState();
-        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
+        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name!));
       }
     })
   }

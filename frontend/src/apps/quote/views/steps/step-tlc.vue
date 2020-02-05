@@ -99,7 +99,7 @@ export default class StepTLC extends Vue {
   tlcLicenseNameSuccess!: boolean
 
   @quote.Action
-  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
+  updateStepStatus!: (payload: { step: string, value: boolean }) => void;
 
   @quoteTLC.Action
   retrieveTLCName!: (licenseNumber: string) => Promise<void>
@@ -144,12 +144,12 @@ export default class StepTLC extends Vue {
   onNotMe(): void {
     this.resetTlc();
     this.tlcValue = '';
-    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: false});
+    this.updateStepStatus({ step: this.$route.name!, value: false});
   }
 
   onIsMe(): void {
-    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true});
-    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
+    this.updateStepStatus({ step: this.$route.name!, value: true});
+    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
   }
 
   prettifyName(name: string): string {

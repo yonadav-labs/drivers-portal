@@ -50,8 +50,8 @@ const quoteRoutesByOrder = {
 
 export class QuoteProcessRouter {
 
-  static previousRouteName(route: QuoteRouteNames): QuoteRouteNames {
-    const currentOrder = quoteRoutesOrder[route];
+  static previousRouteName(route: string): QuoteRouteNames {
+    const currentOrder = quoteRoutesOrder[route as QuoteRouteNames];
 
     if (currentOrder === 0) {
       throw new Error('There is no previous route')
@@ -60,8 +60,8 @@ export class QuoteProcessRouter {
     return quoteRoutesByOrder[currentOrder - 1];
   }
 
-  static nextRouteName(route: QuoteRouteNames): QuoteRouteNames {
-    const currentOrder = quoteRoutesOrder[route];
+  static nextRouteName(route: string): QuoteRouteNames {
+    const currentOrder = quoteRoutesOrder[route as QuoteRouteNames];
 
     if (currentOrder === (Object.keys(quoteRoutesByOrder).length - 1)) {
       throw new Error('There is no next route')
@@ -71,20 +71,20 @@ export class QuoteProcessRouter {
 
   }
 
-  static previousRoute(route: QuoteRouteNames): { name: QuoteRouteNames } {
-    return { name: QuoteProcessRouter.previousRouteName(route) }
+  static previousRoute(route: string): { name: QuoteRouteNames } {
+    return { name: QuoteProcessRouter.previousRouteName(route as QuoteRouteNames) }
   }
 
-  static nextRoute(route: QuoteRouteNames): { name: QuoteRouteNames } {
+  static nextRoute(route: string): { name: QuoteRouteNames } {
     return { name: QuoteProcessRouter.nextRouteName(route) }
   }
 
-  static isBefore(current: QuoteRouteNames, compareWith: QuoteRouteNames): boolean {
-    return quoteRoutesOrder[current] < quoteRoutesOrder[compareWith]
+  static isBefore(current: string, compareWith: string): boolean {
+    return quoteRoutesOrder[current as QuoteRouteNames] < quoteRoutesOrder[compareWith as QuoteRouteNames]
   }
 
-  static isLater(current: QuoteRouteNames, compareWith: QuoteRouteNames): boolean {
-    return quoteRoutesOrder[compareWith] < quoteRoutesOrder[current]
+  static isLater(current: string, compareWith: string): boolean {
+    return quoteRoutesOrder[compareWith as QuoteRouteNames] < quoteRoutesOrder[current as QuoteRouteNames]
   }
 
   static getRouteNameByOrder(order: number): QuoteRouteNames | undefined {

@@ -87,7 +87,7 @@ export default class StepEmail extends Vue {
   updateQuoteEmail!: (email: string) => void;
 
   @quote.Action
-  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
+  updateStepStatus!: (payload: { step: string, value: boolean }) => void;
 
   get colorBlue(): string {
     return Colors.Blue
@@ -117,19 +117,19 @@ export default class StepEmail extends Vue {
   resetState(): void {
     this.emailValue = '';
     this.updateQuoteEmail(this.emailValue)
-    this.updateStepStatus({ step: this.$route.name as QuoteRouteNames, value: false})
+    this.updateStepStatus({ step: this.$route.name!, value: false})
     this.resetEmailExists();
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: StepEmail) => {
-      if (!from.name || QuoteProcessRouter.isBefore(from.name as QuoteRouteNames, vm.$route.name! as QuoteRouteNames)) {
+      if (!from.name || QuoteProcessRouter.isBefore(from.name, vm.$route.name!)) {
         vm.resetState();
       }
 
-      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name! as QuoteRouteNames))) {
+      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name!))) {
         vm.resetState();
-        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
+        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name!));
       }
     })
   }
