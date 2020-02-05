@@ -1,12 +1,21 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
-import { QuestionsStep } from '@/@types/quote';
+
+import { QuestionsStep, QuoteProcess } from '@/@types/quote';
+
+import { APIProperty, APIState } from '@/store/api'
+import {
+  createQuoteProcess, retrieveQuoteProcessById, updateQuoteProcess
+} from '@/store/quote/api'
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
+import { buildQuoteProcessPayload, deconstructQuoteProcess } from './helpers'
+
 @Module({ namespaced: true })
 export default class QuoteMainVuexModule extends VuexModule {
+  apiQuoteProcess: APIProperty<QuoteProcess> = APIState.state<QuoteProcess>();
   internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
   internalQuoteEmail = '';
@@ -31,6 +40,18 @@ export default class QuoteMainVuexModule extends VuexModule {
     return this.internalQuestionAnswers
   }
 
+  get quoteEmail(): string {
+    return this.internalQuoteEmail;
+  }
+
+  get quoteProcess(): QuoteProcess | undefined {
+    return this.apiQuoteProcess.data;
+  }
+
+  get quoteProcessId(): string | undefined {
+    return (this.apiQuoteProcess.data || {}).id
+  }
+
   get stepCompletedByName(): (name: QuoteRouteNames) => boolean {
     return (name: QuoteRouteNames) => this.stepsCompleted[name];
   }
@@ -53,11 +74,44 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
+  setQuoteProcess(payload: QuoteProcess): void {
+    this.apiQuoteProcess = APIState.update(this.apiQuoteProcess, payload)
+  }
+
+  @Mutation
+  setQuoteProcessBlank(): void {
+    this.apiQuoteProcess = APIState.state<QuoteProcess>();
+  }
+
+  @Mutation
+  setQuoteProcessPending(): void {
+    this.apiQuoteProcess = APIState.setPending(this.apiQuoteProcess)
+  }
+
+  @Mutation
   setStepCompleted(payload: { step: QuoteRouteNames, value: boolean }): void {
     const { step, value } = payload;
     this.stepsCompleted = {
       ...this.stepsCompleted,
       [step]: value
+    }
+  }
+
+  @Action
+  async createOrUpdateQuoteProcess(): Promise<void> {
+    this.context.commit('setQuoteProcessPending')
+    const data = buildQuoteProcessPayload();
+    try {
+      const existing = await updateQuoteProcess(data.email, data)
+      this.context.commit('setQuoteProcess', existing)
+    } catch (updateError) {
+      try {
+        const created = await createQuoteProcess(data)
+        this.context.commit('setQuoteProcess', created)
+      } catch (createError) {
+        this.context.commit('setQuoteProcess', createError)
+        console.error(createError)
+      }
     }
   }
 
@@ -78,8 +132,30 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
+  async retrieveQuoteProcess(id: string): Promise<void> {
+    this.context.commit('setQuoteProcessBlank');
+    this.context.commit('setQuoteProcessPending');
+    try {
+      const quoteProcess = await retrieveQuoteProcessById(id);
+      this.context.commit('setQuoteProcess', quoteProcess)
+      deconstructQuoteProcess(quoteProcess);
+    } catch(e) {
+      this.context.commit('setQuoteProcess', e)
+    }
+
+  }
+
+  @Action
   updateQuoteEmail(email: string): void {
     this.context.commit('setQuoteEmail', email);
+  }
+
+  @Action
+  updateQuestionAnswers(payload: QuestionsStep): void {
+    this.context.commit('setQuestionAnswers', {
+      ...this.questionAnswers,
+      ...payload
+    })
   }
 
   @Action

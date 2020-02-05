@@ -24,6 +24,10 @@ export default class QuoteTLCVuexModule extends VuexModule {
     return !!this.tlcStepLicenseName
   }
 
+  get tlcLicenseName(): TLCStepLicenseName | undefined {
+    return this.tlcLicenseNameProperty.data
+  }
+
   @Mutation
   setTlcStepLicenseBlank(): void {
     this.tlcLicenseNameProperty = APIState.state<TLCStepLicenseName>();

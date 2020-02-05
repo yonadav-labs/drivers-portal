@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
@@ -157,7 +157,6 @@ import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 
 const quote = namespace('Quote')
-const quoteTLC = namespace('QuoteTlc')
 
 // Ninth Step 
 @Component({
@@ -167,69 +166,92 @@ const quoteTLC = namespace('QuoteTlc')
   }
 })
 export default class StepQuote extends Vue {
-      DEPOSIT_OPTIONS = [
-        {
-          text: 'No',
-          value: 'no'
-        },
-        {
-          text: '15%',
-          value: '15'
-        },
-        {
-          text: '20%',
-          value: '20'
-        },
-        {
-          text: '25%',
-          value: '25'
+
+  @Prop({ default: ''})
+  quoteId!: string
+
+  @quote.Getter
+  quoteProcessId?: string
+
+  @quote.Action
+  retrieveQuoteProcess!: (id: string) => Promise<void>
+
+  DEPOSIT_OPTIONS = [
+    {
+      text: 'No',
+      value: 'no'
+    },
+    {
+      text: '15%',
+      value: '15'
+    },
+    {
+      text: '20%',
+      value: '20'
+    },
+    {
+      text: '25%',
+      value: '25'
+    }
+  ]
+
+  PHYSICAL_OPTIONS = [
+    {
+      text: 'No',
+      value: 'no'
+    },
+    {
+      text: '$750',
+      value: '750'
+    },
+    {
+      text: '$1,000',
+      value: '1000'
+    },
+    {
+      text: '$1,500',
+      value: '1500'
+    }
+  ]
+
+  internalPhysical = ''
+  internalDeposit = ''
+  internalDate = ''
+  
+  disabledDates = {
+    to: new Date(),
+    from: addDays(new Date(), 20)
+  }
+
+  focus = 'physical'
+
+  @Watch('internalPhysical')
+  onPhysicalChange(val: string): void {
+    if (!!val) {
+      this.focus = 'deposit'
+    }
+  }
+
+  @Watch('internalDeposit')
+  onDepositChange(val: string): void {
+    if (!!val) {
+      this.focus = 'date'
+    }
+  }
+
+  async beforeRouteEnter (to: Route, from: Route, next: any): Promise<void> {
+    next(async (vm: StepQuote) => {
+      if (!vm.quoteId) {
+        vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
+      } else {
+        await vm.retrieveQuoteProcess(vm.quoteId);
+        if (!vm.quoteProcessId) {
+          vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
         }
-    ]
-
-    PHYSICAL_OPTIONS = [
-      {
-        text: 'No',
-        value: 'no'
-      },
-      {
-        text: '$750',
-        value: '750'
-      },
-      {
-        text: '$1,000',
-        value: '1000'
-      },
-      {
-        text: '$1,500',
-        value: '1500'
       }
-    ]
 
-    internalPhysical = ''
-    internalDeposit = ''
-    internalDate = ''
-    
-    disabledDates = {
-      to: new Date(),
-      from: addDays(new Date(), 20)
-    }
-
-    focus = 'physical'
-
-    @Watch('internalPhysical')
-    onPhysicalChange(val: string): void {
-      if (!!val) {
-        this.focus = 'deposit'
-      }
-    }
-
-    @Watch('internalDeposit')
-    onDepositChange(val: string): void {
-      if (!!val) {
-        this.focus = 'date'
-      }
-    }
-    
+    })
+  }
 }
 </script>
 

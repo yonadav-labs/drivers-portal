@@ -32,7 +32,7 @@ const quoteRoutesOrder = {
   [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 6,
   [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 7,
   [QuoteRouteNames.EMAIL]: 8,
-  [QuoteRouteNames.QUOTE]: 10
+  [QuoteRouteNames.QUOTE]: 9
 }
 
 const quoteRoutesByOrder = {
@@ -86,6 +86,14 @@ export class QuoteProcessRouter {
   static isLater(current: QuoteRouteNames, compareWith: QuoteRouteNames): boolean {
     return quoteRoutesOrder[compareWith] < quoteRoutesOrder[current]
   }
+
+  static getRouteNameByOrder(order: number): QuoteRouteNames | undefined {
+    return quoteRoutesByOrder[order]
+  }
+
+  static getRouteByOrder(order: number): { name?: QuoteRouteNames } {
+    return { name: QuoteProcessRouter.getRouteNameByOrder(order) }
+  } 
 }
 
 export default [
@@ -98,5 +106,5 @@ export default [
   { path: '/question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE },
   { path: '/question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE },
   { path: '/email/', component: StepEmail, name: QuoteRouteNames.EMAIL },
-  { path: '/quote/', component: StepQuote, name: QuoteRouteNames.QUOTE  }
+  { path: '/quote/:quoteId/', component: StepQuote, name: QuoteRouteNames.QUOTE, props: true }
 ]

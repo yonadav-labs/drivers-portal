@@ -4,7 +4,10 @@ import { TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo } from '@/@typ
 
 export async function getTLCLicenseName(licenseNumber: string): Promise<TLCStepLicenseName> {
     const response = await client.get(`importer/fhv_driver/${licenseNumber}/`)
-    return response.data
+    return {
+      tlc_number: response.data.license_number,
+      tlc_name: response.data.name
+    }
 }
 
 export async function getVINFHVInfo(vehicle_vin_number: string): Promise<VINStepFHVInfo> {

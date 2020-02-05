@@ -69,10 +69,16 @@ export default class StepEmail extends Vue {
   emailExists!: boolean
 
   @quote.Getter
+  quoteProcessId?: string
+
+  @quote.Getter
   stepCompletedByName!: (route: QuoteRouteNames) => boolean
 
   @quote.Action
   checkEmailExists!: (email: string) => Promise<void>
+
+  @quote.Action
+  createOrUpdateQuoteProcess!: () => Promise<void>
 
   @quote.Action
   resetEmailExists!: () => void;
@@ -95,11 +101,16 @@ export default class StepEmail extends Vue {
   }
 
   async onNext(): Promise<void> {
+    this.resetEmailExists();
     await this.checkEmailExists(this.emailValue);
-    if (this.emailExists) {
-      console.log("Exists")
-    } else {
-      console.log("Not exist")
+    if (!this.emailExists) {
+      await this.updateQuoteEmail(this.emailValue)
+      await this.createOrUpdateQuoteProcess()
+      if (!this.quoteProcessId) {
+        throw new Error('error page');
+      } else {
+        this.$router.push({ name: QuoteRouteNames.QUOTE, params: {quoteId: this.quoteProcessId}})
+      }
     }
   }
 

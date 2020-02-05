@@ -48,7 +48,7 @@ export default class StepQuestionLongDmv extends Vue {
   answers = [
     {
       label: '+3 years',
-      value: '+3'
+      value: '3+'
     },
     {
       label: '2 - 3 years',

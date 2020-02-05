@@ -1,6 +1,6 @@
 export interface TLCStepLicenseName {
-    license_number: string,
-    name: string
+    tlc_number: string,
+    tlc_name: string
 }
 
 export interface VINStepFHVInfo {
@@ -24,4 +24,15 @@ export interface QuestionsStep {
   fault_accidents_last_months?: string,
   defensive_driving_certificate?: boolean,
   accident_avoidance_system?: boolean
+}
+
+export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo, Required<QuestionsStep> {
+  email: string
+}
+
+export interface QuoteProcess extends QuoteProcessPayload {
+  id: string,
+  deposit?: string,
+  liability?: string,
+  date?: string,
 }

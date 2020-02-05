@@ -126,11 +126,11 @@ export default class StepTLC extends Vue {
   }
 
   get tlcLicenseNumber(): string {
-    return this.tlcStepLicenseName ? this.tlcStepLicenseName.license_number:''
+    return this.tlcStepLicenseName ? this.tlcStepLicenseName.tlc_number:''
   }
 
   get tlcLicenseName(): string {
-    return this.tlcStepLicenseName ? this.tlcStepLicenseName.name:''
+    return this.tlcStepLicenseName ? this.tlcStepLicenseName.tlc_name:''
   }
 
   get tlcError(): boolean {
