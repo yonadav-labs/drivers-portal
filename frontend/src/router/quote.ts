@@ -50,6 +50,10 @@ const quoteRoutesByOrder = {
 
 export class QuoteProcessRouter {
 
+  static hasPrevious(route: string): boolean {
+    return quoteRoutesOrder[route as QuoteRouteNames] !== 0
+  }
+
   static previousRouteName(route: string): QuoteRouteNames {
     const currentOrder = quoteRoutesOrder[route as QuoteRouteNames];
 

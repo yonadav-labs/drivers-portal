@@ -69,6 +69,9 @@ export default class StepEmail extends Vue {
   emailExists!: boolean
 
   @quote.Getter
+  quoteEmail!: string
+
+  @quote.Getter
   quoteProcessId?: string
 
   @quote.Getter
@@ -109,6 +112,7 @@ export default class StepEmail extends Vue {
       if (!this.quoteProcessId) {
         throw new Error('error page');
       } else {
+        this.updateStepStatus({ step: this.$route.name!, value: true})
         this.$router.push({ name: QuoteRouteNames.QUOTE, params: {quoteId: this.quoteProcessId}})
       }
     }
@@ -119,6 +123,10 @@ export default class StepEmail extends Vue {
     this.updateQuoteEmail(this.emailValue)
     this.updateStepStatus({ step: this.$route.name!, value: false})
     this.resetEmailExists();
+  }
+
+  created(): void {
+    this.emailValue = this.quoteEmail || '';
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {

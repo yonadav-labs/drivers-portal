@@ -24,7 +24,7 @@
         class="icon--grey"
         v-if="invalid"
       ></component>
-      <icon-check-circle size="16" class="icon--blue" v-else></icon-check-circle>
+      <icon-check-circle size="16" class="blue-check" v-else></icon-check-circle>
     </div>
     <p class="input-alert">
       <slot name="error"></slot>
@@ -121,6 +121,10 @@ export default class BasicInput extends Vue {
   get invalid(): boolean {
     return !this.emailValid || (!this.minlength && this.value === '') || (this.minlength && (!this.value || this.value.length < this.minlength)) || !this.validate
   }
+
+  created(): void {
+    this.validChange();
+  }
 }
 </script>
 
@@ -128,9 +132,11 @@ export default class BasicInput extends Vue {
 .icon--grey {
   color: $grey;
 }
-.icon--blue {
+
+.blue-check {
   color: $blue;
 }
+
 .container-input {
   .input-alert {
     font-size: $fs-md;

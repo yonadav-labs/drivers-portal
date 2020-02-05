@@ -20,22 +20,48 @@
           class="footer"
           :class="{'footer--simple': false && `goDriverBack == 'TLC' || activeStepName === 'STY'|| activeStepName === 'SLOAD'`}"
         >
-          <!-- <basic-button
+          <basic-button
             class="back-button"
             text="Back"
             @click="back()"
-            v-if="goDriverBack != 'TLC' && activeStepName !== 'STY' && activeStepName !== 'SLOAD'"
+            v-if="showBack"
           >
             <icon-arrow-left size="16" class="icon--grey-darker" slot="before"></icon-arrow-left>
-          </basic-button> -->
-          <!-- <a class="footer-comments" href="#">
-            <icon-comment-dots size="16" class="icon--grey-darker"></icon-comment-dots>
-          </a> -->
+          </basic-button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
+import BasicButton from '@/components/buttons/basic-button.vue'
+import IconArrowLeft from '@/components/icons/icon-arrow-left.vue'
+
+import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+
+@Component({
+  components: {
+    BasicButton, IconArrowLeft
+  }
+})
+export default class QuoteProcessLayout extends Vue {
+
+  @Prop({ default: false })
+  backDisabled!: boolean
+
+  get showBack(): boolean {
+    return !this.backDisabled && QuoteProcessRouter.hasPrevious(this.$route.name!);
+  }
+
+  back(): void {
+    this.$router.push(QuoteProcessRouter.previousRoute(this.$route.name!))
+  }
+}
+</script>
+
 
 <style lang="scss" scoped>
   .icon--grey-darker {
@@ -243,11 +269,3 @@
     margin-top: 1rem;
   }
 </style>
-<script>
-import { Component, Vue } from 'vue-property-decorator';
-
-@Component
-export default class QuoteProcessLayout extends Vue {
-  
-}
-</script>

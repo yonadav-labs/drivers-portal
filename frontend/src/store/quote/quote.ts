@@ -62,6 +62,14 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
+  setMultipleStepsCompleted(payload: { step: QuoteRouteNames, value: boolean }): void {
+    this.stepsCompleted = {
+      ...this.stepsCompleted,
+      ...payload
+    }
+  }
+
+  @Mutation
   setQuoteEmail(value: string): void {
     this.internalQuoteEmail = value;
   }

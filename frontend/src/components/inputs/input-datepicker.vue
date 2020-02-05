@@ -71,9 +71,6 @@ export default class InputDatepicker extends Vue {
   .icon--grey {
     color: $grey;
   }
-  .icon--blue {
-    color: $blue;
-  }
     .box-datepicker{
       align-items: center;
       background-color: $white;

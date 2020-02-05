@@ -2,6 +2,8 @@ import { store } from '@/store/store'
 
 import { QuoteProcessPayload, QuoteProcess } from '@/@types/quote';
 
+import { QuoteRouteNames } from '@/router/quote'
+
 export function buildQuoteProcessPayload(): QuoteProcessPayload {
   return {
     ...store.getters['QuoteTlc/tlcLicenseName'],
@@ -30,4 +32,17 @@ export function deconstructQuoteProcess(quoteProcess: QuoteProcess): void {
     accident_avoidance_system 
   })
   store.commit('Quote/setQuoteEmail', email)
+
+  store.commit('Quote/setMultipleStepsCompleted', {
+    [QuoteRouteNames.TLC]: true,
+    [QuoteRouteNames.VIN]: true,
+    [QuoteRouteNames.QUESTION_LONG_TLC]: true,
+    [QuoteRouteNames.QUESTION_LONG_DMV]: true,
+    [QuoteRouteNames.QUESTION_DRIVER_POINTS]: true,
+    [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: true,
+    [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: true,
+    [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: true,
+    [QuoteRouteNames.EMAIL]: true,
+  })
+  
 }
