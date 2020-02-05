@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import {VINStepFHVInfo, VINStepInsuranceInfo } from '@/@types/quote';
 
 import { APIProperty, APIState } from '@/store/api'
-import { getVINFHVInfo, getVINInsuranceInfo } from './api'
+import { getVINFHVInfo, getVINInsuranceInfo } from '@/store/importer/api'
 
 @Module({ namespaced: true })
 export default class QuoteVINVuexModule extends VuexModule {

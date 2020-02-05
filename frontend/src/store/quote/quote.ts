@@ -1,12 +1,13 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { QuestionsStep } from '@/@types/quote';
 
-import { APIProperty, APIState } from '@/store/api'
+import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
 
 import { QuoteRouteNames } from '@/router/quote'
 
 @Module({ namespaced: true })
 export default class QuoteMainVuexModule extends VuexModule {
+  internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
   stepsCompleted = {
     [QuoteRouteNames.TLC]: false,
@@ -20,12 +21,21 @@ export default class QuoteMainVuexModule extends VuexModule {
     [QuoteRouteNames.EMAIL]: false
   }
 
+  get emailExists(): boolean {
+    return this.internalEmailExist
+  }
+
   get questionAnswers(): QuestionsStep {
     return this.internalQuestionAnswers
   }
 
   get stepCompletedByName(): (name: QuoteRouteNames) => boolean {
     return (name: QuoteRouteNames) => this.stepsCompleted[name];
+  }
+
+  @Mutation
+  setEmailExists(value: boolean): void {
+    this.internalEmailExist = value;
   }
 
   @Mutation
@@ -41,6 +51,17 @@ export default class QuoteMainVuexModule extends VuexModule {
     this.stepsCompleted = {
       ...this.stepsCompleted,
       [step]: value
+    }
+  }
+
+  @Action
+  async checkEmailExists(email: string): Promise<void> {
+    this.context.commit('setEmailExists', false);
+    try {
+      await apiCheckEmailExists(email);
+      this.context.commit('setEmailExists', true);
+    } catch (e) {
+      this.context.commit('setEmailExists', false);
     }
   }
 

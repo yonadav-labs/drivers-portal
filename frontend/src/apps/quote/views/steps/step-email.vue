@@ -19,7 +19,7 @@
                     >
                     </basic-input>
                 </div>
-                <error-message class="error" v-if="!!emailError" slot="error">This email is already registered as user</error-message>
+                <error-message class="error" v-if="emailExists" slot="error">This email is already registered as user</error-message>
             </div>
           </div>
           <basic-button
@@ -65,12 +65,16 @@ const quoteTLC = namespace('QuoteTlc')
 })
 export default class StepEmail extends Vue {
 
+  @quote.Getter
+  emailExists!: boolean
+
+  @quote.Action
+  checkEmailExists!: (email: string) => Promise<void>
 
   get colorBlue(): string {
     return Colors.Blue
   }
 
-  emailError = false;
   emailValid = false;
   emailValue = '';
 
@@ -78,8 +82,13 @@ export default class StepEmail extends Vue {
     this.emailValid = value;
   }
 
-  onNext(): void {
-    debugger;
+  async onNext(): Promise<void> {
+    await this.checkEmailExists(this.emailValue);
+    if (this.emailExists) {
+      console.log("Exists")
+    } else {
+      console.log("Not exist")
+    }
   }
 
 
@@ -175,6 +184,7 @@ export default class StepEmail extends Vue {
     background-color: rgba(206, 212, 218, 0.2);
     border-radius: 8px;
     margin: 1.25rem auto;
+    text-align: left;
 
     .form-input__container {
       padding: 1.25rem 2.5rem;

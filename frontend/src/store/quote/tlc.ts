@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { TLCStepLicenseName } from '@/@types/quote';
 
 import { APIProperty, APIState } from '@/store/api'
-import { getTLCLicenseName } from './api'
+import { getTLCLicenseName } from '@/store/importer/api'
 
 @Module({ namespaced: true })
 export default class QuoteTLCVuexModule extends VuexModule {
