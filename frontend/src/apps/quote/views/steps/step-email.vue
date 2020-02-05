@@ -13,7 +13,7 @@
                     v-model="emailValue"
                     type='email'
                     placeholder='your.email-here@email.com'
-                    icon="id-card"
+                    icon="envelope"
                     :required="true"
                     @valid="onValidChange"
                     >
@@ -166,7 +166,7 @@ export default class StepEmail extends Vue {
       opacity: 0.8;
     }
     .form-input__email {
-      width: 100%;
+      width: 17.5rem;
 
       .error {
         font-size: $fs-xs;

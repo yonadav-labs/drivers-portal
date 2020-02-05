@@ -3,7 +3,7 @@ import { QuestionsStep } from '@/@types/quote';
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
 
-import { QuoteRouteNames } from '@/router/quote'
+import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 @Module({ namespaced: true })
 export default class QuoteMainVuexModule extends VuexModule {
@@ -19,7 +19,8 @@ export default class QuoteMainVuexModule extends VuexModule {
     [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: false,
     [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: false,
     [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: false,
-    [QuoteRouteNames.EMAIL]: false
+    [QuoteRouteNames.EMAIL]: false,
+    [QuoteRouteNames.QUOTE]: false
   }
 
   get emailExists(): boolean {

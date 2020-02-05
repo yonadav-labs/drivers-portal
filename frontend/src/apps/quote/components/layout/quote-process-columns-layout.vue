@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="main-content"
+      class="main-content main-content--columns"
     >
       <!-- Container -->
       <div class="container">
@@ -32,6 +32,9 @@
             <icon-comment-dots size="16" class="icon--grey-darker"></icon-comment-dots>
           </a> -->
         </div>
+      </div>
+      <div class="right-column">
+        <slot name="right-column"></slot>
       </div>
     </div>
   </div>
@@ -247,7 +250,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component
-export default class QuoteProcessLayout extends Vue {
+export default class QuoteProcessColumnsLayout extends Vue {
   
 }
 </script>

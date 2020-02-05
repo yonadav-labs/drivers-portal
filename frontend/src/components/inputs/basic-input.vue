@@ -38,9 +38,11 @@ import { Component, Prop, Vue, Model, Emit, Watch } from 'vue-property-decorator
 import IconCar from '@/components/icons/icon-car.vue'
 import IconIdCard from '@/components/icons/icon-id-card.vue'
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
+import IconEnvelope from '@/components/icons/icon-envelope.vue'
+
 import { VueConstructor } from 'vue';
 
-type Icon = 'car' | 'id-card';
+type Icon = 'car' | 'id-card' | 'envelope';
 
 @Component({
   components: {
@@ -105,6 +107,8 @@ export default class BasicInput extends Vue {
         return IconIdCard;
       case 'car':
         return IconCar;
+      case 'envelope':
+        return IconEnvelope;
       default:
         return undefined;
     }
