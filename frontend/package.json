@@ -14,9 +14,6 @@
     "serve:staging": "vue-cli-service serve --mode staging"
   },
   "dependencies": {
-    "@commite/ajax-client": "^0.3.2",
-    "@types/axios": "^0.14.0",
-    "@types/vue-router": "^2.0.0",
     "axios": "^0.19.2",
     "child-replace-with-polyfill": "^1.0.1",
     "core-js": "^2.6.9",
@@ -32,6 +29,8 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
+    "@types/axios": "^0.14.0",
+    "@types/vue-router": "^2.0.0",
     "@vue/cli-plugin-e2e-cypress": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-plugin-unit-jest": "^3.11.0",

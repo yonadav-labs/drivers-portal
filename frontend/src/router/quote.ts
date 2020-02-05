@@ -6,6 +6,7 @@ import StepQuestionDriverPoints from '@/apps/quote/views/steps/step-question-dri
 import StepQuestionFaultAccidents from '@/apps/quote/views/steps/step-question-fault-accidents.vue'
 import StepQuestionDefensiveCertificate from '@/apps/quote/views/steps/step-question-defensive-certificate.vue'
 import StepQuestionAccidentAvoidance from '@/apps/quote/views/steps/step-question-accident-avoidance.vue'
+import StepEmail from '@/apps/quote/views/steps/step-email.vue'
 
 export enum QuoteRouteNames {
   TLC = 'quoteTlc',
@@ -15,7 +16,8 @@ export enum QuoteRouteNames {
   QUESTION_DRIVER_POINTS = 'quoteQuestionDriverPoints',
   QUESTION_FAULT_ACCIDENTS = 'quoteQuestionFaultAccidents',
   QUESTION_DEFENSIVE_CERTIFICATE = 'quoteQuestionDefensiveCertificate',
-  QUESTION_ACCIDENT_AVOIDANCE = 'quoteQuestionAccidentAvoidance'
+  QUESTION_ACCIDENT_AVOIDANCE = 'quoteQuestionAccidentAvoidance',
+  EMAIL = 'quoteEmail'
 }
 
 const quoteRoutesOrder = {
@@ -27,6 +29,7 @@ const quoteRoutesOrder = {
   [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 5,
   [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 6,
   [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 7,
+  [QuoteRouteNames.EMAIL]: 8,
 }
 
 const quoteRoutesByOrder = {
@@ -38,6 +41,7 @@ const quoteRoutesByOrder = {
   [quoteRoutesOrder[QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]]: QuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
   [quoteRoutesOrder[QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]]: QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
   [quoteRoutesOrder[QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]]: QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
+  [quoteRoutesOrder[QuoteRouteNames.EMAIL]]: QuoteRouteNames.EMAIL,
 }
 
 export class QuoteProcessRouter {
@@ -89,4 +93,5 @@ export default [
   { path: '/question-fault-accidents/', component: StepQuestionFaultAccidents, name: QuoteRouteNames.QUESTION_FAULT_ACCIDENTS },
   { path: '/question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE },
   { path: '/question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE },
+  { path: '/email/', component: StepEmail, name: QuoteRouteNames.EMAIL }
 ]

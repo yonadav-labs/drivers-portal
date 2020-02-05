@@ -15,13 +15,14 @@
         :value="value"
         :readonly="readonly"
         @input="input"
-        @keyup="$emit('keyup')"
-        @keyup.enter="$emit('keyupEnter')">
+        @keyup="onKeyUp"
+        @keyup.enter="$emit('keyupEnter')"
+        >
       <component
         v-bind:is="iconComponent"
         size="16"
         class="icon--grey"
-        v-if="((!minlength && value =='') || (minlength && (!value || value.length < minlength)) || !validate)"
+        v-if="invalid"
       ></component>
       <icon-check-circle size="16" class="icon--blue" v-else></icon-check-circle>
     </div>
@@ -32,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Model, Emit } from 'vue-property-decorator';
+import { Component, Prop, Vue, Model, Emit, Watch } from 'vue-property-decorator';
 
 import IconCar from '@/components/icons/icon-car.vue'
 import IconIdCard from '@/components/icons/icon-id-card.vue'
@@ -84,8 +85,18 @@ export default class BasicInput extends Vue {
   @Prop()
   value!: string
 
+  @Watch('invalid')
+  validChange(): void {
+    this.$emit('valid', !this.invalid)
+  }
+
   input(event: { target: HTMLInputElement; }): void {
     this.$emit('input', event.target.value);
+  }
+
+  @Emit('keyup')
+  onKeyUp(event: Event): any {
+    return event;
   }
 
   get iconComponent(): VueConstructor<Vue> | undefined {
@@ -97,6 +108,14 @@ export default class BasicInput extends Vue {
       default:
         return undefined;
     }
+  }
+
+  get emailValid(): boolean {
+    return this.type !== 'email' || !this.required || (!!this.value && /.*@*.\.{1}.\w/.test(this.value))
+  }
+
+  get invalid(): boolean {
+    return !this.emailValid || (!this.minlength && this.value === '') || (this.minlength && (!this.value || this.value.length < this.minlength)) || !this.validate
   }
 }
 </script>

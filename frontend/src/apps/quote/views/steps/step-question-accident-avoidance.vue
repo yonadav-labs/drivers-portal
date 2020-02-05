@@ -54,7 +54,8 @@ export default class StepQuestionAccidentAvoidance extends Vue {
   }
 
   next(): void {
-    debugger;
+    this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true });
+    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
