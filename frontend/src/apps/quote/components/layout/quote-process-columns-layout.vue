@@ -6,6 +6,7 @@
       <!-- Container -->
       <div class="container">
         <div class="content">
+          <breadcrumbs></breadcrumbs>
           <div
             class="header"
             :class="{'simple-header': false && `goDriverBack != 'TLC' && activeStepName != 'SLOAD'`}"
@@ -41,13 +42,14 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
+import Breadcrumbs from './breadcrumbs.vue'
 import IconArrowLeft from '@/components/icons/icon-arrow-left.vue'
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 @Component({
   components: {
-    BasicButton, IconArrowLeft
+    BasicButton, Breadcrumbs, IconArrowLeft
   }
 })
 export default class QuoteProcessLayout extends Vue {

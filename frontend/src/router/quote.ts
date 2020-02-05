@@ -48,6 +48,19 @@ const quoteRoutesByOrder = {
   [quoteRoutesOrder[QuoteRouteNames.QUOTE]]: QuoteRouteNames.QUOTE,
 }
 
+const quoteRoutesTitles = {
+  [QuoteRouteNames.TLC]: 'TLC License',
+  [QuoteRouteNames.VIN]: `Vehicle's VIN`,
+  [QuoteRouteNames.QUESTION_LONG_TLC]: 'Driver Questions(1 of 6)',
+  [QuoteRouteNames.QUESTION_LONG_DMV]: 'Driver Questions(2 of 6)',
+  [QuoteRouteNames.QUESTION_DRIVER_POINTS]: 'Driver Questions(3 of 6)',
+  [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(4 of 6)',
+  [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(5 of 6)',
+  [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(6 of 6)',
+  [QuoteRouteNames.EMAIL]: 'Verify Email Address',
+  [QuoteRouteNames.QUOTE]: 'Quote'
+}
+
 export class QuoteProcessRouter {
 
   static hasPrevious(route: string): boolean {
@@ -97,7 +110,11 @@ export class QuoteProcessRouter {
 
   static getRouteByOrder(order: number): { name?: QuoteRouteNames } {
     return { name: QuoteProcessRouter.getRouteNameByOrder(order) }
-  } 
+  }
+  
+  static getRouteTitle(route: string): string {
+    return quoteRoutesTitles[route as QuoteRouteNames];
+  }
 }
 
 export default [
