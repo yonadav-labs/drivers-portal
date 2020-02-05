@@ -65,7 +65,7 @@ export default class StepQuestionDefensiveCertificate extends Vue {
       
       if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name! as QuoteRouteNames))) {
         vm.resetState();
-        vm.$router.push(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
+        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
       }
     })
   }
