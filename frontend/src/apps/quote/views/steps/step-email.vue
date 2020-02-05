@@ -35,9 +35,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
+
+import { Route } from 'vue-router';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
@@ -47,8 +49,6 @@ import ErrorMessage from '@/components/error-message.vue'
 
 import { Colors } from '@/utils/colors'
 import { capitalize } from '@/utils/text'
-
-import { TLCStepLicenseName } from '../../../../@types/quote';
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
@@ -68,8 +68,20 @@ export default class StepEmail extends Vue {
   @quote.Getter
   emailExists!: boolean
 
+  @quote.Getter
+  stepCompletedByName!: (route: QuoteRouteNames) => boolean
+
   @quote.Action
   checkEmailExists!: (email: string) => Promise<void>
+
+  @quote.Action
+  resetEmailExists!: () => void;
+
+  @quote.Action
+  updateQuoteEmail!: (email: string) => void;
+
+  @quote.Action
+  updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
 
   get colorBlue(): string {
     return Colors.Blue
@@ -91,75 +103,25 @@ export default class StepEmail extends Vue {
     }
   }
 
+  resetState(): void {
+    this.emailValue = '';
+    this.updateQuoteEmail(this.emailValue)
+    this.updateStepStatus({ step: this.$route.name as QuoteRouteNames, value: false})
+    this.resetEmailExists();
+  }
 
-  // @quoteTLC.Getter
-  // tlcStepLicenseName?: TLCStepLicenseName
+  beforeRouteEnter (to: Route, from: Route, next: any): void {
+    next((vm: StepEmail) => {
+      if (!from.name || QuoteProcessRouter.isBefore(from.name as QuoteRouteNames, vm.$route.name! as QuoteRouteNames)) {
+        vm.resetState();
+      }
 
-  // @quoteTLC.Getter
-  // tlcLicenseNameError?: Error
-
-  // @quoteTLC.Getter
-  // tlcLicenseNameSuccess!: boolean
-
-  // @quote.Action
-  // updateStepStatus!: (payload: { step: QuoteRouteNames, value: boolean }) => void;
-
-  // @quoteTLC.Action
-  // retrieveTLCName!: (licenseNumber: string) => Promise<void>
-
-  // @quoteTLC.Action
-  // resetTlc!: () => void
-
-  // tlcValue = ''
-
-  // created(): void {
-  //   this.tlcValue = this.tlcLicenseNumber || ''
-  // }
-
-  // get colorBlue(): string {
-  //   return Colors.Blue
-  // }
-
-  // get colorOrange(): string {
-  //   return Colors.Orange
-  // }
-
-  // get isConfirmStep(): boolean {
-  //   return this.tlcLicenseName.length > 0
-  // }
-
-  // get tlcLicenseNumber(): string {
-  //   return this.tlcStepLicenseName ? this.tlcStepLicenseName.license_number:''
-  // }
-
-  // get tlcLicenseName(): string {
-  //   return this.tlcStepLicenseName ? this.tlcStepLicenseName.name:''
-  // }
-
-  // get tlcError(): boolean {
-  //   return !!this.tlcLicenseNameError
-  // }
-
-  // async onNext(): Promise<void> {
-  //   await this.retrieveTLCName(this.tlcValue);
-  // }
-
-  // onNotMe(): void {
-  //   this.resetTlc();
-  //   this.tlcValue = '';
-  //   this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: false});
-  // }
-
-  // onIsMe(): void {
-  //   this.updateStepStatus({ step: this.$route.name! as QuoteRouteNames, value: true});
-  //   this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name! as QuoteRouteNames))
-  // }
-
-  // prettifyName(name: string): string {
-  //   return capitalize(name)
-  // }
-
-
+      if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name! as QuoteRouteNames))) {
+        vm.resetState();
+        vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name! as QuoteRouteNames));
+      }
+    })
+  }
 }
 </script>
 

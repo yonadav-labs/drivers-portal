@@ -9,6 +9,7 @@ import { QuoteRouteNames } from '@/router/quote'
 export default class QuoteMainVuexModule extends VuexModule {
   internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
+  internalQuoteEmail = '';
   stepsCompleted = {
     [QuoteRouteNames.TLC]: false,
     [QuoteRouteNames.VIN]: false,
@@ -39,6 +40,11 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
+  setQuoteEmail(value: string): void {
+    this.internalQuoteEmail = value;
+  }
+
+  @Mutation
   setQuestionAnswers(payload: QuestionsStep): void {
     this.internalQuestionAnswers = {
       ...payload
@@ -66,11 +72,13 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
-  updateQuestionAnswers(payload: QuestionsStep): void {
-    this.context.commit('setQuestionAnswers', {
-      ...this.internalQuestionAnswers,
-      ...payload
-    })
+  resetEmailExists(): void {
+    this.context.commit('setEmailExists', false);
+  }
+
+  @Action
+  updateQuoteEmail(email: string): void {
+    this.context.commit('setQuoteEmail', email);
   }
 
   @Action
