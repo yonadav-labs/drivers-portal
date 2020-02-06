@@ -311,7 +311,9 @@ class QuoteSoftFallout(BaseModel):
 
   phone_number = models.CharField(
       verbose_name='Phone Number',
-      max_length=255
+      max_length=255,
+      blank=True,
+      null=True
   )
 
   email = models.EmailField(
