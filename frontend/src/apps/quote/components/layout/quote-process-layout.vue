@@ -6,6 +6,9 @@
       <!-- Container -->
       <div class="container">
         <div class="content">
+          <breadcrumbs
+          v-if="!hideBreadcrumbs"
+          ></breadcrumbs>
           <div
             class="header"
             :class="{'simple-header': false && `goDriverBack != 'TLC' && activeStepName != 'SLOAD'`}"
@@ -20,24 +23,55 @@
           class="footer"
           :class="{'footer--simple': false && `goDriverBack == 'TLC' || activeStepName === 'STY'|| activeStepName === 'SLOAD'`}"
         >
-          <!-- <basic-button
+          <basic-button
             class="back-button"
             text="Back"
             @click="back()"
-            v-if="goDriverBack != 'TLC' && activeStepName !== 'STY' && activeStepName !== 'SLOAD'"
+            v-if="showBack"
           >
             <icon-arrow-left size="16" class="icon--grey-darker" slot="before"></icon-arrow-left>
-          </basic-button> -->
-          <!-- <a class="footer-comments" href="#">
-            <icon-comment-dots size="16" class="icon--grey-darker"></icon-comment-dots>
-          </a> -->
+          </basic-button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
+import BasicButton from '@/components/buttons/basic-button.vue'
+import Breadcrumbs from './breadcrumbs.vue'
+import IconArrowLeft from '@/components/icons/icon-arrow-left.vue'
+
+import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+
+@Component({
+  components: {
+    BasicButton, Breadcrumbs, IconArrowLeft
+  }
+})
+export default class QuoteProcessLayout extends Vue {
+
+  @Prop({ default: false })
+  hideBack!: boolean
+
+  @Prop({ default: false })
+  hideBreadcrumbs!: boolean
+
+  get showBack(): boolean {
+    return !this.hideBack && QuoteProcessRouter.hasPrevious(this.$route.name!);
+  }
+
+  back(): void {
+    this.$emit('back')
+    this.$router.push(QuoteProcessRouter.previousRoute(this.$route.name!))
+  }
+}
+</script>
+
+
+<style lang="scss" scoped>
   .icon--grey-darker {
     color: $grey-darker;
   }
@@ -78,97 +112,6 @@
         .divider {
           margin-top: 2.5rem;
           padding-bottom: 1.75rem;
-        }
-        .insurance-info {
-          font-size: $fs-lg;
-          padding: 1.875rem;
-          .insurance-info--question {
-            color: $blue;
-            display: flex;
-            font-weight: $fw-semibold;
-            font-size: $fs-md;
-          }
-        }
-        .insurance-resume {
-          background-color: rgba(241, 243, 245, 0.92);
-          display: flex;
-          justify-content: space-between;
-          padding: 1.25rem;
-          .insurance-estimated {
-            background-color: $white;
-            border-radius: 2px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            padding: 1rem 0.875rem 0.875rem;
-            width: 9.813rem;
-            span {
-              font-size: $fs-lg;
-            }
-            p {
-              text-align: center;
-              &.estimated-price {
-                color: $blue;
-                font-size: $fs-xl;
-                font-weight: $fw-semibold;
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-              }
-            }
-            .estimated-date {
-              background-color: $grey-light;
-              font-size: $fs-sm;
-              margin: 0 auto;
-              opacity: 0.5;
-              padding: 0.5rem;
-            }
-          }
-        }
-        .insurance-action {
-          background-color: $grey;
-          border-radius: 0 0 8px 8px;
-          color: $white;
-          cursor: not-allowed;
-          display: flex;
-          justify-content: center;
-          font-size: $fs-md;
-          font-weight: $fw-semibold;
-          text-align: center;
-          text-decoration: none;
-          padding: 1rem 0;
-          width: 100%;
-          .icon {
-            color: $white;
-            margin-left: 1rem;
-          }
-          &.active {
-            background-image: linear-gradient(105deg, #fca011, #f76707);
-            cursor: pointer;
-          }
-        }
-        .insurance-title {
-          font-size: $fs-md;
-          font-weight: $fw-semibold;
-          line-height: 1.22;
-          text-transform: uppercase;
-          padding-bottom: 1.875rem;
-        }
-        .insurance-text {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 1.25rem;
-          > div {
-            display: flex;
-            flex-direction: column;
-          }
-          .insurance-price {
-            color: $grey-darker;
-            font-size: $fs-md;
-            padding-top: 0.5rem;
-          }
-          &.insurance-text--total {
-            font-weight: $fw-bold;
-          }
         }
       }
       .container {
@@ -334,11 +277,3 @@
     margin-top: 1rem;
   }
 </style>
-<script>
-import { Component, Vue } from 'vue-property-decorator';
-
-@Component
-export default class QuoteProcessLayout extends Vue {
-  
-}
-</script>

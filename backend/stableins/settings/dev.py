@@ -42,3 +42,7 @@ ANYMAIL_SENDGRID_SEND_DEFAULTS = {
         }
     }
 }
+
+CORS_ORIGIN_WHITELIST = [
+    "localhost:8080",
+]

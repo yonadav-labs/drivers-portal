@@ -8,7 +8,8 @@ from base.models import BaseModel
 
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
-    QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES
+    QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
+    FAULT_ACCIDENTS_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
 
@@ -46,17 +47,22 @@ class QuoteProcess(BaseModel):
         verbose_name='License Plate #',
         max_length=20
     )
+    base_name = models.CharField(
+        verbose_name='Base Name',
+        max_length=511
+    )
     base_number = models.CharField(
         verbose_name='Base Number',
         max_length=6
     )
     base_type = models.CharField(
         verbose_name='Base Type',
-        max_length=255
+        max_length=255,
+        blank=True,
+        null=True
     )
-    vehicle_year = models.CharField(
+    vehicle_year = models.PositiveIntegerField(
         verbose_name='Vehicle Year',
-        max_length=4,
         validators=[RegexValidator('^[1,2][0,9]\d{2}$')]
     )
     vehicle_weight = models.CharField(
@@ -95,6 +101,11 @@ class QuoteProcess(BaseModel):
         verbose_name='Driver points in last 36 months',
         max_length=4,
         choices=POINTS_CHOICES
+    )
+    fault_accidents_last_months = models.CharField(
+        verbose_name='Fault accidents in last 36 months',
+        max_length=2,
+        choices=FAULT_ACCIDENTS_CHOICES
     )
     defensive_driving_certificate = models.BooleanField(
         verbose_name='Defensive driving certificate',
@@ -290,3 +301,26 @@ class QuoteProcessPayment(BaseModel):
     class Meta:
         verbose_name = 'Quote Process Payment'
         verbose_name_plural = 'Quote Process Payment'
+
+
+class QuoteSoftFallout(BaseModel):
+  name = models.CharField(
+      verbose_name='Name',
+      max_length=255
+  )
+
+  phone_number = models.CharField(
+      verbose_name='Phone Number',
+      max_length=255,
+      blank=True,
+      null=True
+  )
+
+  email = models.EmailField(
+      verbose_name='Email'
+  )
+
+  class Meta:
+    verbose_name = "Quote Soft Fallout"
+    verbose_name_plural = "Quote Soft Fallouts"
+    ordering = ('-created', )

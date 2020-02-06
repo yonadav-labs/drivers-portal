@@ -53,13 +53,15 @@ $proximanova-path: "~@/assets/fonts/Proxima-Nova" !default;
     font-weight: 700;
   }
 
+html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-feature-settings: “liga”,“kern”; font-variant-numeric: proportional-nums; }
+
 * {
   margin: 0;
   font-family: 'Proxima Nova';
 }
 
 p,span{
-  font-weight: 300;
+  font-weight: 400;
 }
 *,
 *::before,
@@ -102,6 +104,8 @@ a {
 ol,
 ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 blockquote,

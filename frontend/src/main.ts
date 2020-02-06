@@ -5,6 +5,9 @@ import 'ie11-custom-properties';
 import 'element-closest-polyfill';
 import 'child-replace-with-polyfill';
 
+// Hooks for components
+import './class-component-hooks'
+
 import Vue from 'vue';
 import VueRouter from 'vue-router'
 
