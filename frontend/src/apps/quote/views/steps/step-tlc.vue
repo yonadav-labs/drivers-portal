@@ -1,5 +1,6 @@
 <template>
   <quote-process-layout>
+    <quote-summary></quote-summary>
     <div class='form'>
         <p class='form__explain'>To start, we need your TLC number.</p>
         <form id='tlcForm' @submit.prevent.stop="onNext">
@@ -67,6 +68,7 @@ import IconCheck from '@/components/icons/icon-check.vue'
 import IconCross from '@/components/icons/icon-cross.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { Colors } from '@/utils/colors'
 import { capitalize } from '@/utils/text'
@@ -84,7 +86,7 @@ const quoteTLC = namespace('QuoteTlc')
 @Component({
   components: {
     QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight,
-    ErrorMessage, IconCheck, IconCross
+    ErrorMessage, IconCheck, IconCross, QuoteSummary
   }
 })
 export default class StepTLC extends Vue {

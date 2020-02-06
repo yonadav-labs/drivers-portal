@@ -60,6 +60,7 @@ export default class QuoteProcessLayout extends Vue {
   }
 
   back(): void {
+    this.$emit('back')
     this.$router.push(QuoteProcessRouter.previousRoute(this.$route.name!))
   }
 }

@@ -1,5 +1,6 @@
 <template>
   <quote-process-layout>
+    <quote-summary></quote-summary>
     <div class='form'>
         <p class='form__explain'>Great! We just need your <span>email</span> to verify.</p>
         <form id='emailForm' @submit.prevent.stop="onNext">
@@ -46,6 +47,7 @@ import BasicInput from '@/components/inputs/basic-input.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { Colors } from '@/utils/colors'
 import { capitalize } from '@/utils/text'
@@ -60,7 +62,7 @@ const quoteTLC = namespace('QuoteTlc')
 @Component({
   components: {
     QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight,
-    ErrorMessage
+    ErrorMessage, QuoteSummary
   }
 })
 export default class StepEmail extends Vue {

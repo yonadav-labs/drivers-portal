@@ -1,6 +1,7 @@
 <template>
   <quote-process-columns-layout>
-    <div>
+    <quote-summary></quote-summary>
+    <div class="questions">
       <banner
         title="Physical Coverage"
         text="If you want Physical (Collision and Comprehensive) Coverage, please select your desired Deductible."
@@ -152,6 +153,7 @@ import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import IconInfo from '@/components/icons/icon-info.vue'
 import InputDatepicker from '@/components/inputs/input-datepicker.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
@@ -162,7 +164,7 @@ const quote = namespace('Quote')
 @Component({
   components: {
     Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
-    IconArrowRight, IconInfo
+    IconArrowRight, IconInfo, QuoteSummary
   }
 })
 export default class StepQuote extends Vue {
@@ -359,5 +361,9 @@ export default class StepQuote extends Vue {
       line-height: 22px;
     }
   }
+}
+
+.questions {
+  margin-top: 1rem;
 }
 </style>

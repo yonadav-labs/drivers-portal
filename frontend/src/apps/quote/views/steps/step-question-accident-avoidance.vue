@@ -1,5 +1,6 @@
 <template>
   <quote-process-layout>
+    <quote-summary></quote-summary>
     <quote-process-yes-no-form @yes="yes" @no="no">
       Does your vehicle have an accident avoidance or dash cam system? 
     </quote-process-yes-no-form>
@@ -16,6 +17,7 @@ import { QuestionsStep } from '@/@types/quote';
 
 import QuoteProcessYesNoForm from '@/apps/quote/components/forms/quote-process-yes-no-form.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
@@ -25,7 +27,7 @@ const quote = namespace('Quote')
 
 @Component({
   components: {
-    QuoteProcessLayout, QuoteProcessYesNoForm
+    QuoteProcessLayout, QuoteProcessYesNoForm, QuoteSummary
   }
 })
 export default class StepQuestionAccidentAvoidance extends Vue {

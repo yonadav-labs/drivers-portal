@@ -1,5 +1,6 @@
 <template>
   <quote-process-layout>
+    <quote-summary></quote-summary>
     <quote-process-radio-form :answers="answers" name="years" v-model="value" @next="onNext">
       How long have you had your TLC license?
     </quote-process-radio-form>
@@ -17,6 +18,7 @@ import { QuestionsStep } from '@/@types/quote';
 import { RadioElement } from '@/apps/quote/components/@types/forms'
 import QuoteProcessRadioForm from '@/apps/quote/components/forms/quote-process-radio-form.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
@@ -27,7 +29,7 @@ const quote = namespace('Quote')
 
 @Component({
   components: {
-    QuoteProcessLayout, QuoteProcessRadioForm
+    QuoteProcessLayout, QuoteProcessRadioForm, QuoteSummary
   }
 })
 export default class StepQuestionLongTlc extends Vue {

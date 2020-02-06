@@ -1,5 +1,6 @@
 <template>
-  <quote-process-layout>
+  <quote-process-layout @back="resetState">
+    <quote-summary></quote-summary>
     <div class='vin-container' v-if="!success">
         <p class='vin-container__explain'>Please, enter your vehicle's VIN</p>
         <form id='vinForm' @submit.prevent.stop="onNext">
@@ -91,6 +92,7 @@ import IconCheck from '@/components/icons/icon-check.vue'
 import IconCross from '@/components/icons/icon-cross.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
+import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { capitalize } from '@/utils/text'
 import { Colors } from '@/utils/colors'
@@ -108,7 +110,7 @@ const quoteVIN = namespace('QuoteVin')
 @Component({
   components: {
     QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight,
-    ErrorMessage, IconCheck, IconCross
+    ErrorMessage, IconCheck, IconCross, QuoteSummary
   }
 })
 export default class StepVIN extends Vue {
