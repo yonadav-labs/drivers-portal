@@ -8,8 +8,9 @@ import StepQuestionDefensiveCertificate from '@/apps/quote/views/steps/step-ques
 import StepQuestionAccidentAvoidance from '@/apps/quote/views/steps/step-question-accident-avoidance.vue'
 import StepEmail from '@/apps/quote/views/steps/step-email.vue'
 import StepQuote from '@/apps/quote/views/steps/step-quote.vue'
+import StepQuoteSoftFallout from '@/apps/quote/views/steps/step-quote-soft-fallout.vue'
 
-export enum QuoteRouteNames {
+export enum OrderedQuoteRouteNames {
   TLC = 'quoteTlc',
   VIN = 'quoteVin',
   QUESTION_LONG_TLC = 'quoteQuestionLongTLC',
@@ -22,53 +23,57 @@ export enum QuoteRouteNames {
   QUOTE = 'quoteQuote'
 }
 
+export enum ExtraQuoteRouteNames {
+  SOFT_FALLOUT = 'quoteSoftFallout',
+}
+
 const quoteRoutesOrder = {
-  [QuoteRouteNames.TLC]: 0,
-  [QuoteRouteNames.VIN]: 1,
-  [QuoteRouteNames.QUESTION_LONG_TLC]: 2,
-  [QuoteRouteNames.QUESTION_LONG_DMV]: 3,
-  [QuoteRouteNames.QUESTION_DRIVER_POINTS]: 4,
-  [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 5,
-  [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 6,
-  [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 7,
-  [QuoteRouteNames.EMAIL]: 8,
-  [QuoteRouteNames.QUOTE]: 9
+  [OrderedQuoteRouteNames.TLC]: 0,
+  [OrderedQuoteRouteNames.VIN]: 1,
+  [OrderedQuoteRouteNames.QUESTION_LONG_TLC]: 2,
+  [OrderedQuoteRouteNames.QUESTION_LONG_DMV]: 3,
+  [OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]: 4,
+  [OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 5,
+  [OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 6,
+  [OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 7,
+  [OrderedQuoteRouteNames.EMAIL]: 8,
+  [OrderedQuoteRouteNames.QUOTE]: 9
 }
 
 const quoteRoutesByOrder = {
-  [quoteRoutesOrder[QuoteRouteNames.TLC]]: QuoteRouteNames.TLC,
-  [quoteRoutesOrder[QuoteRouteNames.VIN]]: QuoteRouteNames.VIN,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_LONG_TLC]]: QuoteRouteNames.QUESTION_LONG_TLC,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_LONG_DMV]]: QuoteRouteNames.QUESTION_LONG_DMV,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_DRIVER_POINTS]]: QuoteRouteNames.QUESTION_DRIVER_POINTS,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]]: QuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]]: QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
-  [quoteRoutesOrder[QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]]: QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
-  [quoteRoutesOrder[QuoteRouteNames.EMAIL]]: QuoteRouteNames.EMAIL,
-  [quoteRoutesOrder[QuoteRouteNames.QUOTE]]: QuoteRouteNames.QUOTE,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.TLC]]: OrderedQuoteRouteNames.TLC,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.VIN]]: OrderedQuoteRouteNames.VIN,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_LONG_TLC]]: OrderedQuoteRouteNames.QUESTION_LONG_TLC,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_LONG_DMV]]: OrderedQuoteRouteNames.QUESTION_LONG_DMV,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]]: OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]]: OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]]: OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]]: OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.EMAIL]]: OrderedQuoteRouteNames.EMAIL,
+  [quoteRoutesOrder[OrderedQuoteRouteNames.QUOTE]]: OrderedQuoteRouteNames.QUOTE,
 }
 
 const quoteRoutesTitles = {
-  [QuoteRouteNames.TLC]: 'TLC License',
-  [QuoteRouteNames.VIN]: `Vehicle's VIN`,
-  [QuoteRouteNames.QUESTION_LONG_TLC]: 'Driver Questions(1 of 6)',
-  [QuoteRouteNames.QUESTION_LONG_DMV]: 'Driver Questions(2 of 6)',
-  [QuoteRouteNames.QUESTION_DRIVER_POINTS]: 'Driver Questions(3 of 6)',
-  [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(4 of 6)',
-  [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(5 of 6)',
-  [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(6 of 6)',
-  [QuoteRouteNames.EMAIL]: 'Verify Email Address',
-  [QuoteRouteNames.QUOTE]: 'Quote'
+  [OrderedQuoteRouteNames.TLC]: 'TLC License',
+  [OrderedQuoteRouteNames.VIN]: `Vehicle's VIN`,
+  [OrderedQuoteRouteNames.QUESTION_LONG_TLC]: 'Driver Questions(1 of 6)',
+  [OrderedQuoteRouteNames.QUESTION_LONG_DMV]: 'Driver Questions(2 of 6)',
+  [OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]: 'Driver Questions(3 of 6)',
+  [OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(4 of 6)',
+  [OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(5 of 6)',
+  [OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(6 of 6)',
+  [OrderedQuoteRouteNames.EMAIL]: 'Verify Email Address',
+  [OrderedQuoteRouteNames.QUOTE]: 'Quote'
 }
 
 export class QuoteProcessRouter {
 
   static hasPrevious(route: string): boolean {
-    return quoteRoutesOrder[route as QuoteRouteNames] !== 0
+    return quoteRoutesOrder[route as OrderedQuoteRouteNames] !== 0
   }
 
-  static previousRouteName(route: string): QuoteRouteNames {
-    const currentOrder = quoteRoutesOrder[route as QuoteRouteNames];
+  static previousRouteName(route: string): OrderedQuoteRouteNames {
+    const currentOrder = quoteRoutesOrder[route as OrderedQuoteRouteNames];
 
     if (currentOrder === 0) {
       throw new Error('There is no previous route')
@@ -77,8 +82,8 @@ export class QuoteProcessRouter {
     return quoteRoutesByOrder[currentOrder - 1];
   }
 
-  static nextRouteName(route: string): QuoteRouteNames {
-    const currentOrder = quoteRoutesOrder[route as QuoteRouteNames];
+  static nextRouteName(route: string): OrderedQuoteRouteNames {
+    const currentOrder = quoteRoutesOrder[route as OrderedQuoteRouteNames];
 
     if (currentOrder === (Object.keys(quoteRoutesByOrder).length - 1)) {
       throw new Error('There is no next route')
@@ -88,44 +93,45 @@ export class QuoteProcessRouter {
 
   }
 
-  static previousRoute(route: string): { name: QuoteRouteNames } {
-    return { name: QuoteProcessRouter.previousRouteName(route as QuoteRouteNames) }
+  static previousRoute(route: string): { name: OrderedQuoteRouteNames } {
+    return { name: QuoteProcessRouter.previousRouteName(route as OrderedQuoteRouteNames) }
   }
 
-  static nextRoute(route: string): { name: QuoteRouteNames } {
+  static nextRoute(route: string): { name: OrderedQuoteRouteNames } {
     return { name: QuoteProcessRouter.nextRouteName(route) }
   }
 
   static isBefore(current: string, compareWith: string): boolean {
-    return quoteRoutesOrder[current as QuoteRouteNames] < quoteRoutesOrder[compareWith as QuoteRouteNames]
+    return quoteRoutesOrder[current as OrderedQuoteRouteNames] < quoteRoutesOrder[compareWith as OrderedQuoteRouteNames]
   }
 
   static isLater(current: string, compareWith: string): boolean {
-    return quoteRoutesOrder[compareWith as QuoteRouteNames] < quoteRoutesOrder[current as QuoteRouteNames]
+    return quoteRoutesOrder[compareWith as OrderedQuoteRouteNames] < quoteRoutesOrder[current as OrderedQuoteRouteNames]
   }
 
-  static getRouteNameByOrder(order: number): QuoteRouteNames | undefined {
+  static getRouteNameByOrder(order: number): OrderedQuoteRouteNames | undefined {
     return quoteRoutesByOrder[order]
   }
 
-  static getRouteByOrder(order: number): { name?: QuoteRouteNames } {
+  static getRouteByOrder(order: number): { name?: OrderedQuoteRouteNames } {
     return { name: QuoteProcessRouter.getRouteNameByOrder(order) }
   }
   
   static getRouteTitle(route: string): string {
-    return quoteRoutesTitles[route as QuoteRouteNames];
+    return quoteRoutesTitles[route as OrderedQuoteRouteNames];
   }
 }
 
 export default [
-  { path: '/', component: StepTLC, name: QuoteRouteNames.TLC},
-  { path: '/vin/', component: StepVIN, name: QuoteRouteNames.VIN },
-  { path: '/question-tlc/', component: StepQuestionLongTLC, name: QuoteRouteNames.QUESTION_LONG_TLC },
-  { path: '/question-dmv/', component: StepQuestionLongDMV, name: QuoteRouteNames.QUESTION_LONG_DMV },
-  { path: '/question-driver-points/', component: StepQuestionDriverPoints, name: QuoteRouteNames.QUESTION_DRIVER_POINTS },
-  { path: '/question-fault-accidents/', component: StepQuestionFaultAccidents, name: QuoteRouteNames.QUESTION_FAULT_ACCIDENTS },
-  { path: '/question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE },
-  { path: '/question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE },
-  { path: '/email/', component: StepEmail, name: QuoteRouteNames.EMAIL },
-  { path: '/quote/:quoteId/', component: StepQuote, name: QuoteRouteNames.QUOTE, props: true }
+  { path: '/', component: StepTLC, name: OrderedQuoteRouteNames.TLC},
+  { path: '/vin/', component: StepVIN, name: OrderedQuoteRouteNames.VIN },
+  { path: '/question-tlc/', component: StepQuestionLongTLC, name: OrderedQuoteRouteNames.QUESTION_LONG_TLC },
+  { path: '/question-dmv/', component: StepQuestionLongDMV, name: OrderedQuoteRouteNames.QUESTION_LONG_DMV },
+  { path: '/question-driver-points/', component: StepQuestionDriverPoints, name: OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS },
+  { path: '/question-fault-accidents/', component: StepQuestionFaultAccidents, name: OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS },
+  { path: '/question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE },
+  { path: '/question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE },
+  { path: '/email/', component: StepEmail, name: OrderedQuoteRouteNames.EMAIL },
+  { path: '/quote/:quoteId/', component: StepQuote, name: OrderedQuoteRouteNames.QUOTE, props: true },
+  { path: '/error/', component: StepQuoteSoftFallout, name: ExtraQuoteRouteNames.SOFT_FALLOUT }
 ]

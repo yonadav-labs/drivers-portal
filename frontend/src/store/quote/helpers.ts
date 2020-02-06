@@ -2,7 +2,7 @@ import { store } from '@/store/store'
 
 import { QuoteProcessPayload, QuoteProcess } from '@/@types/quote';
 
-import { QuoteRouteNames } from '@/router/quote'
+import { OrderedQuoteRouteNames } from '@/router/quote'
 
 export function buildQuoteProcessPayload(): QuoteProcessPayload {
   return {
@@ -34,15 +34,15 @@ export function deconstructQuoteProcess(quoteProcess: QuoteProcess): void {
   store.commit('Quote/setQuoteEmail', email)
 
   store.commit('Quote/setMultipleStepsCompleted', {
-    [QuoteRouteNames.TLC]: true,
-    [QuoteRouteNames.VIN]: true,
-    [QuoteRouteNames.QUESTION_LONG_TLC]: true,
-    [QuoteRouteNames.QUESTION_LONG_DMV]: true,
-    [QuoteRouteNames.QUESTION_DRIVER_POINTS]: true,
-    [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: true,
-    [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: true,
-    [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: true,
-    [QuoteRouteNames.EMAIL]: true,
+    [OrderedQuoteRouteNames.TLC]: true,
+    [OrderedQuoteRouteNames.VIN]: true,
+    [OrderedQuoteRouteNames.QUESTION_LONG_TLC]: true,
+    [OrderedQuoteRouteNames.QUESTION_LONG_DMV]: true,
+    [OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]: true,
+    [OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: true,
+    [OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: true,
+    [OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: true,
+    [OrderedQuoteRouteNames.EMAIL]: true,
   })
   
 }

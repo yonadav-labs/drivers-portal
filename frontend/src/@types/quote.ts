@@ -36,3 +36,9 @@ export interface QuoteProcess extends QuoteProcessPayload {
   liability?: string,
   date?: string,
 }
+
+export interface QuoteSoftFallout {
+  name: string,
+  email: string,
+  phone_number?: string
+}

@@ -19,7 +19,7 @@ import QuoteProcessYesNoForm from '@/apps/quote/components/forms/quote-process-y
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 // Question Step 
 
@@ -32,7 +32,7 @@ const quote = namespace('Quote')
 })
 export default class StepQuestionAccidentAvoidance extends Vue {
   @quote.Getter
-  stepCompletedByName!: (route: QuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
 
   @quote.Action
   updateStepStatus!: (payload: { step: string, value: boolean }) => void;

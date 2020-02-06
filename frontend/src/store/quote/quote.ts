@@ -1,35 +1,37 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
-import { QuestionsStep, QuoteProcess } from '@/@types/quote';
+import { QuestionsStep, QuoteProcess, QuoteSoftFallout } from '@/@types/quote';
 
 import { APIProperty, APIState } from '@/store/api'
 import {
-  createQuoteProcess, retrieveQuoteProcessById, updateQuoteProcess
+  createQuoteProcess, retrieveQuoteProcessById, updateQuoteProcess,
+  createQuoteSoftFallout
 } from '@/store/quote/api'
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteNames } from '@/router/quote'
 
 import { buildQuoteProcessPayload, deconstructQuoteProcess } from './helpers'
 
 @Module({ namespaced: true })
 export default class QuoteMainVuexModule extends VuexModule {
   apiQuoteProcess: APIProperty<QuoteProcess> = APIState.state<QuoteProcess>();
+  apiQuoteSoftFallout: APIProperty<QuoteSoftFallout> = APIState.state<QuoteSoftFallout>();
   internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
   internalQuoteEmail = '';
   stepsCompleted = {
-    [QuoteRouteNames.TLC]: false,
-    [QuoteRouteNames.VIN]: false,
-    [QuoteRouteNames.QUESTION_LONG_TLC]: false,
-    [QuoteRouteNames.QUESTION_LONG_DMV]: false,
-    [QuoteRouteNames.QUESTION_DRIVER_POINTS]: false,
-    [QuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: false,
-    [QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: false,
-    [QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: false,
-    [QuoteRouteNames.EMAIL]: false,
-    [QuoteRouteNames.QUOTE]: false
+    [OrderedQuoteRouteNames.TLC]: false,
+    [OrderedQuoteRouteNames.VIN]: false,
+    [OrderedQuoteRouteNames.QUESTION_LONG_TLC]: false,
+    [OrderedQuoteRouteNames.QUESTION_LONG_DMV]: false,
+    [OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]: false,
+    [OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: false,
+    [OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: false,
+    [OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: false,
+    [OrderedQuoteRouteNames.EMAIL]: false,
+    [OrderedQuoteRouteNames.QUOTE]: false
   }
 
   get emailExists(): boolean {
@@ -52,8 +54,8 @@ export default class QuoteMainVuexModule extends VuexModule {
     return (this.apiQuoteProcess.data || {}).id
   }
 
-  get stepCompletedByName(): (name: QuoteRouteNames) => boolean {
-    return (name: QuoteRouteNames) => this.stepsCompleted[name];
+  get stepCompletedByName(): (name: OrderedQuoteRouteNames) => boolean {
+    return (name: OrderedQuoteRouteNames) => this.stepsCompleted[name];
   }
 
   @Mutation
@@ -62,7 +64,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
-  setMultipleStepsCompleted(payload: { step: QuoteRouteNames, value: boolean }): void {
+  setMultipleStepsCompleted(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
     this.stepsCompleted = {
       ...this.stepsCompleted,
       ...payload
@@ -97,7 +99,22 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
-  setStepCompleted(payload: { step: QuoteRouteNames, value: boolean }): void {
+  setQuoteSoftFallout(payload: QuoteSoftFallout): void {
+    this.apiQuoteSoftFallout = APIState.update(this.apiQuoteSoftFallout, payload)
+  }
+
+  @Mutation
+  setQuoteSoftFalloutBlank(): void {
+    this.apiQuoteSoftFallout = APIState.state<QuoteSoftFallout>();
+  }
+
+  @Mutation
+  setQuoteSoftFalloutPending(): void {
+    this.apiQuoteSoftFallout = APIState.setPending(this.apiQuoteSoftFallout)
+  }
+
+  @Mutation
+  setStepCompleted(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
     const { step, value } = payload;
     this.stepsCompleted = {
       ...this.stepsCompleted,
@@ -135,6 +152,17 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
+  async createQuoteSoftFallout(payload: QuoteSoftFallout): Promise<void> {
+    this.context.commit('setQuoteSoftFalloutPending');
+    try {
+      const quoteFallout = await createQuoteSoftFallout(payload);
+      this.context.commit('setQuoteSoftFallout', quoteFallout)
+    } catch (e) {
+      this.context.commit('setQuoteSoftFallout', e)
+    }
+  }
+
+  @Action
   resetEmailExists(): void {
     this.context.commit('setEmailExists', false);
   }
@@ -167,7 +195,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
-  updateStepStatus(payload: { step: QuoteRouteNames, value: boolean }): void {
+  updateStepStatus(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
     this.context.commit('setStepCompleted', payload);
   }
 }

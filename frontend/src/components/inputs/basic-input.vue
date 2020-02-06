@@ -39,10 +39,12 @@ import IconCar from '@/components/icons/icon-car.vue'
 import IconIdCard from '@/components/icons/icon-id-card.vue'
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
 import IconEnvelope from '@/components/icons/icon-envelope.vue'
+import IconPhone from '@/components/icons/icon-phone.vue'
+import IconUser from '@/components/icons/icon-user.vue'
 
 import { VueConstructor } from 'vue';
 
-type Icon = 'car' | 'id-card' | 'envelope';
+type Icon = 'car' | 'id-card' | 'envelope' | 'phone' | 'user';
 
 @Component({
   components: {
@@ -109,6 +111,10 @@ export default class BasicInput extends Vue {
         return IconCar;
       case 'envelope':
         return IconEnvelope;
+      case 'phone':
+        return IconPhone;
+      case 'user':
+        return IconUser;
       default:
         return undefined;
     }

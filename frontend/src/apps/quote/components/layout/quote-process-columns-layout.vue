@@ -45,7 +45,7 @@ import BasicButton from '@/components/buttons/basic-button.vue'
 import Breadcrumbs from './breadcrumbs.vue'
 import IconArrowLeft from '@/components/icons/icon-arrow-left.vue'
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 @Component({
   components: {

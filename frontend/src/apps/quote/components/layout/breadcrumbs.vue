@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 @Component
 export default class Breadcrumbs extends Vue {
@@ -24,25 +24,25 @@ export default class Breadcrumbs extends Vue {
   }
 
   steps = [
-      QuoteRouteNames.TLC,
-      QuoteRouteNames.VIN,
-      QuoteRouteNames.QUESTION_LONG_TLC,
-      QuoteRouteNames.QUESTION_LONG_DMV,
-      QuoteRouteNames.QUESTION_DRIVER_POINTS,
-      QuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
-      QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
-      QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
-      QuoteRouteNames.EMAIL,
-      QuoteRouteNames.QUOTE,
+      OrderedQuoteRouteNames.TLC,
+      OrderedQuoteRouteNames.VIN,
+      OrderedQuoteRouteNames.QUESTION_LONG_TLC,
+      OrderedQuoteRouteNames.QUESTION_LONG_DMV,
+      OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS,
+      OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
+      OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
+      OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
+      OrderedQuoteRouteNames.EMAIL,
+      OrderedQuoteRouteNames.QUOTE,
   ]
 
   groupedSteps = [
-    QuoteRouteNames.QUESTION_LONG_TLC,
-    QuoteRouteNames.QUESTION_LONG_DMV,
-    QuoteRouteNames.QUESTION_DRIVER_POINTS,
-    QuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
-    QuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
-    QuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
+    OrderedQuoteRouteNames.QUESTION_LONG_TLC,
+    OrderedQuoteRouteNames.QUESTION_LONG_DMV,
+    OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS,
+    OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
+    OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
+    OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
   ]
 
   get filteredSteps(): string[] {
@@ -55,8 +55,8 @@ export default class Breadcrumbs extends Vue {
     if (isCurrent) {
       return true;
     } else {
-      const isGrouped = this.groupedSteps.includes(step as QuoteRouteNames)
-      const currentIsGrouped = this.groupedSteps.includes(this.currentStep as QuoteRouteNames)
+      const isGrouped = this.groupedSteps.includes(step as OrderedQuoteRouteNames)
+      const currentIsGrouped = this.groupedSteps.includes(this.currentStep as OrderedQuoteRouteNames)
 
       return !isGrouped || (!currentIsGrouped && step === this.groupedSteps[0])
     }

@@ -99,7 +99,7 @@ import { Colors } from '@/utils/colors'
 
 import { TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo } from '../../../../@types/quote';
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { ExtraQuoteRouteNames, OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 // Second Step 
 
@@ -116,7 +116,7 @@ const quoteVIN = namespace('QuoteVin')
 export default class StepVIN extends Vue {
 
   @quote.Getter
-  stepCompletedByName!: (route: QuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
 
   @quoteTLC.Getter
   tlcStepLicenseName?: TLCStepLicenseName
@@ -145,6 +145,7 @@ export default class StepVIN extends Vue {
   @quoteVIN.Action
   resetInsuranceInfo!: () => void;
 
+  attempts = 0;
   vinValue = ''
 
   get colorBlue(): string {
@@ -159,9 +160,21 @@ export default class StepVIN extends Vue {
     return !!this.fhvInfo && !!this.insuranceInfo
   }
 
-  onNext(): void {
-    this.retrieveFHVInfo(this.vinValue);
-    this.retrieveInsuranceInfo(this.vinValue);
+  @Watch('attempts')
+  onAttemptsChange(): void {
+    if (this.attempts >= 3) {
+      this.$router.replace({ name: ExtraQuoteRouteNames.SOFT_FALLOUT })
+    }
+  }
+
+  async onNext(): Promise<void> {
+    await Promise.all([
+      this.retrieveFHVInfo(this.vinValue),
+      this.retrieveInsuranceInfo(this.vinValue),
+    ])
+    if (this.hasErrors) {
+      this.attempts++;
+    }
   }
 
   onIsMe(): void {
@@ -171,6 +184,7 @@ export default class StepVIN extends Vue {
 
   onNotMe(): void {
     this.resetState();
+    this.attempts++;
   }
 
   prettifyName(name: string): string {
@@ -195,6 +209,11 @@ export default class StepVIN extends Vue {
         vm.$router.replace(QuoteProcessRouter.previousRoute(vm.$route.name!));
       }
     })
+  }
+
+  created(): void {
+    this.vinValue = (!!this.fhvInfo && this.fhvInfo.vehicle_vin) || ''
+    this.onAttemptsChange();
   }
 }
 </script>

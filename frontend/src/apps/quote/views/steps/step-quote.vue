@@ -173,7 +173,7 @@ import ModalPremium from '@/apps/quote/components/modals/modal-premium.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 import { QuoteProcess } from '@/@types/quote';
 
 

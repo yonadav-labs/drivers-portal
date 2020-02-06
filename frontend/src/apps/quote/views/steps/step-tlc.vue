@@ -75,7 +75,7 @@ import { capitalize } from '@/utils/text'
 
 import { TLCStepLicenseName } from '../../../../@types/quote';
 
-import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { ExtraQuoteRouteNames, OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 
 const quote = namespace('Quote')
@@ -109,11 +109,8 @@ export default class StepTLC extends Vue {
   @quoteTLC.Action
   resetTlc!: () => void
 
+  attempts = 0
   tlcValue = ''
-
-  created(): void {
-    this.tlcValue = this.tlcLicenseNumber || ''
-  }
 
   get colorBlue(): string {
     return Colors.Blue
@@ -141,12 +138,23 @@ export default class StepTLC extends Vue {
 
   async onNext(): Promise<void> {
     await this.retrieveTLCName(this.tlcValue);
+    if (this.tlcError) {
+      this.attempts++;
+    }
+  }
+
+  @Watch('attempts')
+  onAttemptsChange(): void {
+    if (this.attempts >= 2) {
+      this.$router.replace({ name: ExtraQuoteRouteNames.SOFT_FALLOUT })
+    }
   }
 
   onNotMe(): void {
     this.resetTlc();
     this.tlcValue = '';
     this.updateStepStatus({ step: this.$route.name!, value: false});
+    this.attempts++;
   }
 
   onIsMe(): void {
@@ -156,6 +164,11 @@ export default class StepTLC extends Vue {
 
   prettifyName(name: string): string {
     return capitalize(name)
+  }
+
+  created(): void {
+    this.tlcValue = this.tlcLicenseNumber || ''
+    this.onAttemptsChange();
   }
 }
 </script>
