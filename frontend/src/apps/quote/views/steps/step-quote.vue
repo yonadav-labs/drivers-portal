@@ -105,7 +105,7 @@
           <span>$450</span>
           <!-- <span>${{formatNumber(variations.liabilityTotal)}}</span> -->
         </div>
-        <a href class="insurance-info--question">
+        <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
           <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>How is my premium calculated?
         </a>
       </div>
@@ -133,6 +133,23 @@
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
     </div>
+    <modal-premium 
+      v-if="!!quoteProcess && showPremium"
+      :tlc-name="quoteProcess.tlc_name"
+      :tlc-number="quoteProcess.tlc_number"
+      :has-defensive="quoteProcess.defensive_driving_certificate"
+      :points="quoteProcess.driver_points_last_months"
+      :accidents="quoteProcess.fault_accidents_last_months"
+      :vehicle-vin="quoteProcess.vehicle_vin"
+      :vehicle-owner="quoteProcess.vehicle_owner"
+      :vehicle-plate="quoteProcess.license_player"
+      :vehicle-year="quoteProcess.vehicle_year"
+      :base-name="quoteProcess.base_name"
+      :base-number="quoteProcess.base_number"
+      :insurance-name="quoteProcess.insurance_carrier_name"
+      :insurance-policy="quoteProcess.insurance_policy_number"
+      @close="setShowPremium(false)"
+      ></modal-premium>
   </quote-process-columns-layout>
 </template>
 
@@ -152,10 +169,12 @@ import DropdownInfo from '@/components/containers/dropdown-info.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import IconInfo from '@/components/icons/icon-info.vue'
 import InputDatepicker from '@/components/inputs/input-datepicker.vue'
+import ModalPremium from '@/apps/quote/components/modals/modal-premium.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { QuoteProcess } from '@/@types/quote';
 
 
 const quote = namespace('Quote')
@@ -164,13 +183,16 @@ const quote = namespace('Quote')
 @Component({
   components: {
     Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
-    IconArrowRight, IconInfo, QuoteSummary
+    IconArrowRight, IconInfo, QuoteSummary, ModalPremium
   }
 })
 export default class StepQuote extends Vue {
 
   @Prop({ default: ''})
   quoteId!: string
+
+  @quote.Getter
+  quoteProcess?: QuoteProcess
 
   @quote.Getter
   quoteProcessId?: string
@@ -226,6 +248,7 @@ export default class StepQuote extends Vue {
   }
 
   focus = 'physical'
+  showPremium = false;
 
   @Watch('internalPhysical')
   onPhysicalChange(val: string): void {
@@ -253,6 +276,10 @@ export default class StepQuote extends Vue {
       }
 
     })
+  }
+
+  setShowPremium(value: boolean): void {
+    this.showPremium = value;
   }
 }
 </script>

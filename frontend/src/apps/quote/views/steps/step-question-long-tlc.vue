@@ -50,7 +50,7 @@ export default class StepQuestionLongTlc extends Vue {
   answers = [
     {
       label: '+3 years',
-      value: '+3'
+      value: '3+'
     },
     {
       label: '1 - 3 years',
