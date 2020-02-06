@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from quote.models import QuoteProcess
 from quote.serializers import (
   RetrieveUpdateQuoteProcessSerializer, CreateQuoteProcessSerializer,
-  RetrieveQuoteProcessSerializer
+  RetrieveQuoteProcessSerializer, CreateQuoteSoftFalloutSerializer
 )
 
 class CreateQuoteProcessView(CreateAPIView):
@@ -22,3 +22,8 @@ class RetrieveQuoteProcessView(RetrieveAPIView):
   queryset = QuoteProcess.objects.filter(user__isnull=True)
   permission_classes = (AllowAny, )
   serializer_class = RetrieveQuoteProcessSerializer
+
+
+class CreateQuoteSoftFalloutView(CreateAPIView):
+  permission_classes = (AllowAny, )
+  serializer_class = CreateQuoteSoftFalloutSerializer

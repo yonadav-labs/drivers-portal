@@ -301,3 +301,24 @@ class QuoteProcessPayment(BaseModel):
     class Meta:
         verbose_name = 'Quote Process Payment'
         verbose_name_plural = 'Quote Process Payment'
+
+
+class QuoteSoftFallout(BaseModel):
+  name = models.CharField(
+      verbose_name='Name',
+      max_length=255
+  )
+
+  phone_number = models.CharField(
+      verbose_name='Phone Number',
+      max_length=255
+  )
+
+  email = models.EmailField(
+      verbose_name='Email'
+  )
+
+  class Meta:
+    verbose_name = "Quote Soft Fallout"
+    verbose_name_plural = "Quote Soft Fallouts"
+    ordering = ('-created', )

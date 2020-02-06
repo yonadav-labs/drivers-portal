@@ -2,7 +2,7 @@ from django.urls import path
 
 from quote.rest_views import (
   CreateQuoteProcessView, RetrieveUpdateQuoteProcessView,
-  RetrieveQuoteProcessView
+  RetrieveQuoteProcessView, CreateQuoteSoftFalloutView
 )
 
 urlpatterns = [
@@ -21,4 +21,9 @@ urlpatterns = [
         RetrieveUpdateQuoteProcessView.as_view(),
         name="retrieve-update-quote-process"
     ),
+    path(
+      'quote_soft_fallout/create/',
+      CreateQuoteSoftFalloutView.as_view(),
+      name="create-quote-soft-fallout"
+    )
 ]

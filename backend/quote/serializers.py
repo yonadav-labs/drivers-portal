@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from users.models import User
 
-from quote.models import QuoteProcess
+from quote.models import QuoteProcess, QuoteSoftFallout
 
 
 class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
@@ -78,3 +78,12 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'email',
     )
     model = QuoteProcess
+
+
+class CreateQuoteSoftFalloutSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    fields = (
+      'id', 'name', 'phone_number', 'email'
+    )
+    model = QuoteSoftFallout
