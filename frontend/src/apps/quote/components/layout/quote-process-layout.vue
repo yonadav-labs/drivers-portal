@@ -7,6 +7,7 @@
       <div class="container">
         <div class="content">
           <breadcrumbs
+          v-if="!hideBreadcrumbs"
           ></breadcrumbs>
           <div
             class="header"
@@ -53,10 +54,13 @@ import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 export default class QuoteProcessLayout extends Vue {
 
   @Prop({ default: false })
-  backDisabled!: boolean
+  hideBack!: boolean
+
+  @Prop({ default: false })
+  hideBreadcrumbs!: boolean
 
   get showBack(): boolean {
-    return !this.backDisabled && QuoteProcessRouter.hasPrevious(this.$route.name!);
+    return !this.hideBack && QuoteProcessRouter.hasPrevious(this.$route.name!);
   }
 
   back(): void {

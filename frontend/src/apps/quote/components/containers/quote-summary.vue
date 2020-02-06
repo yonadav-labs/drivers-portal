@@ -18,7 +18,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Getter, namespace } from 'vuex-class';
 
 import { TLCStepLicenseName, VINStepFHVInfo } from '@/@types/quote';
-
 import { QuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
 
 import { capitalize } from '@/utils/text'

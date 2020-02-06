@@ -1,7 +1,7 @@
 <template>
-  <quote-process-layout>
-    <quote-summary></quote-summary>
-    <div class='form'>
+  <quote-process-layout :hide-breadcrumbs="showAnimation" :hide-back="showAnimation">
+    <quote-summary v-if="!showAnimation"></quote-summary>
+    <div class='form' v-if="!showAnimation">
         <p class='form__explain'>Great! We just need your <span>email</span> to verify.</p>
         <form id='emailForm' @submit.prevent.stop="onNext">
           <div class="form-input">
@@ -32,11 +32,12 @@
           </basic-button>        
       </form>
     </div>
+    <loading-quote v-if="showAnimation" @done="onAnimationDone"></loading-quote>
   </quote-process-layout>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
@@ -47,6 +48,7 @@ import BasicInput from '@/components/inputs/basic-input.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
+import LoadingQuote from '@/apps/quote/components/containers/loading-quote.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { Colors } from '@/utils/colors'
@@ -62,7 +64,7 @@ const quoteTLC = namespace('QuoteTlc')
 @Component({
   components: {
     QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight,
-    ErrorMessage, QuoteSummary
+    ErrorMessage, QuoteSummary, LoadingQuote
   }
 })
 export default class StepEmail extends Vue {
@@ -94,29 +96,50 @@ export default class StepEmail extends Vue {
   @quote.Action
   updateStepStatus!: (payload: { step: string, value: boolean }) => void;
 
+
+  emailValid = false;
+  emailValue = '';
+  showAnimation = false;
+  animationDone = false;
+
   get colorBlue(): string {
     return Colors.Blue
   }
 
-  emailValid = false;
-  emailValue = '';
+  get nextStepReady(): boolean {
+    return this.animationDone && !!this.quoteProcessId;
+  }
+
+  @Watch('nextStepReady') 
+  goToNext(nextStepReady: boolean): void {
+    if (!!this.nextStepReady && !!this.quoteProcessId) {
+      this.updateStepStatus({ step: this.$route.name!, value: true})
+      this.$router.push({ name: QuoteRouteNames.QUOTE, params: {quoteId: this.quoteProcessId}})
+    }
+  }
 
   onValidChange(value: boolean): void {
     this.emailValid = value;
+  }
+
+  onAnimationDone(): void {
+    this.animationDone = true;
   }
 
   async onNext(): Promise<void> {
     this.resetEmailExists();
     await this.checkEmailExists(this.emailValue);
     if (!this.emailExists) {
-      await this.updateQuoteEmail(this.emailValue)
-      await this.createOrUpdateQuoteProcess()
-      if (!this.quoteProcessId) {
-        throw new Error('error page');
-      } else {
-        this.updateStepStatus({ step: this.$route.name!, value: true})
-        this.$router.push({ name: QuoteRouteNames.QUOTE, params: {quoteId: this.quoteProcessId}})
-      }
+      this.showAnimation = true;
+      this.retieveData()
+    }
+  }
+
+  async retieveData(): Promise<void> {
+    await this.updateQuoteEmail(this.emailValue)
+    await this.createOrUpdateQuoteProcess()
+    if (!this.quoteProcessId) {
+      throw new Error('error page');
     }
   }
 
