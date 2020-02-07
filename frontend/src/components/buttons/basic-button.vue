@@ -33,7 +33,7 @@ export default class BasicButton extends Vue {
     span{
       font-size: 16px;
       font-weight: 600;
-      margin-left: 1rem;
+      margin-left: 0.5rem;
       margin-right: 1rem;
     }
     &:disabled{

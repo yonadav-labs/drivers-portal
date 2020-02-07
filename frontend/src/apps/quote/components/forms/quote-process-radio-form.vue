@@ -86,7 +86,7 @@ export default class QuoteProcessRadioForm extends Vue {
   }
 
   .question-content {
-    background-color: rgba(206, 212, 218, 0.2);
+    background-color: $grey-opacity;
     border-radius: 8px;
     margin: 1.25rem auto;
     padding: 1.25rem 1.875rem;

@@ -246,7 +246,7 @@ export default class StepVIN extends Vue {
   }
 
   .vin-content {
-    background-color: rgba(206, 212, 218, 0.2);
+    background-color: $grey-opacity;
     border-radius: 8px;
     margin: 1.25rem auto;
 

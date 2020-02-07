@@ -56,7 +56,7 @@ export default class QuoteSummary extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 p {
   font-weight: $fw-light;
   text-align: center;

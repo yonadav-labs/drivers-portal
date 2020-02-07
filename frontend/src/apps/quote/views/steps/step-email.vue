@@ -187,7 +187,7 @@ export default class StepEmail extends Vue {
 
 
   .form-input {
-    background-color: rgba(206, 212, 218, 0.2);
+    background-color: $grey-opacity;
     border-radius: 8px;
     margin: 1.25rem auto;
     text-align: left;

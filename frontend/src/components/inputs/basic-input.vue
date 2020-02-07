@@ -33,6 +33,8 @@
 </template>
 
 <script lang="ts">
+import { VueConstructor } from 'vue';
+
 import { Component, Prop, Vue, Model, Emit, Watch } from 'vue-property-decorator';
 
 import IconCar from '@/components/icons/icon-car.vue'
@@ -41,8 +43,6 @@ import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
 import IconEnvelope from '@/components/icons/icon-envelope.vue'
 import IconPhone from '@/components/icons/icon-phone.vue'
 import IconUser from '@/components/icons/icon-user.vue'
-
-import { VueConstructor } from 'vue';
 
 type Icon = 'car' | 'id-card' | 'envelope' | 'phone' | 'user';
 

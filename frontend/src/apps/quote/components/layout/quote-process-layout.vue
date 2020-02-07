@@ -183,7 +183,7 @@ export default class QuoteProcessLayout extends Vue {
           text-align: center;
           .inputForm {
             align-items: center;
-            background-color: rgba(206, 212, 218, 0.2);
+            background-color: $grey-opacity;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
