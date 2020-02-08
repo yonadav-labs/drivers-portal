@@ -4,16 +4,18 @@
 
 <template>
   <div class="container-input">
-    <div class="box-input" :class="{'check':value!='' && !error,'wrong':error}">
+    <div class="box-input" :class="{'check': showCheck,'wrong':error}">
       <input
         :type="type"
         :name="inputName"
         :placeholder="placeholder"
         :id="id"
         :required="required"
+        :minlength="minlength"
         :maxlength="maxlength"
         :value="value"
         :readonly="readonly"
+        :disabled="disabled"
         @input="input"
         @keyup="onKeyUp"
         @keyup.enter="$emit('keyupEnter')"
@@ -22,10 +24,13 @@
         v-bind:is="iconComponent"
         size="16"
         class="icon--grey"
-        v-if="invalid"
+        v-if="!showCheck"
       ></component>
       <icon-check-circle size="16" class="blue-check" v-else></icon-check-circle>
     </div>
+    <p class="help-text" v-if="helpText"> 
+      {{ helpText }}
+    </p>
     <p class="input-alert">
       <slot name="error"></slot>
     </p>
@@ -41,10 +46,11 @@ import IconCar from '@/components/icons/icon-car.vue'
 import IconIdCard from '@/components/icons/icon-id-card.vue'
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
 import IconEnvelope from '@/components/icons/icon-envelope.vue'
+import IconLock from '@/components/icons/icon-lock.vue'
 import IconPhone from '@/components/icons/icon-phone.vue'
 import IconUser from '@/components/icons/icon-user.vue'
 
-type Icon = 'car' | 'id-card' | 'envelope' | 'phone' | 'user';
+type Icon = 'car' | 'envelope' | 'id-card'| 'lock' | 'phone' | 'user';
 
 @Component({
   components: {
@@ -60,6 +66,9 @@ export default class BasicInput extends Vue {
   id?: string;
 
   @Prop({ default: false })
+  disabled?: boolean;
+
+  @Prop({ default: false })
   required?: boolean;
 
   @Prop({ default: false })
@@ -67,6 +76,9 @@ export default class BasicInput extends Vue {
 
   @Prop()
   inputName!: string;
+
+  @Prop({ default: '' })
+  helpText?: string;
 
   @Prop({ default: 'text' })
   type?: string;
@@ -115,6 +127,8 @@ export default class BasicInput extends Vue {
         return IconPhone;
       case 'user':
         return IconUser;
+      case 'lock':
+        return IconLock;
       default:
         return undefined;
     }
@@ -126,6 +140,10 @@ export default class BasicInput extends Vue {
 
   get invalid(): boolean {
     return !this.emailValid || (!this.minlength && this.value === '') || (this.minlength && (!this.value || this.value.length < this.minlength)) || !this.validate
+  }
+
+  get showCheck(): boolean {
+    return !this.invalid && !this.disabled
   }
 
   created(): void {
@@ -179,15 +197,31 @@ export default class BasicInput extends Vue {
   input {
     color: $blue-dark;
     font-size: $fs-lg;
+    letter-spacing: 0.2px;
     width: calc(100% - 1.5rem);
+  
     &::placeholder {
       color: $grey;
     }
     &:focus {
       outline: none;
     }
+
+    &:disabled {
+      color: $grey-darker;
+    }
   }
 }
+
+.help-text {
+  color: $blue-dark;
+  font-size: $fs-sm;	
+  line-height: 17px;
+  margin-top: 0.375rem;
+	opacity: 0.5;	
+  text-align: left;
+}
+
 @keyframes wrong-log {
   0% {
     left: 0px;

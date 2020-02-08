@@ -218,18 +218,5 @@ export default class StepEmail extends Vue {
       }
     }
   }
-
-  .form__result {
-    background-color: rgba(206,212,218,0.4);
-    border-bottom-left-radius: 8px; 
-    border-bottom-right-radius: 8px; 
-    line-height: 28px;
-    padding: 1.25rem 1rem;
-    text-align: center;
-
-    span {
-      font-weight: $fw-semibold;
-    }
-  }
 }
 </style>
