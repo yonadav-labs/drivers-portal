@@ -88,6 +88,12 @@ export default class StepEmail extends Vue {
   createOrUpdateQuoteProcess!: () => Promise<void>
 
   @quote.Action
+  retrieveQuoteProcess!: (id: string) => Promise<void>
+
+  @quote.Action
+  retrieveQuoteProcessCalcVariations!: (id: string) => Promise<void>
+
+  @quote.Action
   resetEmailExists!: () => void;
 
   @quote.Action
@@ -101,13 +107,14 @@ export default class StepEmail extends Vue {
   emailValue = '';
   showAnimation = false;
   animationDone = false;
+  retrieveDone = false;
 
   get colorBlue(): string {
     return Colors.Blue
   }
 
   get nextStepReady(): boolean {
-    return this.animationDone && !!this.quoteProcessId;
+    return this.animationDone && this.retrieveDone;
   }
 
   @Watch('nextStepReady') 
@@ -136,11 +143,17 @@ export default class StepEmail extends Vue {
   }
 
   async retieveData(): Promise<void> {
+    this.retrieveDone = false;
     await this.updateQuoteEmail(this.emailValue)
     await this.createOrUpdateQuoteProcess()
     if (!this.quoteProcessId) {
       throw new Error('error page');
     }
+    await Promise.all([
+      this.retrieveQuoteProcessCalcVariations(this.quoteProcessId), // ORDER MATTERS
+      this.retrieveQuoteProcess(this.quoteProcessId),
+    ])
+    this.retrieveDone = true;
   }
 
   resetState(): void {

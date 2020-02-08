@@ -26,19 +26,50 @@ export interface QuestionsStep {
   accident_avoidance_system?: boolean
 }
 
+
+export interface QuoteProcessOptions {
+  deposit?: number,
+  deductible?: string,
+  date?: string,
+}
+
+export interface QuoteProcessOptionsPayload {
+  deposit: number,
+  deductible?: string,
+  date: string,
+}
+
+export interface QuoteProcessOptionsResponse extends QuoteProcessOptionsPayload {
+  magic_link: string;
+}
+
 export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo, Required<QuestionsStep> {
   email: string
 }
 
-export interface QuoteProcess extends QuoteProcessPayload {
+export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions {
   id: string,
-  deposit?: string,
-  liability?: string,
-  date?: string,
+  deposit_amount?: number
 }
 
 export interface QuoteSoftFallout {
   name: string,
   email: string,
   phone_number?: string
+}
+
+export interface QuoteProcessVariationDeductible {
+  physical_total: number,
+  physical_comprehensive: number,
+  physical_collision: number,
+}
+
+export interface QuoteProcessCalcVariations {
+  liability_total: number
+  body_injury: number
+  property_damage: number
+  personal_injury_protection: number
+  aditional_personal_injury_protection: number
+  uninsured_motorist: number
+  deductible: QuoteProcessVariationDeductible[]
 }

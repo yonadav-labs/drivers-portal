@@ -25,6 +25,7 @@ export default class QuoteVINVuexModule extends VuexModule {
   setApiFHVInfoBlank(): void {
     this.apiFHVInfo = APIState.state<VINStepFHVInfo>();
   }
+
   @Mutation
   setApiInsuranceInfoBlank(): void {
     this.apiInsuranceInfo = APIState.state<VINStepInsuranceInfo>();

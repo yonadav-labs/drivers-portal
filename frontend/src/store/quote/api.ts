@@ -1,6 +1,9 @@
 import { client } from '@/store/api'
 
-import { QuoteProcess, QuoteProcessPayload, QuoteSoftFallout } from '@/@types/quote';
+import { 
+  QuoteProcess, QuoteProcessPayload, QuoteSoftFallout,
+  QuoteProcessCalcVariations
+ } from '@/@types/quote';
 
 export async function createQuoteProcess(data: QuoteProcessPayload): Promise<QuoteProcess> {
   const response = await client.post(`quote/quote_process/create/`, data)
@@ -9,6 +12,11 @@ export async function createQuoteProcess(data: QuoteProcessPayload): Promise<Quo
 
 export async function retrieveQuoteProcessById(id: string): Promise<QuoteProcess> {
   const response = await client.get(`quote/quote_process/${id}/`)
+  return response.data
+}
+
+export async function retrieveCalcQuoteProcessVariations(id: string): Promise<QuoteProcessCalcVariations> {
+  const response = await client.get(`quote/quote_process/${id}/calc_variations/`)
   return response.data
 }
 

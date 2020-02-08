@@ -174,7 +174,7 @@ import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-proc
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
-import { QuoteProcess } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessCalcVariations } from '@/@types/quote';
 
 
 const quote = namespace('Quote')
@@ -197,14 +197,16 @@ export default class StepQuote extends Vue {
   @quote.Getter
   quoteProcessId?: string
 
+  @quote.Getter
+  quoteProcessCalcVariations?: QuoteProcessCalcVariations
+
   @quote.Action
   retrieveQuoteProcess!: (id: string) => Promise<void>
 
+  @quote.Action
+  retrieveQuoteProcessCalcVariations!: (id: string) => Promise<void>
+
   DEPOSIT_OPTIONS = [
-    {
-      text: 'No',
-      value: 'no'
-    },
     {
       text: '15%',
       value: '15'
@@ -269,12 +271,20 @@ export default class StepQuote extends Vue {
       if (!vm.quoteId) {
         vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
       } else {
-        await vm.retrieveQuoteProcess(vm.quoteId);
-        if (!vm.quoteProcessId) {
-          vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
+        if (!vm.quoteProcess) {
+          await vm.retrieveQuoteProcess(vm.quoteId);
+          if (!vm.quoteProcess) {
+            vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
+          }
+        }
+
+        if(!vm.quoteProcessCalcVariations) {
+          await vm.retrieveQuoteProcessCalcVariations(vm.quoteId);
+          if (!vm.quoteProcessCalcVariations) {
+            vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
+          }
         }
       }
-
     })
   }
 

@@ -1,11 +1,14 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
-import { QuestionsStep, QuoteProcess, QuoteSoftFallout } from '@/@types/quote';
+import { 
+  QuestionsStep, QuoteProcess, QuoteSoftFallout,
+  QuoteProcessCalcVariations
+} from '@/@types/quote';
 
 import { APIProperty, APIState } from '@/store/api'
 import {
   createQuoteProcess, retrieveQuoteProcessById, updateQuoteProcess,
-  createQuoteSoftFallout
+  createQuoteSoftFallout, retrieveCalcQuoteProcessVariations
 } from '@/store/quote/api'
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
@@ -18,6 +21,7 @@ import { buildQuoteProcessPayload, deconstructQuoteProcess } from './helpers'
 export default class QuoteMainVuexModule extends VuexModule {
   apiQuoteProcess: APIProperty<QuoteProcess> = APIState.state<QuoteProcess>();
   apiQuoteSoftFallout: APIProperty<QuoteSoftFallout> = APIState.state<QuoteSoftFallout>();
+  apiQuoteProcessCalcVariations: APIProperty<QuoteProcessCalcVariations> = APIState.state<QuoteProcessCalcVariations>();
   internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
   internalQuoteEmail = '';
@@ -52,6 +56,10 @@ export default class QuoteMainVuexModule extends VuexModule {
 
   get quoteProcessId(): string | undefined {
     return (this.apiQuoteProcess.data || {}).id
+  }
+
+  get quoteProcessCalcVariations(): QuoteProcessCalcVariations | undefined {
+    return this.apiQuoteProcessCalcVariations.data
   }
 
   get stepCompletedByName(): (name: OrderedQuoteRouteNames) => boolean {
@@ -96,6 +104,20 @@ export default class QuoteMainVuexModule extends VuexModule {
   @Mutation
   setQuoteProcessPending(): void {
     this.apiQuoteProcess = APIState.setPending(this.apiQuoteProcess)
+  }
+
+  @Mutation
+  setQuoteProcessCalcVariationsBlank(): void {
+    this.apiQuoteProcessCalcVariations = APIState.state<QuoteProcessCalcVariations>();
+  }
+  @Mutation
+  setQuoteProcessCalcVariationsPending(): void {
+    this.apiQuoteProcessCalcVariations = APIState.setPending(this.apiQuoteProcessCalcVariations)
+  }
+
+  @Mutation
+  setQuoteProcessCalcVariations(payload: QuoteProcessCalcVariations | Error): void {
+    this.apiQuoteProcessCalcVariations = APIState.update(this.apiQuoteProcessCalcVariations, payload);
   }
 
   @Mutation
@@ -178,7 +200,18 @@ export default class QuoteMainVuexModule extends VuexModule {
     } catch(e) {
       this.context.commit('setQuoteProcess', e)
     }
+  }
 
+  @Action
+  async retrieveQuoteProcessCalcVariations(id: string): Promise<void> {
+    this.context.commit('setQuoteProcessCalcVariationsBlank')
+    this.context.commit('setQuoteProcessCalcVariationsPending')
+    try {
+      const variations = await retrieveCalcQuoteProcessVariations(id);
+      this.context.commit('setQuoteProcessCalcVariations', variations)
+    } catch (e) {
+      this.context.commit('setQuoteProcessCalcVariations', e)
+    }
   }
 
   @Action
