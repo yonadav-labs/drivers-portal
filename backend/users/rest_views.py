@@ -55,7 +55,7 @@ class RetrieveMagicLinkView(RetrieveAPIView):
   def retrieve(self, *args, **kwargs):
     instance = self.get_object()
     user = instance.user
-    token = Token.objects.create(user=user)
+    token, _ = Token.objects.get_or_create(user=user)
     response_data = self.serializer_class(instance, context={'token': token.key}).data
     instance.delete()
     return Response(response_data)
