@@ -3,7 +3,8 @@ from django.urls import path
 from quote.rest_views import (
   CreateQuoteProcessView, RetrieveUpdateQuoteProcessView,
   RetrieveQuoteProcessView, CreateQuoteSoftFalloutView,
-  UpdateQuoteProcessUserView, RetrieveCalcQuoteProcessVariationsView
+  UpdateQuoteProcessUserView, RetrieveCalcQuoteProcessVariationsView,
+  UpdateQuoteProcessOptionsView
 )
 
 urlpatterns = [
@@ -26,6 +27,11 @@ urlpatterns = [
         'quote_process/<uuid:pk>/calc_variations/',
         RetrieveCalcQuoteProcessVariationsView.as_view(),
         name="calc_quote_process_variations"
+    ),
+    path(
+        'quote_process/<uuid:pk>/update_options/',
+        UpdateQuoteProcessOptionsView.as_view(),
+        name="update_quote_process_options"
     ),
     path(
         'quote_process/<uuid:pk>/update_user/',

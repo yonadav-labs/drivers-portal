@@ -84,9 +84,10 @@ class UpdateQuoteProcessOptionsSerializer(serializers.ModelSerializer):
       
   class Meta:
     fields = (
-      'deposit_amount', 'deposit', 'deductible', 'start_date',
+      'quote_amount', 'deposit', 'deductible', 'start_date',
     )
-    read_only_fields = ('deposit_amount', )
+    model = QuoteProcess
+    read_only_fields = ('quote_amount', )
 
 
 class UpdateQuoteProcessUserSerializer(serializers.ModelSerializer):
@@ -106,6 +107,7 @@ class UpdateQuoteProcessUserSerializer(serializers.ModelSerializer):
 
   class Meta:
     fields = ('email', 'magic_link')
+    model = QuoteProcess
 
 class CreateQuoteSoftFalloutSerializer(serializers.ModelSerializer):
 

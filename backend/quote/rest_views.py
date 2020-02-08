@@ -51,7 +51,7 @@ class UpdateQuoteProcessOptionsView(UpdateAPIView):
 
   def perform_update(self, serializer):
     instance = serializer.save()
-    instance.set_quote_amount()
+    instance.set_quote_variations()
     
 
 class UpdateQuoteProcessUserView(UpdateAPIView):
@@ -61,7 +61,7 @@ class UpdateQuoteProcessUserView(UpdateAPIView):
 
   def get_object(self):
     obj = super().get_object()
-    if not obj.is_ready_for_user:
+    if not obj.is_ready_for_user and obj.variations:
       raise ValidationError({
         'non_field_errors': [
           "Quote Process needs a deposit and a start date before having a user"

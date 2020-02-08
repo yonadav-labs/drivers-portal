@@ -12,7 +12,7 @@ from quote.constants import (
     FAULT_ACCIDENTS_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
-from quote.utils import calc_quote_amount, generate_variations
+from quote.utils import generate_variations
 
 # Create your models here.
 class QuoteProcess(BaseModel):
@@ -167,6 +167,10 @@ class QuoteProcess(BaseModel):
     def is_ready_for_user(self):
       return self.deposit and self.start_date
 
+    @property
+    def variations(self):
+      return getattr(self, 'quoteprocessvariations', None)
+
     def save(self, *args, **kwargs):
         had_user = self.user is not None
         super().save(*args, **kwargs)
@@ -177,32 +181,41 @@ class QuoteProcess(BaseModel):
         if self.is_ready_for_user:
           self.user = user
           self.save()
-
-    def create_variations(self):
-      with transaction.atomic():
-        variations = getattr(self, 'quoteprocessvariations', None)
-        if variations:
-          variations.delete()
-        if self.deductible:
-          variations = generate_variations(self)
-          deductibles = variations.pop('deductible')
-          QuoteProcessVariations.objects.create(
-            quote_process=self,
-            **{
-              **variations,
-              **deductibles[self.deductible]
-            }
-          )
       
-    def set_quote_amount(self):
+    def set_quote_variations(self):
       if self.is_ready_for_user:
-          self.quote_amount = calc_quote_amount(self)
-          self.save()
+          self._create_variations()
+          variations = self.variations
+
+          if variations:
+            self.quote_amount = self.quoteprocessvariations.liability_total
+            
+            if variations.physical_total:
+              self.quote_amount += variations.physical_total
+            self.save()
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
           QuoteProcessDocuments.objects.create(
               quote_process=self
+          )
+
+    def _create_variations(self):
+      with transaction.atomic():
+        variations = self.variations
+        if variations:
+          variations.delete()
+        if self.deposit:
+          variations = generate_variations(self)
+          deductibles = variations.pop('deductible')
+          deductible_data = deductibles[self.deductible] if self.deductible \
+            else {}
+          QuoteProcessVariations.objects.create(
+            quote_process=self,
+            **{
+              **variations,
+              **deductible_data
+            }
           )
 
 

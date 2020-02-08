@@ -2,11 +2,6 @@ from quote.constants import (
   QUOTE_PROCESS_DEDUCTIBLE_750, QUOTE_PROCESS_DEDUCTIBLE_1000, QUOTE_PROCESS_DEDUCTIBLE_1500
 )
 
-def calc_quote_amount(quote_process):
-  # TODO: Implement real quote calcs
-  return 1000
-
-
 def generate_variations(quote_process):
   # TODO: Implement real variations
   return {
