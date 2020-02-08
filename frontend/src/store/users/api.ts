@@ -12,6 +12,11 @@ export async function getCurrentUser(): Promise<User> {
   return response.data
 }
 
+export async function getMagicLink(id: string): Promise<{email: string, token: string}> {
+  const response  = await client.get(`users/magic_link/${id}/`)
+  return response.data
+}
+
 export async function updateUserPassword(password: string): Promise<User> {
   const response = await client.put(`users/current/set_password/`, { password })
   return response.data

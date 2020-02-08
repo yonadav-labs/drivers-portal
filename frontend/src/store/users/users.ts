@@ -1,8 +1,8 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { User } from '@/@types/users';
 
-import { APIProperty, APIState } from '@/store/api'
-import { getCurrentUser } from '@/store/users/api'
+import { APIProperty, APIState, setAuthToken } from '@/store/api'
+import { getCurrentUser, getMagicLink } from '@/store/users/api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
@@ -50,6 +50,19 @@ export default class UsersVuexModule extends VuexModule {
       this.context.commit('setUser', user)
     } catch (e) {
       this.context.commit('setUser', e);
+    }
+  }
+
+  @Action
+  async useMagickLink(id: string): Promise<void> {
+    this.context.commit('setUserBlank')
+
+    try {
+      const { token } = await getMagicLink(id)
+      setAuthToken(token);
+      await this.context.dispatch('retrieveUser')
+    } catch (e) {
+      console.error(new Error('Invalid Magic Link'))
     }
   }
 
