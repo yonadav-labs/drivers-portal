@@ -1,5 +1,5 @@
 <template>
-  <div class="basic-select" :class="{'check':valueSelected != ''}">
+  <div class="basic-select" :class="{'check':valueSelected != defaultOptionValue}">
     <select
       v-model="valueSelected"
       :disabled="disabled"
@@ -8,7 +8,7 @@
       :id="id"
       :ref="id"
     >
-      <option value disabled>Select one</option>
+      <option :value="defaultOptionValue" disabled>Select one</option>
       <option v-for="(option,index) in options" :value="option.value" :key="index">{{option.text}}</option>
     </select>
     <icon-chevron-down size="14" class="icon" :class="{'selected': valueSelected != ''}"></icon-chevron-down>
@@ -27,16 +27,20 @@ import IconChevronDown from '@/components/icons/icon-chevron-down.vue';
 })
 export default class BasicSelect extends Vue {
   @Prop({ default: () => [] })
-  options!: Array<{ value: string, text: string }>
+  options!: Array<{ value: any, text: string }>
 
   @Prop({ default: '' })
-  selected!: string
+  selected!: any
 
   @Prop({ default: false })
   disabled!: boolean
 
   @Prop({ default: () => `select-${Math.floor(Math.random() * 9999)}` })
   id!: string
+
+  @Prop({ default: '' })
+  defaultOptionValue: any
+
 
   get valueSelected(): string {
     return this.selected;
@@ -56,6 +60,7 @@ export default class BasicSelect extends Vue {
   cursor: pointer;
   position: relative;
   width: 9rem;
+
   &.check {
     border: 1px solid $blue;
     box-shadow: 0 2px 4px 0 rgba(206, 212, 218, 0.5);
@@ -71,8 +76,15 @@ export default class BasicSelect extends Vue {
     width: 100%;
     &:focus {
       outline: none;
+
+      option {
+        &:not(:disabled) {
+          color: $blue-dark;
+        }
+      }
     }
     &.disabled {
+      cursor: not-allowed;
       opacity: 0.5;
     }
   }

@@ -9,10 +9,10 @@
         :info="true"
       >
         <basic-select
-          v-model="internalPhysical"
-          :selected="internalPhysical"
+          v-model="internalDeductible"
+          :selected="internalDeductible"
           :options="PHYSICAL_OPTIONS"
-          :no-value="true"
+          :default-option-value="-1"
           @focus="focus='physical'"
         ></basic-select>
       </banner>
@@ -26,7 +26,8 @@
           v-model="internalDeposit"
           :selected="internalDeposit"
           :options="DEPOSIT_OPTIONS"
-          :disabled="internalPhysical == ''"
+          :default-option-value="0"
+          :disabled="!isDeductibleSet"
           @focus="focus='deposit'"
         ></basic-select>
       </banner>
@@ -42,7 +43,7 @@
           v-model="internalDate"
           :disabled-dates="disabledDates"
           format="MMM d yyyy"
-          :disabled="internalPhysical == '' || internalDeposit == ''"
+          :disabled="!isDeductibleSet || !isDepositSet"
           @focus="focus='date'">
         </input-datepicker>
       </banner>
@@ -87,23 +88,22 @@
         <p class="insurance-title">Your insurance</p>
         <div class="insurance-text">
           <span>Liability</span>
-          <span>$380</span>
+          <span>{{ liabilityText }}</span>
         </div>
         <div class="insurance-text">
           <div>
             <span>Physical coverage</span>
-            <span class="insurance-price">Deductible $750</span>
+            <span class="insurance-price" v-if="hasDeductible">Deductible {{ internalDeductible | currency }}</span>
           </div>
           <span
-            v-if="internalPhysical != '' && internalPhysical != 'no'"
-          >$300</span>
-          <span v-else-if="internalPhysical == 'no'">$0</span>
+            v-if="hasDeductible"
+          >{{ physicalAmount| currency }}</span>
+          <span v-else-if="internalDeductible == 0">$0</span>
           <span v-else>$-</span>
         </div>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
-          <span>$450</span>
-          <!-- <span>${{formatNumber(variations.liabilityTotal)}}</span> -->
+          <span>{{ total | currency }}</span>
         </div>
         <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
           <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>How is my premium calculated?
@@ -113,22 +113,22 @@
       <div class="insurance-resume">
         <div class="insurance-estimated">
           <p>Monthly payment</p>
-          <p class="estimated-price">$1000</p>
+          <p class="estimated-price">{{ monthlyPaymentText }}</p>
           <span class="estimated-date">First Payment Due
             <br>
-            Oct. 7, 2019
+            {{ firstPaymentDue }}
           </span>
         </div>
         <div class="insurance-estimated">
           <p>Deposit</p>
-          <p class="estimated-price">$125</p>
-          <span class="estimated-date">20% of total price</span>
+          <p class="estimated-price">{{ depositText }}</p>
+          <span class="estimated-date">{{ isDepositSet ? `${internalDeposit}%`:'--%' }} of total price</span>
         </div>
       </div>
       <button
         class="insurance-action"
-        :class="{'active': internalPhysical != '' && internalDeposit != '' && internalDate != ''}"
-        :disabled="internalPhysical == '' || internalDeposit == '' || internalDate == ''"
+        :class="{'active': ctaEnabled}"
+        :disabled="!ctaEnabled"
       >Get Your Insurance Policy!
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
@@ -142,12 +142,21 @@
       :accidents="quoteProcess.fault_accidents_last_months"
       :vehicle-vin="quoteProcess.vehicle_vin"
       :vehicle-owner="quoteProcess.vehicle_owner"
-      :vehicle-plate="quoteProcess.license_player"
+      :vehicle-plate="quoteProcess.license_plate"
       :vehicle-year="quoteProcess.vehicle_year"
       :base-name="quoteProcess.base_name"
       :base-number="quoteProcess.base_number"
       :insurance-name="quoteProcess.insurance_carrier_name"
       :insurance-policy="quoteProcess.insurance_policy_number"
+      :deposit-option="internalDeposit"
+      :deductible-option="internalDeductible"
+      :variations="quoteProcessCalcVariations"
+      :physical="selectedPhysical"
+      :total="total"
+      :monthly-payment="monthlyPayment"
+      :deposit="deposit"
+      :first-payment-due="firstPaymentDue"
+
       @close="setShowPremium(false)"
       ></modal-premium>
   </quote-process-columns-layout>
@@ -160,7 +169,7 @@ import { Getter, Action, namespace } from 'vuex-class';
 
 import { Route } from 'vue-router';
 
-import { addDays } from 'date-fns';
+import { addDays, addMonths, format } from 'date-fns';
 
 import Banner from '@/components/containers/banner.vue'
 import BasicButton from '@/components/buttons/basic-button.vue'
@@ -174,7 +183,9 @@ import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-proc
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
-import { QuoteProcess, QuoteProcessCalcVariations } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical } from '@/@types/quote';
+
+import { currency, beautyCurrency } from '@/utils/text'
 
 
 const quote = namespace('Quote')
@@ -184,6 +195,11 @@ const quote = namespace('Quote')
   components: {
     Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
     IconArrowRight, IconInfo, QuoteSummary, ModalPremium
+  },
+  filters: {
+    currency(value: number): string {
+      return currency(value)
+    }
   }
 })
 export default class StepQuote extends Vue {
@@ -209,39 +225,39 @@ export default class StepQuote extends Vue {
   DEPOSIT_OPTIONS = [
     {
       text: '15%',
-      value: '15'
+      value: 15
     },
     {
       text: '20%',
-      value: '20'
+      value: 20
     },
     {
       text: '25%',
-      value: '25'
+      value: 25
     }
   ]
 
   PHYSICAL_OPTIONS = [
     {
       text: 'No',
-      value: 'no'
+      value: 0
     },
     {
       text: '$750',
-      value: '750'
+      value: 750
     },
     {
       text: '$1,000',
-      value: '1000'
+      value: 1000
     },
     {
       text: '$1,500',
-      value: '1500'
+      value: 1500
     }
   ]
 
-  internalPhysical = ''
-  internalDeposit = ''
+  internalDeductible = -1
+  internalDeposit = 0
   internalDate = ''
   
   disabledDates = {
@@ -252,7 +268,71 @@ export default class StepQuote extends Vue {
   focus = 'physical'
   showPremium = false;
 
-  @Watch('internalPhysical')
+  get ctaEnabled(): boolean {
+    return this.isDeductibleSet && this.isDepositSet && this.internalDate !== ''
+  }
+
+  get hasDeductible(): boolean {
+    return this.internalDeductible > 0;
+  }
+
+  get isDepositSet(): boolean {
+    return this.internalDeposit > 0;
+  }
+
+  get isDeductibleSet(): boolean {
+    return this.internalDeductible !== -1;
+  }
+
+  get monthlyPayment(): number {
+    return (this.total * (1-(this.internalDeposit/100)))/9;
+  }
+
+  get deposit(): number {
+    if (!this.isDepositSet) {
+      return 0
+    }
+    return this.total * (this.internalDeposit/100)
+  }
+
+  get depositText(): string {
+    return this.isDepositSet ? beautyCurrency(this.deposit):'$--'
+  }
+
+  get firstPaymentDue(): string {
+    if (!this.internalDate) {
+      return '--'
+    }
+    const selectedDate = new Date(this.internalDate)
+    return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
+  }
+
+  get liabilityText(): string {
+    return !!this.quoteProcessCalcVariations ? currency(this.quoteProcessCalcVariations.liability_total):'$--'
+  }
+
+  get monthlyPaymentText(): string {
+    return this.isDepositSet ? beautyCurrency(this.monthlyPayment):'$--'
+  }
+
+  get selectedPhysical(): QuoteProcessVariationPhysical | undefined {
+    if (!!this.quoteProcessCalcVariations && this.hasDeductible) {
+      return this.quoteProcessCalcVariations.deductible[this.internalDeductible]
+    }
+  }
+
+  get physicalAmount(): number {
+    return this.hasDeductible ? this.selectedPhysical!.physical_total:0
+  }
+  
+  get total(): number {
+    if (!this.quoteProcessCalcVariations) {
+      return 0;
+    }
+    return this.quoteProcessCalcVariations.liability_total + this.physicalAmount
+  }
+
+  @Watch('internalDeductible')
   onPhysicalChange(val: string): void {
     if (!!val) {
       this.focus = 'deposit'

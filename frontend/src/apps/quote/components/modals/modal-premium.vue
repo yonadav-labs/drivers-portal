@@ -81,101 +81,105 @@
           <div class="dropdown--content" v-if="opened == 'price'">
             <div class="dropdown--content-row">
               <span class="label">Deductible</span>
-              <span class="value">{{ premiumData.price.deductible | currency }}</span>
+              <span class="value"  v-if="hasDeductible">{{ deductibleOption | currency }}</span>
+              <span class="value" v-else>$--</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Downpayment</span>
-              <span class="value">{{ premiumData.price.downpayment }}</span>
+              <span class="value">{{ hasDeposit ? depositOption:'--' }}%</span>
             </div>
           </div>
         </div>
-        <div class="dropdown" @click="opened == 'liability' ? opened = '' : opened = 'liability'">
+        <div class="dropdown" @click="opened == 'liability' ? opened = '' : opened = 'liability'" v-if="!!variations">
           <div class="dropdown--header">
             <span>liability coverage</span>
-            <span>{{ premiumData.liability.total | currency }}</span>
+            <span>{{ variations.liability_total | currency }}</span>
             <icon-chevron-up v-if="opened == 'liability'" size="12"></icon-chevron-up>
             <icon-chevron-down v-else size="12"></icon-chevron-down>
           </div>
           <div class="dropdown--content" v-if="opened == 'liability'">
             <div class="dropdown--content-row">
               <span class="label">Bodily Injury</span>
-              <span class="value">{{ premiumData.liability.bodily | currency }}</span>
+              <span class="value">{{ variations.body_injury | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Property Damage</span>
-              <span class="value">{{ premiumData.liability.property | currency }}</span>
+              <span class="value">{{ variations.property_damage | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Uninsored Motorist</span>
-              <span class="value">{{ premiumData.liability.uninsored | currency }}</span>
+              <span class="value">{{ variations.uninsured_motorist | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Personal Injury protection</span>
-              <span class="value">{{ premiumData.liability.personal | currency }}</span>
+              <span class="value">{{ variations.personal_injury_protection | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Aggregate no-fault</span>
-              <span class="value">{{ premiumData.liability.aggregate | currency }}</span>
+              <span class="value">{{ variations.aditional_personal_injury_protection | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Total Liability</span>
-              <span class="value">{{ premiumData.liability.total | currency }}</span>
+              <span class="value">{{ variations.liability_total | currency }}</span>
             </div>
           </div>
         </div>
-        <div class="dropdown" @click="opened == 'physical' ? opened = '' : opened = 'physical'">
+        <div class="dropdown" @click="opened == 'physical' ? opened = '' : opened = 'physical'" v-if="hasDeductible">
           <div class="dropdown--header">
             <span>physical coverage</span>
-            <span>{{ premiumData.physical.total | currency }}</span>
+            <span>{{ physical.physical_total | currency }}</span>
             <icon-chevron-up v-if="opened == 'physical'" size="12"></icon-chevron-up>
             <icon-chevron-down v-else size="12"></icon-chevron-down>
           </div>
           <div class="dropdown--content" v-if="opened == 'physical'">
             <div class="dropdown--content-row">
               <span class="label">Comprehensive</span>
-              <span class="value">{{ premiumData.physical.comprehensive | currency }}</span>
+              <span class="value">{{ physical.physical_comprehensive | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Collision</span>
-              <span class="value">{{ premiumData.physical.collision | currency }}</span>
+              <span class="value">{{ physical.physical_collision | currency }}</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Physical Total</span>
-              <span class="value">{{ premiumData.physical.total | currency }}</span>
+              <span class="value">{{ physical.physical_total | currency }}</span>
             </div>
           </div>
         </div>
         <div class="dropdown" @click="opened == 'total' ? opened = '' : opened = 'total'">
           <div class="dropdown--header">
             <span>total amount</span>
-            <span>{{ (premiumData.liability.total + premiumData.physical.total) | currency }}</span>
+            <span v-if="total">{{ total | currency }}</span>
+            <span class="value" v-else>$--</span>
             <icon-chevron-up v-if="opened == 'total'" size="12"></icon-chevron-up>
             <icon-chevron-down v-else size="12"></icon-chevron-down>
           </div>
           <div class="dropdown--content" v-if="opened == 'total'">
             <div class="dropdown--content-row">
               <span class="label">Deposit</span>
-              <span class="value">{{ premiumData.total.deposit | currency }}</span>
+              <span class="value" v-if="hasDeposit">{{ deposit | currency }}</span>
+              <span class="value" v-else>$--</span>
             </div>
             <div class="dropdown--content-row">
               <span class="label">Monthly Payment</span>
-              <span class="value">{{ premiumData.total.monthly | currency }}</span>
+              <span class="value" v-if="hasDeposit">{{ monthlyPayment | currency }}</span>
+              <span class="value" v-else>$--</span>
             </div>
           </div>
         </div>
         <div class="insurance-resume">
           <div class="insurance-estimated">
             <p>Monthly payment</p>
-            <p class="estimated-price">{{ premiumData.total.monthly | currency }}</p>
+            <p class="estimated-price">{{ monthlyPaymentText }}</p>
             <span class="estimated-date">First Payment Due
               <br>
-              {{dateFunc()}}
+              {{ firstPaymentDue }}
             </span>
           </div>
           <div class="insurance-estimated">
             <p>Deposit</p>
-            <p class="estimated-price">{{ premiumData.total.deposit | currency }}</p>
-            <span class="estimated-date">20% of total price</span>
+            <p class="estimated-price">{{ depositText }}</p>
+            <span class="estimated-date">{{ hasDeposit ? `${depositOption}%`:'--%' }} of total price</span>
           </div>
         </div>
       </div>
@@ -192,18 +196,17 @@ import IconCross from '@/components/icons/icon-cross.vue'
 import IconChevronUp from '@/components/icons/icon-chevron-up.vue';
 import IconChevronDown from '@/components/icons/icon-chevron-down.vue';
 
+import { QuoteProcessCalcVariations, QuoteProcessVariationPhysical } from '@/@types/quote';
+
+import { currency, beautyCurrency } from '@/utils/text'
+
 @Component({
   components: {
     Modal, IconCross, IconChevronUp, IconChevronDown
   },
   filters: {
-    currency(value: number): string {
-      if (!value) {
-        return '$0';
-      }
-      const val = value.toFixed(2);
-      return '$' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
+    currency,
+    beautyCurrency
   }
 })
 export default class ModalPremium extends Vue {
@@ -246,6 +249,30 @@ export default class ModalPremium extends Vue {
   @Prop({ default: '' })
   insurancePolicy!: string;
 
+  @Prop({ default: 0 })
+  deductibleOption!: number;
+
+  @Prop({ default: 0 })
+  depositOption!: number;
+
+  @Prop()
+  variations?: QuoteProcessCalcVariations
+
+  @Prop()
+  physical?: QuoteProcessVariationPhysical
+
+  @Prop({ default: 0 })
+  total!: number;
+
+  @Prop({ default: 0 })
+  monthlyPayment!: number;
+
+  @Prop({ default: 0 })
+  deposit!: number;
+
+  @Prop({ default: '--' })
+  firstPaymentDue!: string;
+  
   opened = ''
 
   premiumData = {
@@ -274,6 +301,21 @@ export default class ModalPremium extends Vue {
 
   get defensive(): string {
     return !!this.hasDefensive ? 'Yes': 'No'
+  }
+
+  get hasDeposit(): boolean {
+    return this.depositOption > 0;
+  }
+
+  get hasDeductible(): boolean {
+    return this.deductibleOption > 0;
+  }
+
+  get depositText(): string {
+    return this.hasDeposit ? beautyCurrency(this.deposit):'$--'
+  }
+  get monthlyPaymentText(): string {
+    return this.hasDeposit ? beautyCurrency(this.monthlyPayment):'$--'
   }
 
  dateFunc(): string {

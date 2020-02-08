@@ -58,18 +58,22 @@ export interface QuoteSoftFallout {
   phone_number?: string
 }
 
-export interface QuoteProcessVariationDeductible {
+export interface QuoteProcessVariationPhysical {
   physical_total: number,
   physical_comprehensive: number,
   physical_collision: number,
 }
 
-export interface QuoteProcessCalcVariations {
+
+interface BaseQuoteProcessVariations {
   liability_total: number
   body_injury: number
   property_damage: number
   personal_injury_protection: number
   aditional_personal_injury_protection: number
   uninsured_motorist: number
-  deductible: QuoteProcessVariationDeductible[]
+}
+
+export interface QuoteProcessCalcVariations extends BaseQuoteProcessVariations{ 
+  deductible: QuoteProcessVariationPhysical[]
 }
