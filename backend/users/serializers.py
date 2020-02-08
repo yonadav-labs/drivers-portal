@@ -37,8 +37,12 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
 
 class RetrieveMagicLinkSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(source='user.email', read_only=True)
+  token = serializers.SerializerMethodField()
+
+  def get_token(self, obj):
+    return self.context.get('token')
 
   class Meta:
     model = MagicLink
-    fields = ('id', 'email')
+    fields = ('id', 'email', 'token')
     read_only_fields = ('id', 'email')

@@ -2,7 +2,8 @@ from django.urls import path
 
 from users.rest_views import (
   RetrieveUserExistsView, RetrieveCurrentUserView,
-  UpdateUserPasswordView, RetrieveMagicLinkView
+  UpdateUserPasswordView, RetrieveMagicLinkView,
+  CheckTokenView
 )
 
 urlpatterns = [
@@ -10,4 +11,5 @@ urlpatterns = [
     path('current/', RetrieveCurrentUserView.as_view(), name="current_user"),
     path('current/set_password/', UpdateUserPasswordView.as_view(), name="set_password"),
     path('magic_link/<uuid:pk>/', RetrieveMagicLinkView.as_view(), name="use_magiclink"),
+    path('check_token/', CheckTokenView.as_view(), name="check_token"),
 ]
