@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.models import User
+from users.models import User, MagicLink
 
 class RetrieveUserExistsSerializer(serializers.ModelSerializer):
 
@@ -33,3 +33,12 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
     model = User
     fields = ('id', 'email', 'password', 'has_usable_password')
     read_only_fields = ('id', 'email', )
+
+
+class RetrieveMagicLinkSerializer(serializers.ModelSerializer):
+  email = serializers.EmailField(source='user.email', read_only=True)
+
+  class Meta:
+    model = MagicLink
+    fields = ('id', 'email')
+    read_only_fields = ('id', 'email')

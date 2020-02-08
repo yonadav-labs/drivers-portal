@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -59,3 +60,16 @@ class UserManager(BaseUserManager):
         user.set_unusable_password()
         user.save(using=self._db)
         return user
+
+
+class MagicLinkQueryset(models.QuerySet):
+
+    def expired(self):
+      return self.filter(
+          expire_on__lte=timezone.now()
+      )
+
+    def active(self):
+      return self.exclude(
+          expire_on__lte=timezone.now()
+      )

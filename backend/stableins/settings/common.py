@@ -149,6 +149,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -187,9 +191,14 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     # Executes every day midnigth - 00:00
-    'MedallionImportTask': {
-        'task': 'importer.tasks.medallion_import_task',
-        'schedule': crontab(minute=0, hour=0)
+    # 'MedallionImportTask': {
+    #     'task': 'importer.tasks.medallion_import_task',
+    #     'schedule': crontab(minute=0, hour=0)
+    # },
+    # Executes every day midnigth - 00:15
+    'DeleteExpiredMagicLinks': {
+        'task': 'users.tasks.delete_expired_links',
+        'schedule': crontab(minute=15, hour=0)
     },
     # Executes every day midnigth + 1 - 01:00
     'ForHireImportTask': {
@@ -200,6 +209,11 @@ CELERY_BEAT_SCHEDULE = {
     'VehicleInsuranceImportTask': {
         'task': 'importer.tasks.vehicle_insurance_import_task',
         'schedule': crontab(minute=0, hour=2)
+    },
+    # Executes every day midnigth + 3 - 02:00
+    'FHVActiveDriverImportTask': {
+        'task': 'importer.tasks.fhv_active_driver_import_task',
+        'schedule': crontab(minute=0, hour=3)
     }
 }
 

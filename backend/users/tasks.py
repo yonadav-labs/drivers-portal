@@ -25,3 +25,8 @@ def send_welcome_email_task(user_id):
         subject=subject,
         template_id=USER_WELCOME_TEMPLATE_ID,
     )
+
+
+@task(name="delete_expired_links")
+def delete_expired_links():
+    MagicLink.objects.expired.delete()

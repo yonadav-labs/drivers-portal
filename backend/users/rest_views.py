@@ -1,3 +1,6 @@
+from django.contrib.auth import login
+from django.conf import settings
+
 from rest_framework import serializers
 from rest_framework.generics import (
   RetrieveAPIView, UpdateAPIView
@@ -7,10 +10,10 @@ from rest_framework.permissions import (
   AllowAny, IsAuthenticated)
 from rest_framework.response import Response
 
-from users.models import User
+from users.models import User, MagicLink
 from users.serializers import (
   RetrieveUserExistsSerializer, RetrieveCurrentUserSerializer,
-  UpdateUserPasswordSerializer
+  UpdateUserPasswordSerializer, RetrieveMagicLinkSerializer
 )
 
 
@@ -41,3 +44,20 @@ class UpdateUserPasswordView(UpdateAPIView):
   def perform_update(self, serializer):
     user = self.request.user
     user.set_password(serializer['password'])
+
+
+class RetrieveMagicLinkView(RetrieveAPIView):
+  permission_classes = (AllowAny, )
+  serializer_class = RetrieveMagicLinkSerializer
+  queryset = MagicLink.objects.active()
+
+  def retrieve(self, *args, **kwargs):
+    instance = self.get_object()
+    user = instance.user
+    login(
+      self.request, user,
+      backend=settings.AUTHENTICATION_BACKENDS[0]
+    )
+    response_data = self.serializer_class(instance).data
+    instance.delete()
+    return Response(response_data)
