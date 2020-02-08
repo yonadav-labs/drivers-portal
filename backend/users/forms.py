@@ -15,7 +15,7 @@ class AdminManualQuoteUserForm(forms.ModelForm):
     confirm_password = forms.CharField(
         max_length=32, widget=forms.PasswordInput, required=False)
     quote_process = forms.ModelChoiceField(
-        queryset=QuoteProcess.objects.email_entered(),
+        queryset=QuoteProcess.objects.without_user(),
         widget=forms.HiddenInput())
 
     class Meta:

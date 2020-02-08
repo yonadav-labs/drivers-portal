@@ -15,11 +15,11 @@ class CustomIndexDashboard(Dashboard):
 
     def _retrieve_email_entered(self):
         children = []
-        email_entered = QuoteProcess.objects.\
-            email_entered().older_first()
+        without_user = QuoteProcess.objects.\
+            without_user().older_first()
 
 
-        for quote in email_entered:
+        for quote in without_user:
             children.append({
                 'title': str(quote),
                 'url': reverse('stable_admin:quote_quoteprocess_change',  args=[quote.id] ),

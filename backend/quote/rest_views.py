@@ -13,13 +13,13 @@ class CreateQuoteProcessView(CreateAPIView):
 
 class RetrieveUpdateQuoteProcessView(RetrieveUpdateAPIView):
   lookup_field = "email"
-  queryset = QuoteProcess.objects.filter(user__isnull=True)
+  queryset = QuoteProcess.objects.without_user()
   permission_classes = (AllowAny, )
   serializer_class = RetrieveUpdateQuoteProcessSerializer
 
 
 class RetrieveQuoteProcessView(RetrieveAPIView):
-  queryset = QuoteProcess.objects.filter(user__isnull=True)
+  queryset = QuoteProcess.objects.without_user()
   permission_classes = (AllowAny, )
   serializer_class = RetrieveQuoteProcessSerializer
 

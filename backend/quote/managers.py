@@ -10,7 +10,7 @@ class QuoteProcessQuerySet(models.QuerySet):
             quoteprocesspayment__isnull=True
         )
 
-    def email_entered(self):
+    def without_user(self):
         return self.filter(user__isnull=True)
 
     def quote_documents_not_uploaded(self):
