@@ -18,6 +18,7 @@ import { store } from './store/store'
 
 import 'url-polyfill'; // Polyfill to make Plyr working on IE11
 import 'custom-event-polyfill'; // Polyfill to make Plyr working on IE11
+import { initClient } from './store/api';
 
 Vue.config.productionTip = false;
 
@@ -26,6 +27,9 @@ Vue.use(VueRouter)
 new Vue({
   router,
   store,
+  created: async () => {
+    await initClient();
+  },
   render: h =>
     h(App),
 }).$mount(`#app`);
