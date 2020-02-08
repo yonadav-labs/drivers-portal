@@ -384,6 +384,7 @@ export default class StepQuote extends Vue {
  .insurance-info {
   font-size: $fs-lg;
   padding: 1.875rem;
+
   .insurance-info--question {
     color: $blue;
     display: flex;

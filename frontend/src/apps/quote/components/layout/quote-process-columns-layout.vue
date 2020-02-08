@@ -8,18 +8,15 @@
         <div class="content">
           <breadcrumbs></breadcrumbs>
           <div
-            class="header"
-            :class="{'simple-header': false && `goDriverBack != 'TLC' && activeStepName != 'SLOAD'`}"
+            class="header simple-header"
           >
             <h1>Stable</h1>
-            <p>Lets get you a TLC Insurance Quote!</p>
           </div>
           <slot></slot>
         </div>
 
         <div
           class="footer"
-          :class="{'footer--simple': false && `goDriverBack == 'TLC' || activeStepName === 'STY'|| activeStepName === 'SLOAD'`}"
         >
           <basic-button
             class="back-button"
