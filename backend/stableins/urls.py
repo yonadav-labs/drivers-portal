@@ -8,11 +8,11 @@ from base.admin import stable_admin
 
 
 api_urlpatterns = [
-    path('nested_admin/', include('nested_admin.urls')),
     path('api/v1/', include('stableins.api_urls')),
 ]
 
 admin_urlpatterns = [
+    path('nested_admin/', include('nested_admin.urls')),
     path('admin_tools/', include('admin_tools.urls')),
     path('django_admin/', admin.site.urls),
     path('admin/', stable_admin.urls)

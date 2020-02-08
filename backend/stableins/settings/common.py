@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.sites',
     'rest_framework',
+    'rest_framework.authtoken',
     'anymail',
     # Local apps
     'users.apps.UsersConfig',
@@ -256,7 +257,7 @@ PLAID_CLIENT_SECRET_KEY = env("PLAID_CLIENT_SANDBOX_SECRET_KEY")
 # Rest framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )
 }
