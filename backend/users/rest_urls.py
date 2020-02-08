@@ -1,7 +1,12 @@
 from django.urls import path
 
-from users.rest_views import RetrieveUserExistsView
+from users.rest_views import (
+  RetrieveUserExistsView, RetrieveCurrentUserView,
+  UpdateUserPasswordView
+)
 
 urlpatterns = [
     path('<email>/exists/', RetrieveUserExistsView.as_view(), name="user_exists"),
+    path('current/', RetrieveCurrentUserView.as_view(), name="current_user"),
+    path('current/set_password/', UpdateUserPasswordView.as_view(), name="set_password"),
 ]
