@@ -4,11 +4,13 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 import QuoteModules from './quote'
+import UsersModules from './users'
 
 export const store = new Vuex.Store({
   strict: true,
   state: {},
   modules: {
     ...QuoteModules,
+    ...UsersModules
   },
 });
