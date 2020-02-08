@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import models, transaction
 
 from base.models import BaseModel
 
@@ -12,6 +12,7 @@ from quote.constants import (
     FAULT_ACCIDENTS_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
+from quote.utils import calc_quote_amount, generate_variations
 
 # Create your models here.
 class QuoteProcess(BaseModel):
@@ -120,8 +121,8 @@ class QuoteProcess(BaseModel):
     )
 
     # Step 5
-    deposit_amount = models.DecimalField(
-        verbose_name='Deposit Amount',
+    quote_amount = models.DecimalField(
+        verbose_name='Quote Amount',
         max_digits=7,
         decimal_places=2,
         blank=True,
@@ -133,9 +134,14 @@ class QuoteProcess(BaseModel):
         blank=True,
         null=True
     )
-    deductible = models.PositiveIntegerField(
-        verbose_name='Deductible',
+    deductible = models.PositiveIntegerField( 
+        verbose_name='Physical Coverage', # Phsyical Coverage
         choices=QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
+        blank=True,
+        null=True
+    )
+    start_date = models.DateField(
+        verbose_name="Start date",
         blank=True,
         null=True
     )
@@ -157,14 +163,47 @@ class QuoteProcess(BaseModel):
         except QuoteProcess.quoteprocessdocuments.RelatedObjectDoesNotExist:
             return None
 
-    def add_user(self, user):
-        self.user = user
-        self.save()
+    @property
+    def is_ready_for_user(self):
+      return self.deposit and self.start_date
 
+    def save(self, *args, **kwargs):
+        had_user = self.user is not None
+        super().save(*args, **kwargs)
+        if not had_user and self.user:
+          self._create_process_documents()
+
+    def add_user(self, user):
+        if self.is_ready_for_user:
+          self.user = user
+          self.save()
+
+    def create_variations(self):
+      with transaction.atomic():
+        variations = getattr(self, 'quoteprocessvariations', None)
+        if variations:
+          variations.delete()
+        if self.deductible:
+          variations = generate_variations(self)
+          deductibles = variations.pop('deductible')
+          QuoteProcessVariations.objects.create(
+            quote_process=self,
+            **{
+              **variations,
+              **deductibles[self.deductible]
+            }
+          )
+      
+    def set_quote_amount(self):
+      if self.is_ready_for_user:
+          self.quote_amount = calc_quote_amount(self)
+          self.save()
+
+    def _create_process_documents(self):
         if not self.quote_process_documents:
-            QuoteProcessDocuments.objects.create(
-                quote_process = self
-            )
+          QuoteProcessDocuments.objects.create(
+              quote_process=self
+          )
 
 
 def quote_process_document_upload_to(instance, filename):
@@ -302,6 +341,72 @@ class QuoteProcessPayment(BaseModel):
         verbose_name = 'Quote Process Payment'
         verbose_name_plural = 'Quote Process Payment'
 
+
+class QuoteProcessVariations(BaseModel):
+  quote_process = models.OneToOneField(
+    verbose_name='Quote Process',
+    to=QuoteProcess,
+    on_delete=models.CASCADE,
+  )
+
+  liability_total = models.DecimalField(
+    verbose_name='Liability total',
+    max_digits=7,
+    decimal_places=2
+  )
+  body_injury = models.DecimalField(
+    verbose_name='Body injury',
+    max_digits=7,
+    decimal_places=2
+  )
+  property_damage = models.DecimalField(
+    verbose_name='Property damage',
+    max_digits=7,
+    decimal_places=2
+  )
+  personal_injury_protection = models.DecimalField(
+    verbose_name='Personal injury protection',
+    max_digits=7,
+    decimal_places=2
+  )
+  aditional_personal_injury_protection = models.DecimalField(
+    verbose_name='Aditional personal injury protection',
+    max_digits=7,
+    decimal_places=2
+  )
+  uninsured_motorist = models.DecimalField(
+    verbose_name='Uninsured motorist',
+    max_digits=7,
+    decimal_places=2
+  )
+  physical_total = models.DecimalField(
+    verbose_name='Physical total',
+    max_digits=7,
+    decimal_places=2,
+    blank=True,
+    null=True
+  )
+  physical_comprehensive = models.DecimalField(
+    verbose_name='Physical comprehensive',
+    max_digits=7,
+    decimal_places=2,
+    blank=True,
+    null=True
+  )
+  physical_collision = models.DecimalField(
+    verbose_name='Physical collision',
+    max_digits=7,
+    decimal_places=2,
+    blank=True,
+    null=True
+  )
+
+  class Meta:
+    verbose_name = "Quote Process Variations"
+    verbose_name_plural = "Quote Process Variations"
+
+  def __str__(self):
+    return f"Quote Process Variations for {self.quote_process.email}"
 
 class QuoteSoftFallout(BaseModel):
   name = models.CharField(

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.models import User
+from users.models import User, MagicLink
 
 from quote.models import QuoteProcess, QuoteSoftFallout
 
@@ -79,6 +79,33 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
     )
     model = QuoteProcess
 
+
+class UpdateQuoteProcessOptionsSerializer(serializers.ModelSerializer):
+      
+  class Meta:
+    fields = (
+      'deposit_amount', 'deposit', 'deductible', 'start_date',
+    )
+    read_only_fields = ('deposit_amount', )
+
+
+class UpdateQuoteProcessUserSerializer(serializers.ModelSerializer):
+  magic_link = serializers.SerializerMethodField()
+
+  def get_magic_link(self, obj):
+    if obj.user:
+      magic_link = MagicLink.objects.create(user=obj.user)
+      return str(magic_link.id)
+
+  def validate_email(self, value):
+    if User.objects.filter(email=value).exists():
+      raise serializers.ValidationError(
+          "A user with this email already exists")
+
+    return value
+
+  class Meta:
+    fields = ('email', 'magic_link')
 
 class CreateQuoteSoftFalloutSerializer(serializers.ModelSerializer):
 
