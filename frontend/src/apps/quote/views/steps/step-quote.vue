@@ -129,6 +129,7 @@
         class="insurance-action"
         :class="{'active': ctaEnabled}"
         :disabled="!ctaEnabled"
+        @click="getPolicy"
       >Get Your Insurance Policy!
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
@@ -182,8 +183,10 @@ import ModalPremium from '@/apps/quote/components/modals/modal-premium.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
+import { RouteName } from '@/router'
 import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
-import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical } from '@/@types/quote';
+
+import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical, QuoteProcessOptionsPayload } from '@/@types/quote';
 
 import { currency, beautyCurrency } from '@/utils/text'
 
@@ -208,6 +211,9 @@ export default class StepQuote extends Vue {
   quoteId!: string
 
   @quote.Getter
+  magicLink!: string;
+
+  @quote.Getter
   quoteProcess?: QuoteProcess
 
   @quote.Getter
@@ -221,6 +227,12 @@ export default class StepQuote extends Vue {
 
   @quote.Action
   retrieveQuoteProcessCalcVariations!: (id: string) => Promise<void>
+
+  @quote.Action
+  updateQuoteProcessOptions!: (payload: QuoteProcessOptionsPayload) => Promise<void>
+
+  @quote.Action
+  updateQuoteProcessUser!: (userEmail: string) => Promise<void>
 
   DEPOSIT_OPTIONS = [
     {
@@ -366,6 +378,21 @@ export default class StepQuote extends Vue {
         }
       }
     })
+  }
+
+  async getPolicy(): Promise<void> {
+    await this.updateQuoteProcessOptions({
+      deposit: this.internalDeposit,
+      deductible: this.hasDeductible ? this.internalDeductible:undefined,
+      start_date: this.internalDate
+    })
+    if (this.quoteProcess && !!this.quoteProcess.deposit) {
+      await this.updateQuoteProcessUser(this.quoteProcess.email)
+      
+      if (!!this.magicLink) {
+        this.$router.push({ name: RouteName.MAGIC_LINK, params: { id: this.magicLink } })
+      }
+    }
   }
 
   setShowPremium(value: boolean): void {

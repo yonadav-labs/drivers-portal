@@ -2,13 +2,15 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
 import { 
   QuestionsStep, QuoteProcess, QuoteSoftFallout,
-  QuoteProcessCalcVariations
+  QuoteProcessCalcVariations,
+  QuoteProcessOptionsPayload
 } from '@/@types/quote';
 
 import { APIProperty, APIState } from '@/store/api'
 import {
   createQuoteProcess, retrieveQuoteProcessById, updateQuoteProcess,
-  createQuoteSoftFallout, retrieveCalcQuoteProcessVariations
+  createQuoteSoftFallout, retrieveCalcQuoteProcessVariations,
+  updateQuoteProcessOptions, updateQuoteProcessUser
 } from '@/store/quote/api'
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
@@ -25,6 +27,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   internalEmailExist = false;
   internalQuestionAnswers: QuestionsStep = {}
   internalQuoteEmail = '';
+  loginMagicLink = '';
   stepsCompleted = {
     [OrderedQuoteRouteNames.TLC]: false,
     [OrderedQuoteRouteNames.VIN]: false,
@@ -40,6 +43,10 @@ export default class QuoteMainVuexModule extends VuexModule {
 
   get emailExists(): boolean {
     return this.internalEmailExist
+  }
+
+  get magicLink(): string {
+    return this.loginMagicLink
   }
 
   get questionAnswers(): QuestionsStep {
@@ -97,6 +104,12 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
+  setQuoteProcessPartial(payload: QuoteProcess): void {
+    this.apiQuoteProcess = APIState.patch(this.apiQuoteProcess, payload)
+  }
+
+
+  @Mutation
   setQuoteProcessBlank(): void {
     this.apiQuoteProcess = APIState.state<QuoteProcess>();
   }
@@ -133,6 +146,11 @@ export default class QuoteMainVuexModule extends VuexModule {
   @Mutation
   setQuoteSoftFalloutPending(): void {
     this.apiQuoteSoftFallout = APIState.setPending(this.apiQuoteSoftFallout)
+  }
+
+  @Mutation
+  setLoginMagicLink(magicLink: string): void {
+    this.loginMagicLink = magicLink;
   }
 
   @Mutation
@@ -230,5 +248,31 @@ export default class QuoteMainVuexModule extends VuexModule {
   @Action
   updateStepStatus(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
     this.context.commit('setStepCompleted', payload);
+  }
+
+  @Action
+  async updateQuoteProcessOptions(payload: QuoteProcessOptionsPayload): Promise<void> {
+    this.context.commit('setQuoteProcessPending');
+
+    try {
+      const options = await updateQuoteProcessOptions(this.quoteProcessId!, payload)
+      this.context.commit('setQuoteProcessPartial', options)
+    } catch(e) {
+      this.context.commit('setQuoteProcessPartial', e)
+    }
+  }
+
+  @Action
+  async updateQuoteProcessUser(userEmail: string): Promise<void> {
+    this.context.commit('setQuoteProcessPending');
+    this.context.commit('setLoginMagicLink', '')
+
+    try {
+      const { email, magic_link } = await updateQuoteProcessUser(this.quoteProcessId!, userEmail)
+      this.context.commit('setQuoteProcessPartial', { email })
+      this.context.commit('setLoginMagicLink', magic_link)
+    } catch (e) {
+      this.context.commit('setQuoteProcessPartial', e)
+    }
   }
 }

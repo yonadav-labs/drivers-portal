@@ -29,27 +29,23 @@ export interface QuestionsStep {
 
 export interface QuoteProcessOptions {
   deposit?: number,
-  deductible?: string,
-  date?: string,
+  deductible?: number,
+  start_date?: string,
+  quote_amount?: number
 }
 
 export interface QuoteProcessOptionsPayload {
   deposit: number,
-  deductible?: string,
-  date: string,
-}
-
-export interface QuoteProcessOptionsResponse extends QuoteProcessOptionsPayload {
-  magic_link: string;
+  deductible?: number,
+  start_date: string,
 }
 
 export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo, Required<QuestionsStep> {
   email: string
 }
 
-export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions {
-  id: string,
-  deposit_amount?: number
+export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions  {
+  id: string
 }
 
 export interface QuoteSoftFallout {
