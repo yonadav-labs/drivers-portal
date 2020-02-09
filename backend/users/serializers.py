@@ -29,7 +29,7 @@ class RetrieveCurrentUserSerializer(serializers.ModelSerializer):
     model = User
     fields = (
       'id', 'email', 'has_usable_password', 'quote_status', 
-      'has_policy'
+      'has_policy', 'quoteprocess'
     )
     read_only_fields = ('id', 'email', )
 

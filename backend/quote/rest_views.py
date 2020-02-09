@@ -39,7 +39,7 @@ class RetrieveCalcQuoteProcessVariationsView(RetrieveAPIView):
     return Response(generate_variations(obj))
 
 class RetrieveQuoteProcessView(RetrieveAPIView):
-  queryset = QuoteProcess.objects.without_user()
+  queryset = QuoteProcess.objects.all()
   permission_classes = (AllowAny, )
   serializer_class = RetrieveQuoteProcessSerializer
 
