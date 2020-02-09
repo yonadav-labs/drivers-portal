@@ -186,6 +186,7 @@ class QuoteProcess(BaseModel):
     def add_user(self, user):
         if self.is_ready_for_user:
           self.user = user
+          self._create_process_documents()
           self.update_status()
           self.save()
       
@@ -209,9 +210,6 @@ class QuoteProcess(BaseModel):
       status = get_quote_status(self)
       if not status == self.status:
         self.set_quote_status(status)
-
-        if status == QUOTE_STATUS_DOCS:
-          self._create_process_documents()
 
 
     def _create_process_documents(self):
