@@ -48,7 +48,7 @@ export type QuoteStatus = 'created' | 'docs' | 'review' | 'payment' | 'paid' | '
 
 export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions  {
   id: string,
-  status?: QuoteStatus
+  status: QuoteStatus
 }
 
 export interface QuoteSoftFallout {
