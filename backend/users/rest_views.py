@@ -34,7 +34,7 @@ class RetrieveCurrentUserView(RetrieveAPIView):
     return self.request.user
 
 class UpdateUserPasswordView(UpdateAPIView):
-  allowed_methods = ('PUT', )
+  allowed_methods = ('OPTIONS', 'PUT', )
   lookup_field = None
   permission_classes = (IsAuthenticated, )
   serializer_class = UpdateUserPasswordSerializer
@@ -58,7 +58,7 @@ class RetrieveMagicLinkView(RetrieveAPIView):
 
 
 class CheckTokenView(APIView):
-  allowed_methods = ('GET', )
+  allowed_methods = ('OPTIONS', 'GET', )
   permission_classes = (AllowAny, )
 
   def get(self, request, *args, **kwargs):

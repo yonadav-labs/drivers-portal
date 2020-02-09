@@ -1,20 +1,25 @@
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import (
   RetrieveAPIView, RetrieveUpdateAPIView, CreateAPIView,
-  UpdateAPIView
+  UpdateAPIView, DestroyAPIView
 )
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import User
 
-from quote.models import QuoteProcess
+from quote.models import (
+  QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport)
 from quote.serializers import (
   RetrieveUpdateQuoteProcessSerializer, CreateQuoteProcessSerializer,
   RetrieveQuoteProcessSerializer, CreateQuoteSoftFalloutSerializer,
-  UpdateQuoteProcessOptionsSerializer, UpdateQuoteProcessUserSerializer
+  UpdateQuoteProcessOptionsSerializer, UpdateQuoteProcessUserSerializer,
+  UpdateQuoteProcessDocumentsFileSerializer, 
+  CreateQuoteProcessDocumentsAccidentReportSerializer,
+  UpdateQuoteProcessDocumentsAccidentReportSerializer
 )
 from quote.utils import generate_variations
 
@@ -79,3 +84,42 @@ class UpdateQuoteProcessUserView(UpdateAPIView):
 class CreateQuoteSoftFalloutView(CreateAPIView):
   permission_classes = (AllowAny, )
   serializer_class = CreateQuoteSoftFalloutSerializer
+
+
+# Quote Process Documents
+
+class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
+  allowed_methods = ['OPTIONS', 'PUT', 'PATCH', ]
+  permission_classes = (IsAuthenticated, )
+  serializer_class = UpdateQuoteProcessDocumentsFileSerializer
+
+  def get_object(self):
+    return get_object_or_404(
+      QuoteProcessDocuments.objects,
+      quote_process__user=self.request.user 
+    )
+
+
+# Quote Process Documents Accident Reports
+
+class CreateQuoteProcessDocumentsAccidentReportView(CreateAPIView):
+  permission_classes = (IsAuthenticated, )
+  serializer_class = CreateQuoteProcessDocumentsAccidentReportSerializer
+
+class UpdateQuoteProcessDocumentsAccidentReportView(UpdateAPIView):
+  permission_classes = (IsAuthenticated, )
+  serializer_class = UpdateQuoteProcessDocumentsAccidentReportSerializer
+
+  def get_queryset(self):
+    return QuoteProcessDocumentsAccidentReport.objects.filter(
+      quote_process_documents__quote_process__user=self.request.user
+    )
+
+class DeleteQuoteProcessDocumentsAccidentReportView(DestroyAPIView):
+  permission_classes = (IsAuthenticated, )
+  serializer_class = CreateQuoteProcessDocumentsAccidentReportSerializer
+
+  def get_queryset(self):
+    return QuoteProcessDocumentsAccidentReport.objects.filter(
+      quote_process_documents__quote_process__user=self.request.user
+    )

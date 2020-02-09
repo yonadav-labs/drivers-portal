@@ -2,7 +2,9 @@ from rest_framework import serializers
 
 from users.models import User, MagicLink
 
-from quote.models import QuoteProcess, QuoteSoftFallout
+from quote.models import (
+  QuoteProcess, QuoteSoftFallout, QuoteProcessDocuments,
+  QuoteProcessDocumentsAccidentReport)
 
 
 class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
@@ -118,3 +120,55 @@ class CreateQuoteSoftFalloutSerializer(serializers.ModelSerializer):
       'id', 'name', 'phone_number', 'email'
     )
     model = QuoteSoftFallout
+
+
+class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    fields = (
+      'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
+      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+    )
+    model = QuoteProcessDocuments
+
+# Quote Process Documents Accident Report
+
+class GetQuoteProcessDocumentsMixin(object):
+  
+  def _get_quote_process_documents(self):
+    request = self.context.get('request')
+    if not request:
+      raise AttributeError("Request must be added to context")
+
+    try:
+      quote_process_documents = request.user.quoteprocess.quoteprocessdocuments
+    except (QuoteProcess.DoesNotExists, QuoteProcessDocuments.DoesNotExists) as e:
+      raise serializers.ValidationError("This user doesn't have a quote process ready")
+    return quote_process_documents
+
+
+class CreateQuoteProcessDocumentsAccidentReportSerializer(
+        GetQuoteProcessDocumentsMixin, serializers.ModelSerializer):
+
+  def create(self, validated_data):
+    quote_process_documents = self._get_quote_process_documents()
+
+    return self.Meta.model.objects.create(
+      quote_process_documents=quote_process_documents,
+      **validated_data
+    )
+
+  class Meta:
+    fields = (
+      'id', 'accident_report',
+    )
+    model = QuoteProcessDocumentsAccidentReport
+
+
+class UpdateQuoteProcessDocumentsAccidentReportSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    fields = (
+      'id', 'accident_report'
+    )
+    model = QuoteProcessDocumentsAccidentReport

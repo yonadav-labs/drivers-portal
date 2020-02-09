@@ -4,7 +4,10 @@ from quote.rest_views import (
   CreateQuoteProcessView, RetrieveUpdateQuoteProcessView,
   RetrieveQuoteProcessView, CreateQuoteSoftFalloutView,
   UpdateQuoteProcessUserView, RetrieveCalcQuoteProcessVariationsView,
-  UpdateQuoteProcessOptionsView
+  UpdateQuoteProcessOptionsView, UpdateQuoteProcessDocumentsFileView,
+  CreateQuoteProcessDocumentsAccidentReportView, 
+  UpdateQuoteProcessDocumentsAccidentReportView,
+  DeleteQuoteProcessDocumentsAccidentReportView
 )
 
 urlpatterns = [
@@ -42,5 +45,25 @@ urlpatterns = [
       'quote_soft_fallout/create/',
       CreateQuoteSoftFalloutView.as_view(),
       name="create_quote_soft_fallout"
-    )
+    ),
+    path(
+      'quote_process_documents/upload_file/',
+      UpdateQuoteProcessDocumentsFileView.as_view(),
+      name="update_quote_process_documents_file"
+    ),
+    path(
+      'quote_process_documents_accident_report/create/',
+      CreateQuoteProcessDocumentsAccidentReportView.as_view(),
+      name="create_quote_process_documents_accident_report"
+    ),
+    path(
+      'quote_process_documents_accident_report/<uuid:pk>/update/',
+      UpdateQuoteProcessDocumentsAccidentReportView.as_view(),
+      name="update_quote_process_documents_accident_report"
+    ),
+    path(
+      'quote_process_documents_accident_report/<uuid:pk>/delete/',
+      DeleteQuoteProcessDocumentsAccidentReportView.as_view(),
+      name="delete_quote_process_documents_accident_report"
+    ),
 ]

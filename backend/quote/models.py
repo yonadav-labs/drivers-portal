@@ -239,7 +239,9 @@ class QuoteProcess(BaseModel):
 
 def quote_process_document_upload_to(instance, filename):
     return os.path.join(
-        'quote_process_documents', instance.email, str(instance.id), filename)
+        'documents', instance.quote_process.user.email, 
+        filename
+    )
     
 class QuoteProcessDocuments(BaseModel):
     quote_process = models.OneToOneField(
@@ -338,6 +340,14 @@ class QuoteProcessDocuments(BaseModel):
                 acc += 1
         return acc
 
+
+def quote_process_document_accident_upload_to(instance, filename):
+    return os.path.join(
+        'documents', 'accidents', 
+        instance.quote_process_documents.quote_process.user.email, 
+        filename
+    )
+
 class QuoteProcessDocumentsAccidentReport(BaseModel):
     quote_process_documents = models.ForeignKey(
         verbose_name='Quote Process Documents',
@@ -347,7 +357,7 @@ class QuoteProcessDocumentsAccidentReport(BaseModel):
 
     accident_report = models.FileField(
         verbose_name='Accident Report',
-        upload_to=quote_process_document_upload_to,
+        upload_to=quote_process_document_accident_upload_to,
         null=True,
         blank=True
     )
