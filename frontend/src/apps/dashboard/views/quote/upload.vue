@@ -10,26 +10,26 @@
       <div class="docs-header__price">
         <div class="estimate">
           <p>Monthly price</p>
-          <p class="estimate__price">$760</p>
+          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}</p>
           <span class="estimate__info">First Payment Due
             <br>
-            Oct. 7, 2019
+            {{ firstPaymentDue }}
           </span>
         </div>
       </div>
       <div class="docs-header__deposit">
         <div class="estimate">
           <p>Deposit</p>
-          <p class="estimate__price">$125</p>
+          <p class="estimate__price">{{ depositAmount|beautyCurrency }}</p>
           <span class="estimate__info">
-            20% of total price
+            {{ quoteDeposit }}% of total price
           </span>
         </div>
       </div>
       <div class="docs-header__total">
         <div class="estimate">
           <p>Total</p>
-          <p class="estimate__price">$4500</p>
+          <p class="estimate__price">{{ total|beautyCurrency }}</p>
           <span class="estimate__info">
             Insurance Premium
           </span>
@@ -104,7 +104,11 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
+import { format, addMonths } from 'date-fns';
+
 import { DashboardQuoteRouteName } from '@/router/dashboard'
+
+import { QuoteProcess } from '@/@types/quote';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
@@ -116,15 +120,23 @@ import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 
-const users = namespace('Users')
+import { beautyCurrency } from '@/utils/text'
+
+const quote = namespace('Quote')
 
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, IconCheckCircle, IconFileDownload, IconFileUpload,
     IconPlusCircle, IconTrashAlt
+  },
+  filters: {
+    beautyCurrency
   }
 })
 export default class DashboardQuoteUploadView extends Vue {
+  @quote.Getter
+  quoteProcess?: QuoteProcess
+
   docs = [
     {
       'title': 'DMV License'
@@ -140,7 +152,33 @@ export default class DashboardQuoteUploadView extends Vue {
     },
   ]
 
-  
+  get depositAmount(): number {
+    return this.quoteDeposit/100 * this.total
+  }
+
+  get monthlyPayment(): number {
+    return (this.total * (1-(this.quoteDeposit/100)))/9;
+  }
+
+  get firstPaymentDue(): string {
+    if (!this.startDate) {
+      return '--'
+    }
+    const selectedDate = new Date(this.startDate)
+    return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
+  }
+
+  get startDate(): string {
+    return !!this.quoteProcess ? this.quoteProcess.start_date:''
+  }
+
+  get quoteDeposit(): number {
+    return !!this.quoteProcess ? this.quoteProcess.deposit:0;
+  }
+
+  get total(): number {
+    return !!this.quoteProcess ? Number(this.quoteProcess.quote_amount):0
+  }
 }
 </script>
 

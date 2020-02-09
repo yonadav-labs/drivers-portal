@@ -21,7 +21,8 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment'
+        'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
+        'deposit' , 'start_date', 'quote_amount'
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -30,7 +31,8 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment'
+        'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
+        'deposit' , 'start_date', 'quote_amount'
     )
     model = QuoteProcess
 
