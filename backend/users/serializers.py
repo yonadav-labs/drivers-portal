@@ -40,6 +40,11 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
 
   def get_has_usable_password(self, obj):
     return obj.has_usable_password()
+
+  def update(self, instance, validated_data):
+    instance.set_password(validated_data.get('password'))
+    return instance
+
   class Meta:
     model = User
     fields = ('id', 'email', 'password', 'has_usable_password')

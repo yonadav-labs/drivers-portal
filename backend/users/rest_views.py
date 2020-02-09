@@ -42,10 +42,6 @@ class UpdateUserPasswordView(UpdateAPIView):
   def get_object(self):
     return self.request.user
 
-  def perform_update(self, serializer):
-    user = self.request.user
-    user.set_password(serializer['password'])
-
 
 class RetrieveMagicLinkView(RetrieveAPIView):
   permission_classes = (AllowAny, )
