@@ -87,6 +87,10 @@ export function clearAuthToken(): void {
   localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
+export function hasToken(): boolean {
+  return !!client.defaults.headers.Authorization
+}
+
 export function setAuthToken(token: string): void {
   client.defaults.headers.Authorization = `Token ${token}`;
   localStorage.setItem(AUTH_TOKEN_KEY, token);

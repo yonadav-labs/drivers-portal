@@ -1,4 +1,5 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
+import { QuoteStatus } from '@/@types/quote';
 import { User } from '@/@types/users';
 
 import { APIProperty, APIState, setAuthToken } from '@/store/api'
@@ -19,6 +20,10 @@ export default class UsersVuexModule extends VuexModule {
 
   get isUserRetrieved(): boolean {
     return this.apiUser.status !== 'initial'
+  }
+
+  get userQuoteStatus(): QuoteStatus | undefined {
+    return !!this.user ? this.user.quote_status:undefined
   }
 
   @Mutation
