@@ -19,7 +19,8 @@ from quote.serializers import (
   UpdateQuoteProcessOptionsSerializer, UpdateQuoteProcessUserSerializer,
   UpdateQuoteProcessDocumentsFileSerializer, 
   CreateQuoteProcessDocumentsAccidentReportSerializer,
-  UpdateQuoteProcessDocumentsAccidentReportSerializer
+  UpdateQuoteProcessDocumentsAccidentReportSerializer,
+  RetrieveQuoteProcessDocumentsSerializer
 )
 from quote.utils import generate_variations
 
@@ -88,6 +89,16 @@ class CreateQuoteSoftFalloutView(CreateAPIView):
 
 # Quote Process Documents
 
+
+class RetrieveQuoteProcessDocumentsView(RetrieveAPIView):
+  permission_classes = (IsAuthenticated, )
+  serializer_class = RetrieveQuoteProcessDocumentsSerializer
+
+  def get_object(self):
+    return QuoteProcessDocuments.objects.get(
+      quote_process__user=self.request.user
+    )
+
 class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
   allowed_methods = ['OPTIONS', 'PUT', 'PATCH', ]
   permission_classes = (IsAuthenticated, )
@@ -101,7 +112,6 @@ class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
 
 
 # Quote Process Documents Accident Reports
-
 class CreateQuoteProcessDocumentsAccidentReportView(CreateAPIView):
   permission_classes = (IsAuthenticated, )
   serializer_class = CreateQuoteProcessDocumentsAccidentReportSerializer

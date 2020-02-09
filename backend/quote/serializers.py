@@ -33,8 +33,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
-        'deposit' , 'start_date', 'quote_amount'
+        'email', 'status', 'deposit' , 'start_date', 'quote_amount'
     )
     model = QuoteProcess
 
@@ -122,15 +121,6 @@ class CreateQuoteSoftFalloutSerializer(serializers.ModelSerializer):
     model = QuoteSoftFallout
 
 
-class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
-
-  class Meta:
-    fields = (
-      'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
-      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
-    )
-    model = QuoteProcessDocuments
-
 # Quote Process Documents Accident Report
 
 class GetQuoteProcessDocumentsMixin(object):
@@ -145,6 +135,17 @@ class GetQuoteProcessDocumentsMixin(object):
     except (QuoteProcess.DoesNotExists, QuoteProcessDocuments.DoesNotExists) as e:
       raise serializers.ValidationError("This user doesn't have a quote process ready")
     return quote_process_documents
+
+
+class NestedQuoteProcessAccidentReportSerializer(serializers.ModelSerializer):
+  class Meta:
+    fields = (
+      'id', 'accident_report',
+    )
+    read_only_fields = (
+      'id', 'accident_report',
+    )
+    model = QuoteProcessDocumentsAccidentReport
 
 
 class CreateQuoteProcessDocumentsAccidentReportSerializer(
@@ -172,3 +173,33 @@ class UpdateQuoteProcessDocumentsAccidentReportSerializer(serializers.ModelSeria
       'id', 'accident_report'
     )
     model = QuoteProcessDocumentsAccidentReport
+
+
+# Quote Process Documents
+class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
+  accident_reports = NestedQuoteProcessAccidentReportSerializer(
+    source="quoteprocessdocumentsaccidentreport_set",
+    many=True
+  )
+
+  class Meta:
+    fields = (
+      'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
+      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+      'is_submitted_for_review', 'accident_reports'
+    )
+    read_only_fields = (
+      'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
+      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+      'is_submitted_for_review', 'accident_reports'
+    )
+    model = QuoteProcessDocuments
+
+class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    fields = (
+      'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
+      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+    )
+    model = QuoteProcessDocuments
