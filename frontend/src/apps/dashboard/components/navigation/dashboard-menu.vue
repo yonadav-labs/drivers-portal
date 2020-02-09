@@ -12,7 +12,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import DashboardMenuItem from '@/apps/dashboard/components/navigation/dashboard-menu-item.vue'
 import IconPolicy from '@/components/icons/icon-policy.vue'
 
-import { DashboardDocsRouteName } from '@/router/dashboard'
+import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 @Component({
   components: {
@@ -23,7 +23,7 @@ export default class DashboardMenu extends Vue {
     @Prop({ default: false })
     selected!: boolean
 
-    routeNames = DashboardDocsRouteName
+    routeNames = DashboardQuoteRouteName
 
     onClick(): void {
       this.$emit('click');

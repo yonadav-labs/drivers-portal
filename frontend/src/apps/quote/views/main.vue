@@ -7,7 +7,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Getter, namespace } from 'vuex-class';
 import { Route } from 'vue-router';
 
-import { QuoteStatus } from '@/@types/quote';
+import { User } from '@/@types/users';
 
 import { RouteName } from '@/router'
 
@@ -15,20 +15,17 @@ import { RouteName } from '@/router'
 const users = namespace('Users')
 
 @Component
-export default class Main extends Vue {
-  
-  @users.Getter
-  isAuthenticated!: boolean
+export default class MainView extends Vue {
 
   @users.Getter
-  userQuoteStatus?: QuoteStatus
+  user?: User
 
   showQuote = false;
 
   async beforeRouteEnter(to: Route, from: Route, next: any): Promise<void> {
 
-    next(async vm => {
-      if (vm.isAuthenticated && vm.userQuoteStatus !== undefined) {
+    next(async (vm: MainView) => {
+      if (!!vm.user && vm.user.quoteprocess) {
         vm.$router.replace({ name: RouteName.DASHBOARD })
       } else {
         vm.showQuote = true;

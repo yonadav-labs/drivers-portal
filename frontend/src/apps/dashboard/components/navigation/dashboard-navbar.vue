@@ -16,7 +16,7 @@ import DashboardMenu from '@/apps/dashboard/components/navigation/dashboard-menu
 import IconLogout from '@/components/icons/icon-logout.vue'
 
 
-import { DashboardDocsRouteName } from '@/router/dashboard'
+import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 @Component({
   components: {
@@ -24,7 +24,7 @@ import { DashboardDocsRouteName } from '@/router/dashboard'
   }
 })
 export default class DashboardNavbar extends Vue {
-    routeNames = DashboardDocsRouteName
+    routeNames = DashboardQuoteRouteName
 }
 </script>
 

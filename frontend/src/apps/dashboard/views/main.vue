@@ -26,7 +26,7 @@ import ModalCreatePassword from '@/apps/dashboard/components/modals/create-passw
 import { User } from '@/@types/users';
 
 import { QuoteProcessRouter } from '@/router/quote'
-import { DashboardDocsRouteName, DashboardRouter } from '@/router/dashboard'
+import { DashboardRouteName, DashboardRouter } from '@/router/dashboard'
 import { Route } from 'vue-router';
 
 const users = namespace('Users')
@@ -36,7 +36,7 @@ const users = namespace('Users')
     DashboardNavbar, DashboardMenu, ModalCreatePassword
   }
 })
-export default class Dashboard extends Vue {
+export default class DashboardView extends Vue {
 
   @users.Getter
   isAuthenticated!: boolean
@@ -60,12 +60,12 @@ export default class Dashboard extends Vue {
 
   async beforeRouteEnter(to: Route, from: Route, next: any): Promise<void> {
 
-    next(async vm => {
+    next(async (vm: DashboardView) => {
       if (!vm.isAuthenticated) {
         vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
       } else {
         if (vm.user!.quote_status !== 'done' && !DashboardRouter.isDocsRoute(vm.$route.name!) ) {
-          vm.$router.replace({ name: DashboardDocsRouteName.DOCS })
+          vm.$router.replace({ name: DashboardRouteName.QUOTE })
         }
 
         if (!vm.user!.has_usable_password) {

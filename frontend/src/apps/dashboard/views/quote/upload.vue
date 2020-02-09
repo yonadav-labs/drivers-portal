@@ -104,7 +104,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
-import { DashboardDocsRouteName } from '@/router/dashboard'
+import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
@@ -124,7 +124,7 @@ const users = namespace('Users')
     IconPlusCircle, IconTrashAlt
   }
 })
-export default class DashboardDocsView extends Vue {
+export default class DashboardQuoteUploadView extends Vue {
   docs = [
     {
       'title': 'DMV License'

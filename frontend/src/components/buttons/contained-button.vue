@@ -14,7 +14,7 @@ import { VueConstructor } from 'vue';
 
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { DashboardDocsRouteName } from '@/router/dashboard'
+import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 import IconCheck from '@/components/icons/icon-check.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
