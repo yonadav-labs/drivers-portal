@@ -221,6 +221,14 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
+  async retrieveDeconstructQuoteProcess(id: string): Promise<void> {
+    await this.context.dispatch('retrieveQuoteProcess', id)
+    if (this.quoteProcess) {
+      deconstructQuoteProcess(this.quoteProcess); 
+    }
+  }
+
+  @Action
   async retrieveQuoteProcessCalcVariations(id: string): Promise<void> {
     this.context.commit('setQuoteProcessCalcVariationsBlank')
     this.context.commit('setQuoteProcessCalcVariationsPending')

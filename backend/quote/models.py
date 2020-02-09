@@ -10,6 +10,7 @@ from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
     FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
+    QUOTE_STATUS_DOCS
 )
 from quote.managers import QuoteProcessQuerySet
 from quote.utils import generate_variations, get_quote_status
@@ -181,12 +182,6 @@ class QuoteProcess(BaseModel):
     def variations(self):
       return getattr(self, 'quoteprocessvariations', None)
 
-
-    def save(self, *args, **kwargs):
-        had_user = self.user is not None
-        super().save(*args, **kwargs)
-        if not had_user and self.user:
-          self._create_process_documents()
   
     def add_user(self, user):
         if self.is_ready_for_user:
@@ -214,6 +209,9 @@ class QuoteProcess(BaseModel):
       status = get_quote_status(self)
       if not status == self.status:
         self.set_quote_status(status)
+
+        if status == QUOTE_STATUS_DOCS:
+          self._create_process_documents()
 
 
     def _create_process_documents(self):

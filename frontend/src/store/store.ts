@@ -6,6 +6,8 @@ Vue.use(Vuex);
 import QuoteModules from './quote'
 import UsersModules from './users'
 
+import { initClient, hasToken } from './api';
+
 export const store = new Vuex.Store({
   strict: true,
   state: {},
@@ -13,4 +15,26 @@ export const store = new Vuex.Store({
     ...QuoteModules,
     ...UsersModules
   },
+  actions: {
+    async initializeStore(): Promise<void> {
+      await initializeStore();
+    },
+    async resetStore(): Promise<void> {
+      await resetStore();
+    },
+  }
 });
+
+const initialStateCopy = JSON.parse(JSON.stringify(store.state))
+
+async function initializeStore(): Promise<void> {
+  await initClient();
+  if (hasToken()) {
+    await store.dispatch('Users/retrieveUser');
+  }
+}
+
+async function resetStore():Promise<void> {
+  store.replaceState(initialStateCopy)
+  await initializeStore();
+}

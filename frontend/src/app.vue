@@ -19,11 +19,12 @@ export default class App extends Vue {
   @Action('Users/retrieveUser')
   retrieveUser!: () => void;
 
+  @Action
+  initializeStore!: () => void;
+
   async created(): Promise<void> {
-    await initClient();
-    if (hasToken()) {
-        await this.retrieveUser();
-    }
+    await this.initializeStore();
+
     this.$nextTick(
       () => {
         this.appReady = true;

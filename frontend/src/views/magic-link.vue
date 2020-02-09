@@ -24,6 +24,9 @@ export default class MagicLinkView extends Vue {
   @users.Action
   useMagickLink!: (id: string) => Promise<void>
 
+  @Action
+  resetStore!: () => Promise<void>
+
   invalidLink = false;
 
   onInvalidLink(): void {
@@ -33,8 +36,8 @@ export default class MagicLinkView extends Vue {
     }, 3000)
   }
 
-  onValidLink(): void {
-    // TODO: Change me
+  async onValidLink(): Promise<void> {
+    await this.resetStore();
     this.$router.replace({ name: RouteName.DASHBOARD })
   }
 

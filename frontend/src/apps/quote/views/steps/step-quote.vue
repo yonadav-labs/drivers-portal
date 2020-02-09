@@ -223,7 +223,7 @@ export default class StepQuote extends Vue {
   quoteProcessCalcVariations?: QuoteProcessCalcVariations
 
   @quote.Action
-  retrieveQuoteProcess!: (id: string) => Promise<void>
+  retrieveDeconstructQuoteProcess!: (id: string) => Promise<void>
 
   @quote.Action
   retrieveQuoteProcessCalcVariations!: (id: string) => Promise<void>
@@ -364,7 +364,7 @@ export default class StepQuote extends Vue {
         vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
       } else {
         if (!vm.quoteProcess) {
-          await vm.retrieveQuoteProcess(vm.quoteId);
+          await vm.retrieveDeconstructQuoteProcess(vm.quoteId);
           if (!vm.quoteProcess) {
             vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
           }
