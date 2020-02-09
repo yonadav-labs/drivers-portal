@@ -103,6 +103,8 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
+import { Getter, Action, namespace } from 'vuex-class';
+
 import { DashboardRouteName } from '@/router/dashboard'
 
 import BasicButton from '@/components/buttons/basic-button.vue'
@@ -116,6 +118,8 @@ import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 
 import ModalCreatePassword from '@/apps/dashboard/components/modals/create-password.vue'
+
+const users = namespace('Users')
 
 @Component({
   components: {
@@ -138,6 +142,8 @@ export default class DashboardDocsView extends Vue {
       'title': 'Defensive Driving Certificate'
     },
   ]
+
+  
 }
 </script>
 

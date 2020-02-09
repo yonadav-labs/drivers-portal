@@ -20,7 +20,7 @@ import QuoteProcessRadioForm from '@/apps/quote/components/forms/quote-process-r
 import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
-import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 // Question Step 
 
@@ -37,7 +37,7 @@ export default class StepQuestionDriverPoints extends Vue {
   questionAnswers!: QuestionsStep;
 
   @quote.Getter
-  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
   @quote.Action
   updateStepStatus!: (payload: { step: string, value: boolean }) => void;

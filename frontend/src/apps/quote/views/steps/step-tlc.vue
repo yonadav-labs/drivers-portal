@@ -75,7 +75,7 @@ import { capitalize } from '@/utils/text'
 
 import { TLCStepLicenseName } from '../../../../@types/quote';
 
-import { ExtraQuoteRouteNames, OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { ExtraQuoteRouteNames, OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 
 const quote = namespace('Quote')

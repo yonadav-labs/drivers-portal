@@ -54,7 +54,7 @@ import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 import { Colors } from '@/utils/colors'
 import { capitalize } from '@/utils/text'
 
-import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 
 const quote = namespace('Quote')
@@ -79,7 +79,7 @@ export default class StepEmail extends Vue {
   quoteProcessId?: string
 
   @quote.Getter
-  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
   @quote.Action
   checkEmailExists!: (email: string) => Promise<void>
@@ -121,7 +121,7 @@ export default class StepEmail extends Vue {
   goToNext(nextStepReady: boolean): void {
     if (!!this.nextStepReady && !!this.quoteProcessId) {
       this.updateStepStatus({ step: this.$route.name!, value: true})
-      this.$router.push({ name: OrderedQuoteRouteNames.QUOTE, params: {quoteId: this.quoteProcessId}})
+      this.$router.push({ name: OrderedQuoteRouteName.QUOTE, params: {quoteId: this.quoteProcessId}})
     }
   }
 

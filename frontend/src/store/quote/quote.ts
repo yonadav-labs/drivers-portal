@@ -15,7 +15,7 @@ import {
 
 import { checkEmailExists as apiCheckEmailExists } from '@/store/users/api'
 
-import { OrderedQuoteRouteNames } from '@/router/quote'
+import { OrderedQuoteRouteName } from '@/router/quote'
 
 import { buildQuoteProcessPayload, deconstructQuoteProcess } from './helpers'
 
@@ -29,16 +29,16 @@ export default class QuoteMainVuexModule extends VuexModule {
   internalQuoteEmail = '';
   loginMagicLink = '';
   stepsCompleted = {
-    [OrderedQuoteRouteNames.TLC]: false,
-    [OrderedQuoteRouteNames.VIN]: false,
-    [OrderedQuoteRouteNames.QUESTION_LONG_TLC]: false,
-    [OrderedQuoteRouteNames.QUESTION_LONG_DMV]: false,
-    [OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS]: false,
-    [OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS]: false,
-    [OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE]: false,
-    [OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE]: false,
-    [OrderedQuoteRouteNames.EMAIL]: false,
-    [OrderedQuoteRouteNames.QUOTE]: false
+    [OrderedQuoteRouteName.TLC]: false,
+    [OrderedQuoteRouteName.VIN]: false,
+    [OrderedQuoteRouteName.QUESTION_LONG_TLC]: false,
+    [OrderedQuoteRouteName.QUESTION_LONG_DMV]: false,
+    [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: false,
+    [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: false,
+    [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: false,
+    [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: false,
+    [OrderedQuoteRouteName.EMAIL]: false,
+    [OrderedQuoteRouteName.QUOTE]: false
   }
 
   get emailExists(): boolean {
@@ -69,8 +69,8 @@ export default class QuoteMainVuexModule extends VuexModule {
     return this.apiQuoteProcessCalcVariations.data
   }
 
-  get stepCompletedByName(): (name: OrderedQuoteRouteNames) => boolean {
-    return (name: OrderedQuoteRouteNames) => this.stepsCompleted[name];
+  get stepCompletedByName(): (name: OrderedQuoteRouteName) => boolean {
+    return (name: OrderedQuoteRouteName) => this.stepsCompleted[name];
   }
 
   @Mutation
@@ -79,7 +79,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
-  setMultipleStepsCompleted(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
+  setMultipleStepsCompleted(payload: { step: OrderedQuoteRouteName, value: boolean }): void {
     this.stepsCompleted = {
       ...this.stepsCompleted,
       ...payload
@@ -154,7 +154,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Mutation
-  setStepCompleted(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
+  setStepCompleted(payload: { step: OrderedQuoteRouteName, value: boolean }): void {
     const { step, value } = payload;
     this.stepsCompleted = {
       ...this.stepsCompleted,
@@ -246,7 +246,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   }
 
   @Action
-  updateStepStatus(payload: { step: OrderedQuoteRouteNames, value: boolean }): void {
+  updateStepStatus(payload: { step: OrderedQuoteRouteName, value: boolean }): void {
     this.context.commit('setStepCompleted', payload);
   }
 

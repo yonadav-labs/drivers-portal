@@ -5,6 +5,6 @@ export enum DashboardRouteName {
 }
 
 export default [
-  { path: '/', component: DashboardDocs, name: DashboardRouteName.DOCS },
+  { path: 'docs/', component: DashboardDocs, name: DashboardRouteName.DOCS },
 ]
 

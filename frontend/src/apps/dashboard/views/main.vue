@@ -15,10 +15,17 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
+import { Getter, Action, namespace } from 'vuex-class';
+
 import DashboardNavbar from '@/apps/dashboard/components/navigation/dashboard-navbar.vue'
 import DashboardMenu from '@/apps/dashboard/components/navigation/dashboard-menu.vue'
 
+import { User } from '@/@types/users';
+
+import { QuoteProcessRouter } from '@/router/quote'
 import { DashboardRouteName } from '@/router/dashboard'
+
+const users = namespace('Users')
 
 @Component({
   components: {
@@ -26,6 +33,31 @@ import { DashboardRouteName } from '@/router/dashboard'
   }
 })
 export default class Dashboard extends Vue {
+
+  @users.Getter
+  isAuthenticated!: boolean
+
+  @users.Getter
+  isUserRetrieved!: boolean
+
+  @users.Getter
+  user?: User
+
+  @users.Action
+  retrieveUser!: () => Promise<void>
+
+  async created(): Promise<void> {
+    if (!this.isUserRetrieved) {
+      await this.retrieveUser()
+    }
+    if (!this.isAuthenticated) {
+      this.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
+    }
+
+    if (!!this.user && this.user.quote_status !== 'done') {
+      this.$router.replace({ name: DashboardRouteName.DOCS })
+    }
+  }
 }
 </script>
 

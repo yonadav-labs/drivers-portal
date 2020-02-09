@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 @Component
 export default class Breadcrumbs extends Vue {
@@ -24,25 +24,25 @@ export default class Breadcrumbs extends Vue {
   }
 
   steps = [
-      OrderedQuoteRouteNames.TLC,
-      OrderedQuoteRouteNames.VIN,
-      OrderedQuoteRouteNames.QUESTION_LONG_TLC,
-      OrderedQuoteRouteNames.QUESTION_LONG_DMV,
-      OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS,
-      OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
-      OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
-      OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
-      OrderedQuoteRouteNames.EMAIL,
-      OrderedQuoteRouteNames.QUOTE,
+      OrderedQuoteRouteName.TLC,
+      OrderedQuoteRouteName.VIN,
+      OrderedQuoteRouteName.QUESTION_LONG_TLC,
+      OrderedQuoteRouteName.QUESTION_LONG_DMV,
+      OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
+      OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
+      OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
+      OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+      OrderedQuoteRouteName.EMAIL,
+      OrderedQuoteRouteName.QUOTE,
   ]
 
   groupedSteps = [
-    OrderedQuoteRouteNames.QUESTION_LONG_TLC,
-    OrderedQuoteRouteNames.QUESTION_LONG_DMV,
-    OrderedQuoteRouteNames.QUESTION_DRIVER_POINTS,
-    OrderedQuoteRouteNames.QUESTION_FAULT_ACCIDENTS,
-    OrderedQuoteRouteNames.QUESTION_DEFENSIVE_CERTIFICATE,
-    OrderedQuoteRouteNames.QUESTION_ACCIDENT_AVOIDANCE,
+    OrderedQuoteRouteName.QUESTION_LONG_TLC,
+    OrderedQuoteRouteName.QUESTION_LONG_DMV,
+    OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
+    OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
+    OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
+    OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
   ]
 
   get filteredSteps(): string[] {
@@ -55,8 +55,8 @@ export default class Breadcrumbs extends Vue {
     if (isCurrent) {
       return true;
     } else {
-      const isGrouped = this.groupedSteps.includes(step as OrderedQuoteRouteNames)
-      const currentIsGrouped = this.groupedSteps.includes(this.currentStep as OrderedQuoteRouteNames)
+      const isGrouped = this.groupedSteps.includes(step as OrderedQuoteRouteName)
+      const currentIsGrouped = this.groupedSteps.includes(this.currentStep as OrderedQuoteRouteName)
 
       return !isGrouped || (!currentIsGrouped && step === this.groupedSteps[0])
     }

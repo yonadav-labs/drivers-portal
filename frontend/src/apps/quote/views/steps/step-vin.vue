@@ -99,7 +99,7 @@ import { Colors } from '@/utils/colors'
 
 import { TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo } from '../../../../@types/quote';
 
-import { ExtraQuoteRouteNames, OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { ExtraQuoteRouteNames, OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 // Second Step 
 
@@ -116,7 +116,7 @@ const quoteVIN = namespace('QuoteVin')
 export default class StepVIN extends Vue {
 
   @quote.Getter
-  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
   @quoteTLC.Getter
   tlcStepLicenseName?: TLCStepLicenseName

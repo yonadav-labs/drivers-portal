@@ -21,7 +21,7 @@ import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-lay
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 
-import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 // Question Step 
 
@@ -34,7 +34,7 @@ const quote = namespace('Quote')
 })
 export default class StepQuestionLongDmv extends Vue {
   @quote.Getter
-  stepCompletedByName!: (route: OrderedQuoteRouteNames) => boolean
+  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
   @quote.Getter
   questionAnswers!: QuestionsStep;

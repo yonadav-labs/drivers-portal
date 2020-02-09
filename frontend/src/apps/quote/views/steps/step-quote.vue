@@ -184,7 +184,7 @@ import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-proc
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { RouteName } from '@/router'
-import { OrderedQuoteRouteNames, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical, QuoteProcessOptionsPayload } from '@/@types/quote';
 

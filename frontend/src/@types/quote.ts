@@ -44,8 +44,11 @@ export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo,
   email: string
 }
 
+export type QuoteStatus = 'created' | 'docs' | 'review' | 'payment' | 'paid' | 'done'
+
 export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions  {
-  id: string
+  id: string,
+  status?: QuoteStatus
 }
 
 export interface QuoteSoftFallout {

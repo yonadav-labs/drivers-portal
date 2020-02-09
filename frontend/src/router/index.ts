@@ -15,7 +15,7 @@ export enum RouteName {
 const routes = [
     { path: '/magic_link/:id/', component: MagicLinkView, name: 'magic_link', props: true },
     {
-      path: '/dashboard', component: DashboardMainView, children: [
+      path: '/dashboard/', component: DashboardMainView, children: [
         ...DashboardRoutes
       ]
     },
