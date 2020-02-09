@@ -338,14 +338,14 @@ class QuoteProcessDocuments(BaseModel):
                 acc += 1
         return acc
 
-class QuoteProcessDocumentsAciddentReport(BaseModel):
+class QuoteProcessDocumentsAccidentReport(BaseModel):
     quote_process_documents = models.ForeignKey(
         verbose_name='Quote Process Documents',
         on_delete=models.CASCADE,
         to=QuoteProcessDocuments
     )
 
-    defensive_driving_certificate = models.FileField(
+    accident_report = models.FileField(
         verbose_name='Accident Report',
         upload_to=quote_process_document_upload_to,
         null=True,

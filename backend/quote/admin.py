@@ -9,16 +9,16 @@ from nested_admin import NestedStackedInline, NestedModelAdmin
 from base.admin import stable_admin
 
 from quote.models import (
-    QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAciddentReport
+    QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport
 )
 
-class QuoteProcessDocumentsAciddentReportInline(NestedStackedInline):
-    model = QuoteProcessDocumentsAciddentReport
+class QuoteProcessDocumentsAccidentReportInline(NestedStackedInline):
+    model = QuoteProcessDocumentsAccidentReport
     extra = 0
 
 class QuoteProcessDocumentsInline(NestedStackedInline):
     model = QuoteProcessDocuments
-    inlines = [QuoteProcessDocumentsAciddentReportInline, ]
+    inlines = [QuoteProcessDocumentsAccidentReportInline, ]
 
 
 class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
@@ -55,7 +55,7 @@ stable_admin.register(QuoteProcess, QuoteProcessAdmin)
 
 class QuoteProcessDocumentsAdmin(DjangoObjectActions, NestedModelAdmin):
     change_actions = ('view_full_quote_process',  )
-    inlines = [QuoteProcessDocumentsAciddentReportInline, ]
+    inlines = [QuoteProcessDocumentsAccidentReportInline, ]
 
     def view_full_quote_process(self, request, obj):
         return redirect(
