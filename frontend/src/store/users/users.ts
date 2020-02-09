@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { User } from '@/@types/users';
 
 import { APIProperty, APIState, setAuthToken } from '@/store/api'
-import { getCurrentUser, getMagicLink } from '@/store/users/api'
+import { getCurrentUser, getMagicLink, updateUserPassword } from '@/store/users/api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
@@ -41,6 +41,11 @@ export default class UsersVuexModule extends VuexModule {
     this.apiUser = APIState.update(this.apiUser, payload)
   }
 
+  @Mutation
+  setUserPartial(payload: User | Error): void {
+    this.apiUser = APIState.patch(this.apiUser, payload)
+  }
+
   @Action
   async retrieveUser(): Promise<void> {
     this.context.commit('setUserLoading')
@@ -69,8 +74,8 @@ export default class UsersVuexModule extends VuexModule {
   @Action
   async updateUserPassword(password: string): Promise<void> {
     try {
-      const user = await this.updateUserPassword(password)
-      this.context.commit('setUser', user)
+      const user = await updateUserPassword(password)
+      this.context.commit('setUserPartial', user)
     } catch (e) {
       this.context.commit('setPasswordErrors', e);
     }

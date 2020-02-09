@@ -96,7 +96,6 @@
     <div class="submit-review">
       <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="true">Submit for Review</contained-button>
     </div>
-    <modal-create-password email="danny.boy@gmail.com"></modal-create-password>
   </div>
 </template>
 
@@ -105,7 +104,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
-import { DashboardRouteName } from '@/router/dashboard'
+import { DashboardDocsRouteName } from '@/router/dashboard'
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
@@ -117,14 +116,12 @@ import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 
-import ModalCreatePassword from '@/apps/dashboard/components/modals/create-password.vue'
-
 const users = namespace('Users')
 
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, IconCheckCircle, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt, ModalCreatePassword
+    IconPlusCircle, IconTrashAlt
   }
 })
 export default class DashboardDocsView extends Vue {

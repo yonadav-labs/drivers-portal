@@ -9,13 +9,14 @@ import DashboardMainView from '@/apps/dashboard/views/main.vue'
 import MagicLinkView from '@/views/magic-link.vue'
 
 export enum RouteName {
-  MAGIC_LINK = 'magic_link'
+  MAGIC_LINK = 'magic_link',
+  DASHBOARD = 'dashboard'
 }
 
 const routes = [
-    { path: '/magic_link/:id/', component: MagicLinkView, name: 'magic_link', props: true },
+    { path: '/magic_link/:id/', component: MagicLinkView, name: RouteName.MAGIC_LINK, props: true },
     {
-      path: '/dashboard/', component: DashboardMainView, children: [
+      path: '/dashboard/', component: DashboardMainView, name: RouteName.DASHBOARD, children: [
         ...DashboardRoutes
       ]
     },

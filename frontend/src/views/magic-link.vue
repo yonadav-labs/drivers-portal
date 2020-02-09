@@ -9,7 +9,7 @@ import { Getter, Action, namespace } from 'vuex-class';
 
 import { QuoteProcessRouter } from '@/router/quote'
 
-import { DashboardRouteName } from '@/router/dashboard'
+import { DashboardDocsRouteName } from '@/router/dashboard'
 
 const users = namespace('Users')
 
@@ -35,7 +35,7 @@ export default class MagicLinkView extends Vue {
 
   onValidLink(): void {
     // TODO: Change me
-    this.$router.replace({ name: DashboardRouteName.DOCS })
+    this.$router.replace({ name: DashboardDocsRouteName.DOCS })
   }
 
   async created(): Promise<void> {

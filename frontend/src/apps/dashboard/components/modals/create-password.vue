@@ -7,7 +7,7 @@
       <div class="modal-content">
         <div class='form'>
             <p class='form__explain'>
-              Your insurance quote is being validate! Create a password to track progress and communicate with Stable directly!
+              Your insurance quote is being validated! Create a password to track progress and communicate with Stable directly!
             </p>
             <form id='passwordForm' @submit.prevent.stop="createPassword">
               <div class="form-input">
