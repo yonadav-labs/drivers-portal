@@ -60,12 +60,12 @@
             {{ doc.title }}
           </div>
           <div class="document-row__status">
-            <div class="status">PENDING</div>
+            <div class="status" :class="docFieldStatus(doc.field)">{{ docFieldStatusCopy(doc.field) }}</div>
           </div>
           <div class="document-row__actions">
-            <button-icon class="document-row__action-icon"><icon-file-download></icon-file-download></button-icon>
-            <button-icon class="document-row__action-icon"><icon-trash-alt></icon-trash-alt></button-icon>
-            <contained-button color="grey" icon="file-upload">Upload</contained-button>
+            <button-icon class="document-row__action-icon" @click="downloadDoc(doc)" :disabled="!isDocUploaded(doc.field)"><icon-file-download></icon-file-download></button-icon>
+            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)"><icon-trash-alt></icon-trash-alt></button-icon>
+            <file-upload-handler @change="(file) => uploadDoc(doc, file)"><contained-button color="grey" icon="file-upload" :disabled="doc.disabled">Upload</contained-button></file-upload-handler>
           </div>
         </div>
         <div class="document-row document-row--has-children">
@@ -108,11 +108,13 @@ import { format, addMonths } from 'date-fns';
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 
-import { QuoteProcess } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessDocuments } from '@/@types/quote';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
 import ContainedButton from '@/components/buttons/contained-button.vue'
+
+import FileUploadHandler from '@/components/inputs/file-upload-handler.vue'
 
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
 import IconFileDownload from '@/components/icons/icon-file-download.vue'
@@ -120,35 +122,70 @@ import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 
-import { beautyCurrency } from '@/utils/text'
+import { beautyCurrency, getFilename } from '@/utils/text'
+import { Route } from 'vue-router';
 
 const quote = namespace('Quote')
+const quoteDocs = namespace('QuoteDocuments')
+
+interface DocElement {
+  title: string,
+  field: string,
+  disabled: boolean
+}
 
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, IconCheckCircle, IconFileDownload, IconFileUpload,
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconFileDownload, IconFileUpload,
     IconPlusCircle, IconTrashAlt
   },
   filters: {
-    beautyCurrency
+    beautyCurrency, getFilename
   }
 })
 export default class DashboardQuoteUploadView extends Vue {
   @quote.Getter
   quoteProcess?: QuoteProcess
 
-  docs = [
+  @quoteDocs.Getter
+  quoteProcessDocuments?: QuoteProcessDocuments 
+
+  @quoteDocs.Action
+  retrieveQuoteProcessDocuments!: () => Promise<void>
+
+  @quoteDocs.Action
+  updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
+
+  docs: DocElement[] = [
     {
-      'title': 'DMV License'
+      title: 'DMV License Front Side',
+      field: 'dmv_license_front_side',
+      disabled: false
     },
     {
-      'title': 'TLC License'
+      title: 'DMV License Back Side',
+      field: 'dmv_license_back_side',
+      disabled: false
     },
     {
-      'title': 'Proof of Address'
+      title: 'TLC License Front Side',
+      field: 'tlc_license_front_side',
+      disabled: false
     },
     {
-      'title': 'Defensive Driving Certificate'
+      title: 'TLC License Back Side',
+      field: 'tlc_license_back_side',
+      disabled: false
+    },
+    {
+      title: 'Proof of Address',
+      field: 'proof_of_address',
+      disabled: false
+    },
+    {
+      title: 'Defensive Driving Certificate',
+      field: 'defensive_driving_certificate',
+      disabled: false
     },
   ]
 
@@ -169,15 +206,51 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get startDate(): string {
-    return !!this.quoteProcess ? this.quoteProcess.start_date:''
+    return (!!this.quoteProcess && this.quoteProcess.start_date) || ''
   }
 
   get quoteDeposit(): number {
-    return !!this.quoteProcess ? this.quoteProcess.deposit:0;
+    return (!!this.quoteProcess && this.quoteProcess.deposit !== undefined) ? this.quoteProcess.deposit:0;
   }
 
   get total(): number {
     return !!this.quoteProcess ? Number(this.quoteProcess.quote_amount):0
+  }
+
+  docFieldStatus(field: string): string {
+    return this.isDocUploaded(field) ? 'success':'pending'
+  }
+
+  docFieldStatusCopy(field: string): string {
+    return this.isDocUploaded(field) ? 'uploaded':'pending'
+  }
+
+  downloadDoc(doc: DocElement): void {
+    const link = document.createElement('a');
+    link.target = '_blank';
+    link.download = getFilename(this.quoteProcessDocuments[doc.field]);
+    link.href = this.quoteProcessDocuments[doc.field];
+    link.click();
+  }
+
+  isDocUploaded(field: string): boolean {
+    return !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[field]
+  }
+
+  async removeDoc(doc: DocElement): Promise<void> {
+    await this.updateQuoteProcessDocumentsFile({field: doc.field, file: ''})
+  }
+
+  async uploadDoc(doc: DocElement, file: File): Promise<void> {
+    doc.disabled = true;
+    await this.updateQuoteProcessDocumentsFile({field: doc.field, file})
+    doc.disabled = false;
+  }
+
+  beforeRouteEnter (to: Route, from: Route, next: any): void {
+    next((vm: DashboardQuoteUploadView) => {
+      vm.retrieveQuoteProcessDocuments()
+    })
   }
 }
 </script>

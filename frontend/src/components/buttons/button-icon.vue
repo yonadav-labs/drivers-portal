@@ -25,7 +25,7 @@ export default class ButtonIcon extends Vue {
     display: inline-flex;
 
     &:disabled{
-      color: $grey !important;
+      color: $grey-medium !important;
       cursor: not-allowed
     }
     &:focus{

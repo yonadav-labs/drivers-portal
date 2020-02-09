@@ -76,3 +76,21 @@ interface BaseQuoteProcessVariations {
 export interface QuoteProcessCalcVariations extends BaseQuoteProcessVariations{ 
   deductible: QuoteProcessVariationPhysical[]
 }
+
+export interface QuoteProcessDocumentsAccidentReport {
+  id: string,
+  accident_report?: string
+}
+
+export interface QuoteProcessDocuments {
+  id: string,
+  dmv_license_front_side: string,
+  dmv_license_back_side: string,
+  tlc_license_front_sid: string,
+  tlc_license_back_side: string,
+  proof_of_address: string,
+  defensive_driving_certificat: string,
+  is_submitted_for_review: string,
+  accident_reports: QuoteProcessDocumentsAccidentReport[],
+  [key: string]: any
+}
