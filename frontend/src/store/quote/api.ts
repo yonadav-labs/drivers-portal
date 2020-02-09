@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { 
   QuoteProcess, QuoteProcessPayload, QuoteSoftFallout,
   QuoteProcessCalcVariations, QuoteProcessOptionsPayload, QuoteProcessOptions,
+  QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport
   
  } from '@/@types/quote';
 
@@ -49,4 +50,44 @@ export async function updateQuoteProcessUser(id: string, email: string): Promise
 export async function createQuoteSoftFallout(data: QuoteSoftFallout): Promise<QuoteSoftFallout> {
   const response = await client.post(`quote/quote_soft_fallout/create/`, data)
   return response.data
+}
+
+/*
+* Quote Process Documents
+*/ 
+
+export async function retrieveQuoteProcessDocuments(): Promise<QuoteProcessDocuments> {
+  const response = await client.get(`quote/quote_process_documents/retrieve/`)
+  return response.data
+}
+
+export async function updateQuoteProcessDocumentsFile(field:string, file: File | ''): Promise<QuoteProcessDocuments> {
+  const formData = new FormData();
+  formData.append(field, file)
+  const response = await client.patch(`quote/quote_process_documents/upload_file/`, formData)
+  return response.data
+}
+
+
+/*
+* Quote Process Documents Accident Report
+*/
+
+
+export async function createQuoteProcessDocumentsAccidentReport(file: File): Promise<QuoteProcessDocumentsAccidentReport> {
+  const formData = new FormData();
+  formData.append(file.name, file)
+  const response = await client.post(`quote/quote_process_documents_accident_reports/create/`, formData)
+  return response.data
+}
+
+export async function updateQuoteProcessDocumentsAccidentReport(id:string, file: File): Promise<QuoteProcessDocumentsAccidentReport> {
+  const formData = new FormData();
+  formData.append(file.name, file)
+  const response = await client.put(`quote/quote_process_documents_accident_reports/${id}/update/`, formData)
+  return response.data
+}
+
+export async function deleteQuoteProcessDocumentsAccidentReport(id: string): Promise<void> {
+  await client.delete(`quote/quote_process_documents_accident_reports/${id}/update/`)
 }
