@@ -13,13 +13,24 @@ class RetrieveUserExistsSerializer(serializers.ModelSerializer):
 
 class RetrieveCurrentUserSerializer(serializers.ModelSerializer):
   has_usable_password = serializers.SerializerMethodField()
+  quote_status = serializers.SerializerMethodField()
+  has_policy = serializers.SerializerMethodField()
 
   def get_has_usable_password(self, obj):
     return obj.has_usable_password()
+
+  def get_quote_status(self, obj):
+    return obj.quote_status
+
+  def get_has_policy(self, obj):
+    return obj.has_policy
   
   class Meta:
     model = User
-    fields = ('id', 'email', 'has_usable_password')
+    fields = (
+      'id', 'email', 'has_usable_password', 'quote_status', 
+      'has_policy'
+    )
     read_only_fields = ('id', 'email', )
 
 

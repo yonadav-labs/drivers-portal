@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from base.models import BaseModel
 
@@ -24,6 +25,19 @@ class User(AbstractUser, BaseModel):
     @property
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name).strip()
+
+    @property
+    def quote_process(self):
+      return getattr(self, 'quoteprocess', None)
+
+    @property
+    def has_policy(self):
+      return hasattr(self, 'policy')
+
+    @cached_property
+    def quote_status(self):
+      quote = self.quote_process
+      return quote.status if quote else None
 
     def send_welcome_email(self):
         from users.tasks import send_welcome_email_task

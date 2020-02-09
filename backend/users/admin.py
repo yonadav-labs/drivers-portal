@@ -67,9 +67,9 @@ class ManualQuoteUserAdmin(admin.ModelAdmin):
         return False
 
     def response_add(self, request, obj):
-        last_quote_process = obj.quoteprocess_set.all().order_by('-created').first()
+        quote_process = obj.quote_process
         return redirect(
-            reverse('stable_admin:quote_quoteprocess_change', args=(last_quote_process.id, ))
+            reverse('stable_admin:quote_quoteprocess_change', args=(quote_process.id, ))
         )
 
 stable_admin.register(ManualQuoteUser, ManualQuoteUserAdmin)

@@ -9,15 +9,15 @@ from base.models import BaseModel
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
-    FAULT_ACCIDENTS_CHOICES
+    FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
 )
 from quote.managers import QuoteProcessQuerySet
-from quote.utils import generate_variations
+from quote.utils import generate_variations, get_quote_status
 
 # Create your models here.
 class QuoteProcess(BaseModel):
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         verbose_name='User',
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -145,6 +145,11 @@ class QuoteProcess(BaseModel):
         blank=True,
         null=True
     )
+    status = models.CharField(
+      max_length=7,
+      choices=QUOTE_STATUS_CHOICES,
+      default=QUOTE_STATUS_CREATED
+    )
 
     objects = QuoteProcessQuerySet.as_manager()
 
@@ -158,10 +163,15 @@ class QuoteProcess(BaseModel):
 
     @property
     def quote_process_documents(self):
-        try:
-            return self.quoteprocessdocuments
-        except QuoteProcess.quoteprocessdocuments.RelatedObjectDoesNotExist:
-            return None
+       return getattr(self, 'quoteprocessdocuments', None)
+
+    @property
+    def quote_process_payment(self):
+       return getattr(self, 'quoteprocesspayment', None)
+
+    @property
+    def quote_policy(self):
+      return getattr(self, 'policy', None)
 
     @property
     def is_ready_for_user(self):
@@ -171,15 +181,17 @@ class QuoteProcess(BaseModel):
     def variations(self):
       return getattr(self, 'quoteprocessvariations', None)
 
+
     def save(self, *args, **kwargs):
         had_user = self.user is not None
         super().save(*args, **kwargs)
         if not had_user and self.user:
           self._create_process_documents()
-
+  
     def add_user(self, user):
         if self.is_ready_for_user:
           self.user = user
+          self.update_status()
           self.save()
       
     def set_quote_variations(self):
@@ -193,6 +205,16 @@ class QuoteProcess(BaseModel):
             if variations.physical_total:
               self.quote_amount += variations.physical_total
             self.save()
+
+    def set_quote_status(self, status):
+      self.status = status
+      self.save()
+
+    def update_status(self):
+      status = get_quote_status(self)
+      if not status == self.status:
+        self.set_quote_status(status)
+
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
@@ -295,6 +317,15 @@ class QuoteProcessDocuments(BaseModel):
             f'{self.quote_process.tlc_number}. {self.quote_process.tlc_name}'
         )
 
+    def save(self, *args, **kwargs):
+      created = not self.pk
+      was_submitted = self.is_submitted_for_review
+      
+      super().save(*args, **kwargs)
+      
+      if created or (not was_submitted and self.is_submitted_for_review):
+        self.quote_process.update_status()
+
     def get_documents_filled_count(self):
         acc = 0
         doc_fields = [
@@ -349,6 +380,19 @@ class QuoteProcessPayment(BaseModel):
         null=True,
         blank=True
     )
+  
+    @property
+    def is_paid(self):
+      return self.payment_date
+
+    def save(self, *args, **kwargs):
+      created = not self.pk
+      was_paid = self.is_paid
+      
+      super().save(*args, **kwargs)
+      
+      if created or (not was_paid and self.is_paid):
+        self.quote_process.update_status()
 
     class Meta:
         verbose_name = 'Quote Process Payment'
