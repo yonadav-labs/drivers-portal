@@ -8,7 +8,8 @@ from quote.rest_views import (
   RetrieveQuoteProcessDocumentsView,
   CreateQuoteProcessDocumentsAccidentReportView, 
   UpdateQuoteProcessDocumentsAccidentReportView,
-  DeleteQuoteProcessDocumentsAccidentReportView
+  DeleteQuoteProcessDocumentsAccidentReportView,
+  UpdateQuoteProcessDocumentsView
 )
 
 urlpatterns = [
@@ -56,6 +57,11 @@ urlpatterns = [
       'quote_process_documents/upload_file/',
       UpdateQuoteProcessDocumentsFileView.as_view(),
       name="update_quote_process_documents_file"
+    ),
+    path(
+        'quote_process_documents/update/',
+        UpdateQuoteProcessDocumentsView.as_view(),
+        name="update_quote_process_documents_update"
     ),
     path(
       'quote_process_documents_accident_report/create/',

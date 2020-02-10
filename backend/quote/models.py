@@ -251,11 +251,9 @@ class QuoteProcessDocuments(BaseModel):
     )
 
     # Documents
-    broker_of_record = models.FileField(
+    is_broker_of_record_signed = models.BooleanField(
         verbose_name='Broker of Record Change',
-        upload_to=quote_process_document_upload_to,
-        null=True,
-        blank=True
+        default=False
     )
     dmv_license_front_side = models.FileField(
         verbose_name='DMV License Front Side',
@@ -304,6 +302,15 @@ class QuoteProcessDocuments(BaseModel):
         default=False
     )
 
+    doc_fields = [
+        'dmv_license_front_side',
+        'dmv_license_back_side',
+        'tlc_license_front_side',
+        'tlc_license_back_side',
+        'proof_of_address',
+        'defensive_driving_certificate'
+    ]
+
     class Meta:
         verbose_name = 'Quote Process Documents'
         verbose_name_plural = 'Quote Process Documents'
@@ -326,19 +333,31 @@ class QuoteProcessDocuments(BaseModel):
 
     def get_documents_filled_count(self):
         acc = 0
-        doc_fields = [
-            'broker_of_record',
-            'dmv_license_front_side',
-            'dmv_license_back_side',
-            'tlc_license_front_side',
-            'tlc_license_back_side',
-            'proof_of_address',
-            'defensive_driving_certificate'
-        ]
-        for doc in doc_fields:
+        
+        for doc in self.doc_fields:
             if getattr(self, doc, None):
                 acc += 1
         return acc
+
+    def get_minimum_accident_reports(self):
+      return int(''.join(
+        filter(
+          lambda x: x.isdigit(), 
+          self.quote_process.fault_accidents_last_months
+        )
+      ))
+
+    def check_ready_for_review(self):
+      return self.is_broker_of_record_signed and \
+        len(self.doc_fields) == self.get_documents_filled_count() and  \
+        self.quoteprocessdocumentsaccidentreport_set.filter(
+          accident_report__isnull=False
+        ).count() >= self.get_minimum_accident_reports()
+
+    def set_is_submitted_for_review(self):
+      self.is_submitted_for_review = True
+      self.save()
+      self.quote_process.update_status()
 
 
 def quote_process_document_accident_upload_to(instance, filename):

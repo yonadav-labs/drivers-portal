@@ -203,3 +203,35 @@ class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
       'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
     )
     model = QuoteProcessDocuments
+
+
+class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
+
+  def validate(self, validated_data):
+    if validated_data.get('is_submitted_for_review') is True:
+      obj = QuoteProcessDocuments.objects.get(
+        quote_process__user=self.context['request'].user
+      )
+      if not obj.check_ready_for_review():
+        raise serializers.ValidationError({
+          "non_field_errors": [
+              "Documents are not ready for review", 
+          ]
+        })
+    return validated_data
+
+  def update(self, obj, validated_data):
+    if validated_data.get('is_broker_record_signed'):
+      obj.is_broker_record_signed = validated_data.get(
+          'is_broker_record_signed')
+    if validated_data.get('is_submitted_for_review') is True:
+      obj.set_is_submitted_for_review()
+    obj.save()
+    return obj
+
+  class Meta:
+    fields = (
+        'id', 'is_submitted_for_review', 'is_broker_record_signed'
+    )
+    read_only_fields = ('id', )
+    model = QuoteProcessDocuments
