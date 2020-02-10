@@ -37,19 +37,19 @@
       </div>
     </div>
     <div class="docs-section" v-if="!!quoteProcessDocuments">
-      <div class="broker-section">
+      <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record">
         <div class="broker-section__info">
-          <div class="broker-section__title">Broker of Record Change <div class="status">PENDING</div></div>
+          <div class="broker-section__title">Broker of Record Change <div class="status" :class="{'success': isBrokerOfRecordReady}">{{ isBrokerOfRecordReady ? 'SIGNED':'PENDING' }}</div></div>
           <p class="broker-section__explain">
             Please review and sign our broker of record change so Stable can get you your insurance documents ASAP!
           </p>
         </div>
         <div class="broker-section__cta">
-          <!-- <contained-button color="blue" icon="pen-alt">Sign now</contained-button> -->
-          <div class="broker-section__signed">Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
+          <contained-button color="blue" icon="pen-alt" v-if="!quoteProcessDocuments.is_broker_of_record_signed" @click="showBrokerModal = true">Sign now</contained-button>
+          <div class="broker-section__signed" v-else>Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
         </div>
       </div>
-      <div class="documents">
+      <div class="documents" :class="{'documents--disabled': !isBrokerOfRecordReady}">
         <div class="documents__header">
           <div class="documents__header-name documents__header-name--document">Document</div>
           <div class="documents__header-name documents__header-name--status">Status</div>
@@ -66,7 +66,7 @@
           <div class="document-row__actions">
             <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download"><icon-file-download></icon-file-download></button-icon>
             <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove"><icon-cross></icon-cross></button-icon>
-            <file-upload-handler @change="(file) => uploadDoc(doc, file)"><contained-button color="grey" icon="file-upload" :disabled="doc.disabled">Upload</contained-button></file-upload-handler>
+            <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
           </div>
         </div>
         <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
@@ -86,7 +86,7 @@
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" @click="downloadDoc(report.accident_report)"><icon-file-download></icon-file-download></button-icon>
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-if="index < minimumAccidentReports" @click="createOrUpdateReport(report, '')"><icon-cross></icon-cross></button-icon>
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-else @click="deleteQuoteProcessDocumentsAccidentReport(report.id)"><icon-trash-alt></icon-trash-alt></button-icon>
-                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="report.disabled"><button-icon class="document-row__action-icon"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
+                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="!isBrokerOfRecordReady || report.disabled"><button-icon class="document-row__action-icon" :disabled="!isBrokerOfRecordReady || report.disabled"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
               </div>
             </div>
             <div class="documents__add-accident">
@@ -99,7 +99,7 @@
     <div class="submit-review">
       <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
     </div>
-    <modal-broker-record></modal-broker-record>
+    <modal-broker-record v-if="showBrokerModal" @close="showBrokerModal=false" @submit="signBroker"></modal-broker-record>
   </div>
 </template>
 
@@ -174,7 +174,7 @@ export default class DashboardQuoteUploadView extends Vue {
   updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
 
   @quoteDocs.Action
-  updateQuoteProcessDocuments!: (payload: {is_broker_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
+  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
@@ -213,6 +213,8 @@ export default class DashboardQuoteUploadView extends Vue {
     },
   ]
 
+  showBrokerModal = false;
+
   get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
     return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
   }
@@ -220,6 +222,10 @@ export default class DashboardQuoteUploadView extends Vue {
   get isAccidentReportsReady(): boolean {
     return this.extraAccidentReports.length === 0 && this.quoteAccidentReports.slice(0, this.minimumAccidentReports).every(report => !!report.accident_report)
   } 
+
+  get isBrokerOfRecordReady(): boolean {
+    return !!this.quoteProcessDocuments && (!this.quoteProcessDocuments.requires_broker_of_record || this.quoteProcessDocuments.is_broker_of_record_signed)
+  }
 
   get extraAccidentReports(): CreatedQuoteProcessDocumentAccidentReport[] {
     const extraDocs = this.minimumAccidentReports - this.quoteAccidentReports.length
@@ -275,7 +281,8 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get isReadyForSubmit(): boolean {
     return !!this.quoteProcessDocuments && !this.quoteProcessDocuments.is_submitted_for_review &&
-    this.isAccidentReportsReady && this.docs.every(
+    this.isBrokerOfRecordReady && this.isAccidentReportsReady && 
+    this.docs.every(
       doc => !!this.quoteProcessDocuments![doc.field]
     )
   }
@@ -322,6 +329,11 @@ export default class DashboardQuoteUploadView extends Vue {
       await this.createQuoteProcessDocumentsAccidentReport(file);
     }
     report.disabled = false;
+  }
+
+  async signBroker(): Promise<void> {
+    await this.updateQuoteProcessDocuments({ is_broker_of_record_signed: true});
+    this.showBrokerModal = false;
   }
 
   submitForReview(): void {
@@ -427,6 +439,7 @@ export default class DashboardQuoteUploadView extends Vue {
   border-radius: 4px;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1.875rem;
   padding: 1.25rem 1.875rem;
 
   .broker-section__info {
@@ -473,10 +486,17 @@ export default class DashboardQuoteUploadView extends Vue {
 }
 
 .documents {
+
+  &.documents--disabled {
+    .document-row {
+      background-color: $grey-opacity !important;
+      border: none !important;
+    }
+  }
+
   .documents__header {
     align-items: center;
     display: flex;	
-    margin-top: 1.875rem;
     padding: 0.75rem 2.25rem;
 
     .documents__header-name {

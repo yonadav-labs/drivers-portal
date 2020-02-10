@@ -38,7 +38,7 @@
         >
           <span>I have read the information above and accept the to change my broker.</span>
         </checkbox>
-        <contained-button color="blue" :disabled="!accepted">Accept Broker Record Change</contained-button>
+        <contained-button color="blue" :disabled="!accepted" @click="accept">Accept Broker Record Change</contained-button>
       </div>
     </div>
   </modal>
@@ -65,6 +65,10 @@ import { Colors } from '@/utils/colors'
 })
 export default class ModalBrokerRecord extends Vue {
   accepted: boolean | string = '';
+
+  accept() {
+    this.$emit('submit')
+  }
 }
 </script>
 

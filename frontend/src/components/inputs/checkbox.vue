@@ -13,7 +13,7 @@
       :checked="state">
     <label :for="id">
       <span class="input-box">
-        <span class="input-box-circle"></span>
+        <span class="input-box-check"></span>
       </span>
       <span class="input-text" v-if="text !== ''">{{text}}</span>
       <slot></slot>
@@ -115,17 +115,18 @@ export default class Checkbox extends Vue {
 
 
       & > .input-box {
-      display: inline-block;
+      align-items: center;
+      display: inline-flex;
       background-color: $white;
       border: 1px solid $grey;
       flex-shrink: 0;
-      height: 1.5rem;
-      margin-right: 0.75rem;
-      width: 1.5rem;
+      justify-content: center;
+      height: 1.25rem;
+      margin-right: 1.25rem;
+      width: 1.25rem;
 
-      > .input-box-circle {
+      > .input-box-check {
         display: block;
-        margin: 50%;
         width: 0%;
         height: 0%;
         background: $blue;
@@ -139,11 +140,10 @@ export default class Checkbox extends Vue {
     &:checked + label > .input-box{
       background-color: rgba(66,99,235,0.35);
       border: 1px solid $blue;
-      & > .input-box-circle {
+      & > .input-box-check{
         opacity: 1;
-        margin: 4px;
-        width: 14px;
-        height: 14px;
+        width: 0.75rem;
+        height: 0.75rem;
       }
     } 
     &:disabled + label {

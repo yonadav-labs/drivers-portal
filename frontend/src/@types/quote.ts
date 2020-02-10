@@ -91,6 +91,8 @@ export interface QuoteProcessDocuments {
   proof_of_address: string,
   defensive_driving_certificat: string,
   is_submitted_for_review: boolean,
+  is_broker_of_record_signed: boolean,
+  requires_broker_of_record: boolean
   accident_reports: QuoteProcessDocumentsAccidentReport[],
   [key: string]: any
 }
