@@ -9,7 +9,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class IconCross extends Vue {
-    @Prop()
+    @Prop({ default: 16 })
     size?: string | number;
 }
 </script>

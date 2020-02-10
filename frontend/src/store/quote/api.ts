@@ -76,18 +76,18 @@ export async function updateQuoteProcessDocumentsFile(field:string, file: File |
 
 export async function createQuoteProcessDocumentsAccidentReport(file: File): Promise<QuoteProcessDocumentsAccidentReport> {
   const formData = new FormData();
-  formData.append(file.name, file)
-  const response = await client.post(`quote/quote_process_documents_accident_reports/create/`, formData)
+  formData.append('accident_report', file)
+  const response = await client.post(`quote/quote_process_documents_accident_report/create/`, formData)
   return response.data
 }
 
 export async function updateQuoteProcessDocumentsAccidentReport(id:string, file: File): Promise<QuoteProcessDocumentsAccidentReport> {
   const formData = new FormData();
-  formData.append(file.name, file)
-  const response = await client.put(`quote/quote_process_documents_accident_reports/${id}/update/`, formData)
+  formData.append('accident_report', file)
+  const response = await client.put(`quote/quote_process_documents_accident_report/${id}/update/`, formData)
   return response.data
 }
 
 export async function deleteQuoteProcessDocumentsAccidentReport(id: string): Promise<void> {
-  await client.delete(`quote/quote_process_documents_accident_reports/${id}/update/`)
+  await client.delete(`quote/quote_process_documents_accident_report/${id}/delete/`)
 }

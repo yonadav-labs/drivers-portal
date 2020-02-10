@@ -1,15 +1,18 @@
 <template>
   <div class="file-upload-handler">
-    <input ref="input" aria-hidden class="file-upload-handler__input" type="file"  @change="change">
+    <input ref="input" aria-hidden class="file-upload-handler__input" type="file"  @change="change" :disabled="disabled">
     <slot></slot>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class FileUploadHandler extends Vue {
+  @Prop({ default: false })
+  disabled!: boolean
+
   change(event: Event): void {
     const target = (event.target! as HTMLInputElement)
     this.$emit('change', (target.files || [])[0]);
@@ -25,6 +28,10 @@ export default class FileUploadHandler extends Vue {
 
   input {
     cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
   .file-upload-handler__input {

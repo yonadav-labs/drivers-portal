@@ -1,5 +1,5 @@
 <template>
-  <button class="basic-button" @click="$emit('click',$event)" :disabled="disabled">
+  <button class="basic-button" @click="$emit('click',$event)" :disabled="disabled" :title=title>
     <slot></slot>
   </button>
 </template>
@@ -11,6 +11,9 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 export default class ButtonIcon extends Vue {
   @Prop()
   text!: string;
+
+  @Prop({ default: '' })
+  title!: string;
 
   @Prop({ default: false })
   disabled?: boolean

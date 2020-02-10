@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-    <div class="docs-section">
+    <div class="docs-section" v-if="!!quoteProcessDocuments">
       <div class="broker-section">
         <div class="broker-section__info">
           <div class="broker-section__title">Broker of Record Change <div class="status">PENDING</div></div>
@@ -57,18 +57,19 @@
         </div>
         <div class="document-row" v-for="doc in docs" :key="doc.title">
           <div class="document-row__name">
-            {{ doc.title }}
+            <span class="document-row__doc-title">{{ doc.title }}</span>
+            <span class="document-row__filename" v-if="isDocUploaded(doc.field)" :title="getDocumentUrl(doc.field) | getFilename">{{ getDocumentUrl(doc.field) | getFilename }}</span>
           </div>
           <div class="document-row__status">
             <div class="status" :class="docFieldStatus(doc.field)">{{ docFieldStatusCopy(doc.field) }}</div>
           </div>
           <div class="document-row__actions">
-            <button-icon class="document-row__action-icon" @click="downloadDoc(doc)" :disabled="!isDocUploaded(doc.field)"><icon-file-download></icon-file-download></button-icon>
-            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)"><icon-trash-alt></icon-trash-alt></button-icon>
+            <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download"><icon-file-download></icon-file-download></button-icon>
+            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove"><icon-cross></icon-cross></button-icon>
             <file-upload-handler @change="(file) => uploadDoc(doc, file)"><contained-button color="grey" icon="file-upload" :disabled="doc.disabled">Upload</contained-button></file-upload-handler>
           </div>
         </div>
-        <div class="document-row document-row--has-children">
+        <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
           <div class="document-row__name">
             Accident Reports
           </div>
@@ -76,18 +77,20 @@
             <div class="status">PENDING</div>
           </div>
           <div class="document-row__children">
-            <div class="document-row">
+            <div v-for="(report, index) in accidentReports" :key="report.id" class="document-row">
               <div class="document-row__name">
-                Accident Report #1
+                Accident Report #{{ index + 1}} 
+                <span class="document-row__filename" v-if="!!report.accident_report" :title="report.accident_report | getFilename">&nbsp;— {{ report.accident_report | getFilename }}</span>
               </div>
               <div class="document-row__actions">
-                <button-icon class="document-row__action-icon"><icon-file-download></icon-file-download></button-icon>
-                <button-icon class="document-row__action-icon"><icon-trash-alt></icon-trash-alt></button-icon>
-                <button-icon class="document-row__action-icon"><icon-file-upload></icon-file-upload></button-icon>
+                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" @click="downloadDoc(report.accident_report)"><icon-file-download></icon-file-download></button-icon>
+                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-if="index < minimumAccidentReports" @click="createOrUpdateReport(report, '')"><icon-cross></icon-cross></button-icon>
+                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-else @click="deleteQuoteProcessDocumentsAccidentReport(report.id)"><icon-trash-alt></icon-trash-alt></button-icon>
+                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="report.disabled"><button-icon class="document-row__action-icon"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
               </div>
             </div>
             <div class="documents__add-accident">
-              <basic-button text="Add Accident Report"><icon-plus-circle slot="before"></icon-plus-circle></basic-button>
+              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="isAddAccidentDisabled"><basic-button text="Add Accident Report" :disabled="isAddAccidentDisabled"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
             </div>
           </div>
         </div>
@@ -108,7 +111,7 @@ import { format, addMonths } from 'date-fns';
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 
-import { QuoteProcess, QuoteProcessDocuments } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport } from '@/@types/quote';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
@@ -117,6 +120,7 @@ import ContainedButton from '@/components/buttons/contained-button.vue'
 import FileUploadHandler from '@/components/inputs/file-upload-handler.vue'
 
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
+import IconCross from '@/components/icons/icon-cross.vue'
 import IconFileDownload from '@/components/icons/icon-file-download.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
@@ -134,9 +138,13 @@ interface DocElement {
   disabled: boolean
 }
 
+type QuoteProcessDocumentsAccidentReportElm = QuoteProcessDocumentsAccidentReport & { disabled: boolean }
+type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccidentReportElm, 'id'>
+
+
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconFileDownload, IconFileUpload,
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
     IconPlusCircle, IconTrashAlt
   },
   filters: {
@@ -151,10 +159,20 @@ export default class DashboardQuoteUploadView extends Vue {
   quoteProcessDocuments?: QuoteProcessDocuments 
 
   @quoteDocs.Action
+  createQuoteProcessDocumentsAccidentReport!: (file: File) => Promise<void>
+
+  @quoteDocs.Action
+  deleteQuoteProcessDocumentsAccidentReport!: (id: string) => Promise<void>
+
+  @quoteDocs.Action
   retrieveQuoteProcessDocuments!: () => Promise<void>
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
+
+  @quoteDocs.Action
+  updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
+
 
   docs: DocElement[] = [
     {
@@ -188,6 +206,38 @@ export default class DashboardQuoteUploadView extends Vue {
       disabled: false
     },
   ]
+
+  get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
+    return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
+  }
+
+  get isAddAccidentDisabled(): boolean {
+    return this.extraAccidentReports.length !== 0 || this.quoteAccidentReports.slice(0, this.minimumAccidentReports).some(report => !report.accident_report)
+  } 
+
+  get extraAccidentReports(): CreatedQuoteProcessDocumentAccidentReport[] {
+    const extraDocs = this.minimumAccidentReports - this.quoteAccidentReports.length
+    return extraDocs > 0 ? ([...Array(extraDocs)].map(
+      _ => ({
+        accident_report: '',
+        disabled: false
+      })
+    )):[]
+  }
+
+  get quoteAccidentReports(): QuoteProcessDocumentsAccidentReportElm[] {
+    return !!this.quoteProcessDocuments ? this.quoteProcessDocuments.accident_reports.map(r => ({...r, disabled: false})):[];
+  }
+
+  get minimumAccidentReports(): number {
+    if (!!this.quoteProcess) {
+      const accidents = parseInt(this.quoteProcess.fault_accidents_last_months, 0)
+      if (!isNaN(accidents)) {
+        return accidents
+      }
+    }
+    return 0
+  }
 
   get depositAmount(): number {
     return this.quoteDeposit/100 * this.total
@@ -225,16 +275,20 @@ export default class DashboardQuoteUploadView extends Vue {
     return this.isDocUploaded(field) ? 'uploaded':'pending'
   }
 
-  downloadDoc(doc: DocElement): void {
+  downloadDoc(url: string): void {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.download = getFilename(this.quoteProcessDocuments[doc.field]);
-    link.href = this.quoteProcessDocuments[doc.field];
+    link.download = getFilename(url);
+    link.href = url;
     link.click();
   }
 
   isDocUploaded(field: string): boolean {
     return !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[field]
+  }
+
+  getDocumentUrl(field: string): string {
+    return this.isDocUploaded(field) ? this.quoteProcessDocuments![field]:''
   }
 
   async removeDoc(doc: DocElement): Promise<void> {
@@ -246,6 +300,17 @@ export default class DashboardQuoteUploadView extends Vue {
     await this.updateQuoteProcessDocumentsFile({field: doc.field, file})
     doc.disabled = false;
   }
+
+  async createOrUpdateReport(report: QuoteProcessDocumentsAccidentReportElm, file: File | ''): Promise<void> {
+    report.disabled = true;
+    if (!!report.id) {
+      await this.updateQuoteProcessDocumentsAccidentReport({ id: report.id, file })
+    } else if (file instanceof File) {
+      await this.createQuoteProcessDocumentsAccidentReport(file);
+    }
+    report.disabled = false;
+  }
+ 
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: DashboardQuoteUploadView) => {
@@ -473,11 +538,27 @@ export default class DashboardQuoteUploadView extends Vue {
     }
 
     .document-row__name {
-      color: $blue-dark;
+      display: flex;
       flex-basis: 30%;
-      font-weight: $fw-semibold;
-      line-height: 24px;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      max-width: 30%;
       padding-left: 2.25rem;
+
+      .document-row__doc-title {
+        color: $blue-dark;
+        font-weight: $fw-semibold;
+        line-height: 24px;
+        white-space: nowrap;
+      }
+
+      .document-row__filename {
+        color: $grey-darker;
+        max-width: calc(100% - 3rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     .document-row__children {
@@ -499,9 +580,12 @@ export default class DashboardQuoteUploadView extends Vue {
 
         .document-row__name {
           color: $blue-dark;
-          flex-basis: unset;
+          flex-basis: calc(100% - 10rem);
+          flex-flow: row nowrap;
+          flex-grow: 1;
           font-weight: $fw-regular;
           line-height: 24px;
+          max-width: calc(100% - 10rem);
           padding-left: calc(1.125rem);
         }
 
@@ -519,5 +603,9 @@ export default class DashboardQuoteUploadView extends Vue {
   justify-content: flex-end;
   margin-right: 5rem;
   margin-top: 1.25rem;
+}
+
+.icon-report-upload {
+  color: $grey-darker;
 }
 </style>

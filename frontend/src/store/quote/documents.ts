@@ -68,10 +68,10 @@ export default class QuoteDocumentsVuexModule extends VuexModule {
       const documents = await createQuoteProcessDocumentsAccidentReport(file);
       this.context.commit('setQuoteProcessDocumentsPartial', {
         ...this.quoteProcessDocuments,
-        accident_reports: {
+        accident_reports: [
           ...this.quoteProcessDocuments!.accident_reports,
           documents
-        }
+        ]
       })
     } catch (e) {
       this.context.commit('setQuoteProcessDocumentsPartial', e);
@@ -83,13 +83,16 @@ export default class QuoteDocumentsVuexModule extends VuexModule {
     this.context.commit('setQuoteProcessDocumentsLoading')
 
     try {
-      const documents = await updateQuoteProcessDocumentsAccidentReport(payload.id, payload.file);
+      const document = await updateQuoteProcessDocumentsAccidentReport(payload.id, payload.file);
+      const reports = this.quoteProcessDocuments!.accident_reports.filter(
+        (report: QuoteProcessDocumentsAccidentReport) => report.id !== document.id
+      )
       this.context.commit('setQuoteProcessDocumentsPartial', {
         ...this.quoteProcessDocuments,
-        accident_reports: {
-          ...this.quoteProcessDocuments!.accident_reports,
-          documents
-        }
+        accident_reports: [
+          ...reports,
+          document
+        ]
       })
     } catch (e) {
       this.context.commit('setQuoteProcessDocumentsPartial', e);
