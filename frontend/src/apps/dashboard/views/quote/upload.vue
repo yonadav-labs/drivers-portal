@@ -5,7 +5,7 @@
       <div class="docs-header__info">
         <p class="docs-header__explain">In order to validate the quote we just showed you, please upload the documents below and our team will take care of the rest!
         </p>
-        <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
+        <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
       </div>
       <div class="docs-header__price">
         <div class="estimate">
@@ -37,7 +37,15 @@
       </div>
     </div>
     <div class="docs-section" v-if="!!quoteProcessDocuments">
-      <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record">
+      <div class="success-message" v-if="isSubmittedForReview">
+        <div class="success-message__info">
+          <div class="success-message__title">Thank you for submitting all of your documents!</div>
+          <p class="success-message__explain">
+            Stable has kicked off the automated underwriting process. You will be notified in {{ user.email }} when your policy is ready! 
+          </p>
+        </div>
+      </div>
+      <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record" :class="{'broker-section--submitted': isSubmittedForReview}">
         <div class="broker-section__info">
           <div class="broker-section__title">Broker of Record Change <div class="status" :class="{'success': isBrokerOfRecordReady}">{{ isBrokerOfRecordReady ? 'SIGNED':'PENDING' }}</div></div>
           <p class="broker-section__explain">
@@ -49,7 +57,7 @@
           <div class="broker-section__signed" v-else>Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
         </div>
       </div>
-      <div class="documents" :class="{'documents--disabled': !isBrokerOfRecordReady}">
+      <div class="documents" :class="{'documents--disabled': !isBrokerOfRecordReady, 'documents--done': isSubmittedForReview}">
         <div class="documents__header">
           <div class="documents__header-name documents__header-name--document">Document</div>
           <div class="documents__header-name documents__header-name--status">Status</div>
@@ -65,8 +73,8 @@
           </div>
           <div class="document-row__actions">
             <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download"><icon-file-download></icon-file-download></button-icon>
-            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove"><icon-cross></icon-cross></button-icon>
-            <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
+            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove" v-if="!isSubmittedForReview"><icon-cross></icon-cross></button-icon>
+            <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled" v-if="!isSubmittedForReview"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
           </div>
         </div>
         <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
@@ -84,9 +92,9 @@
               </div>
               <div class="document-row__actions">
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" @click="downloadDoc(report.accident_report)"><icon-file-download></icon-file-download></button-icon>
-                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-if="index < minimumAccidentReports" @click="createOrUpdateReport(report, '')"><icon-cross></icon-cross></button-icon>
-                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-else @click="deleteQuoteProcessDocumentsAccidentReport(report.id)"><icon-trash-alt></icon-trash-alt></button-icon>
-                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="!isBrokerOfRecordReady || report.disabled"><button-icon class="document-row__action-icon" :disabled="!isBrokerOfRecordReady || report.disabled"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
+                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-if="!isSubmittedForReview && index < minimumAccidentReports" @click="createOrUpdateReport(report, '')"><icon-cross></icon-cross></button-icon>
+                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-else-if="!isSubmittedForReview" @click="deleteQuoteProcessDocumentsAccidentReport(report.id)"><icon-trash-alt></icon-trash-alt></button-icon>
+                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="!isBrokerOfRecordReady || report.disabled" v-if="!isSubmittedForReview"><button-icon class="document-row__action-icon" :disabled="!isBrokerOfRecordReady || report.disabled"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
               </div>
             </div>
             <div class="documents__add-accident">
@@ -97,7 +105,7 @@
       </div>
     </div>
     <div class="submit-review">
-      <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
+      <contained-button v-if="!isSubmittedForReview" class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
     </div>
     <modal-broker-record v-if="showBrokerModal" @close="showBrokerModal=false" @submit="signBroker"></modal-broker-record>
   </div>
@@ -113,6 +121,7 @@ import { format, addMonths } from 'date-fns';
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 import { QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport } from '@/@types/quote';
+import { User } from '@/@types/users';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
@@ -134,6 +143,7 @@ import { Route } from 'vue-router';
 
 const quote = namespace('Quote')
 const quoteDocs = namespace('QuoteDocuments')
+const users = namespace('Users')
 
 interface DocElement {
   title: string,
@@ -160,6 +170,9 @@ export default class DashboardQuoteUploadView extends Vue {
 
   @quoteDocs.Getter
   quoteProcessDocuments?: QuoteProcessDocuments
+
+  @users.Getter
+  user!: User
   
   @quoteDocs.Action
   createQuoteProcessDocumentsAccidentReport!: (file: File) => Promise<void>
@@ -285,6 +298,10 @@ export default class DashboardQuoteUploadView extends Vue {
     this.docs.every(
       doc => !!this.quoteProcessDocuments![doc.field]
     )
+  }
+
+  get isSubmittedForReview(): boolean {
+    return !!this.quoteProcessDocuments && this.quoteProcessDocuments.is_submitted_for_review
   }
 
   docFieldStatus(field: string): string {
@@ -483,17 +500,28 @@ export default class DashboardQuoteUploadView extends Vue {
         }
     }
   }
+
+  &.broker-section--submitted {
+    background-color: transparent;
+    border: 1px solid $grey-medium-light;
+    padding: 0.75rem 1.875rem;
+
+    .broker-section__info {
+      .broker-section__title {
+        .status {
+          display: none;
+        }
+      }
+
+      .broker-section__explain {
+        display: none;
+      }
+    }
+
+  }
 }
 
 .documents {
-
-  &.documents--disabled {
-    .document-row {
-      background-color: $grey-opacity !important;
-      border: none !important;
-    }
-  }
-
   .documents__header {
     align-items: center;
     display: flex;	
@@ -525,7 +553,7 @@ export default class DashboardQuoteUploadView extends Vue {
     align-items: center;
     display: flex;
     justify-content: center;
-    padding: 0.75rem 0.75rem 0.25rem;
+    margin: 0.75rem 0 0.25rem;
 
     button {
       color: $grey-darker;
@@ -635,12 +663,92 @@ export default class DashboardQuoteUploadView extends Vue {
       }
     }
   }
+
+  &.documents--disabled {
+    .document-row {
+      background-color: $grey-opacity;
+      border: none;
+
+      &.document-row--has-children {
+        .document-row__children {
+          .document-row {
+            background-color: transparent;
+          }
+        }
+
+      }
+
+      .document-row__actions {
+        > :not(.file-upload-handler) {
+          .svg-icon-center {
+            color: $grey !important;
+          }
+        }
+      }
+    }
+
+    .documents__add-accident {
+      background-color: rgba(206, 212, 218, 0.4);
+      border-radius: 4px;
+      
+      button {
+        span {
+          color: $grey-darker !important;  
+        }
+      }
+    }
+  }
+
+  &.documents--done {
+
+    .documents__header {
+      .documents__header-name {
+        &.documents__header-name--actions {
+          text-align: right;
+        }
+      }
+    }
+
+    .document-row {
+      .document-row__actions {
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+
+.success-message {
+  align-items: center;
+  background-color: rgba(66,99,235,0.04);
+  border: 1px solid $blue;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.875rem;
+  padding: 1.25rem 1.875rem;
+
+  .success-message__info {
+    padding-left: 0.625rem;
+
+    .success-message__title {
+      align-items: center;
+      color: $blue-dark;
+      display: flex;
+      font-weight: $fw-semibold;
+      line-height: 24px;
+    }
+
+    .success-message__explain {
+      color: $grey-darker;
+      line-height: 24px;
+      margin-top: 0.25rem;
+    }
+  }
 }
 
 .submit-review {
   display: flex;
   justify-content: flex-end;
-  margin-right: 5rem;
   margin-top: 1.25rem;
 }
 
