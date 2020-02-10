@@ -186,12 +186,14 @@ class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
-      'is_submitted_for_review', 'accident_reports'
+      'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
+      'requires_broker_of_record'
     )
     read_only_fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
-      'is_submitted_for_review', 'accident_reports'
+      'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
+      'requires_broker_of_record'
     )
     model = QuoteProcessDocuments
 
@@ -221,9 +223,9 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     return validated_data
 
   def update(self, obj, validated_data):
-    if validated_data.get('is_broker_record_signed'):
-      obj.is_broker_record_signed = validated_data.get(
-          'is_broker_record_signed')
+    if validated_data.get('is_broker_of_record_signed'):
+      obj.is_broker_of_record_signed = validated_data.get(
+          'is_broker_of_record_signed')
     if validated_data.get('is_submitted_for_review') is True:
       obj.set_is_submitted_for_review()
     obj.save()
@@ -231,7 +233,7 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
 
   class Meta:
     fields = (
-        'id', 'is_submitted_for_review', 'is_broker_record_signed'
+        'id', 'is_submitted_for_review', 'is_broker_of_record_signed'
     )
     read_only_fields = ('id', )
     model = QuoteProcessDocuments

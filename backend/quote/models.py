@@ -215,7 +215,8 @@ class QuoteProcess(BaseModel):
     def _create_process_documents(self):
         if not self.quote_process_documents:
           QuoteProcessDocuments.objects.create(
-              quote_process=self
+              quote_process=self,
+              requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
           )
 
     def _create_variations(self):
@@ -251,6 +252,10 @@ class QuoteProcessDocuments(BaseModel):
     )
 
     # Documents
+    requires_broker_of_record = models.BooleanField(
+        verbose_name='Require Broker of Record Change',
+        default=False
+    )
     is_broker_of_record_signed = models.BooleanField(
         verbose_name='Broker of Record Change',
         default=False
@@ -348,7 +353,9 @@ class QuoteProcessDocuments(BaseModel):
       ))
 
     def check_ready_for_review(self):
-      return self.is_broker_of_record_signed and \
+      broker_of_record_done = not self.requires_broker_of_record or \
+        self.is_broker_of_record_signed
+      return broker_of_record_done and \
         len(self.doc_fields) == self.get_documents_filled_count() and  \
         self.quoteprocessdocumentsaccidentreport_set.filter(
           accident_report__isnull=False
