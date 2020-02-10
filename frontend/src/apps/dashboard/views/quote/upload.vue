@@ -5,7 +5,7 @@
       <div class="docs-header__info">
         <p class="docs-header__explain">In order to validate the quote we just showed you, please upload the documents below and our team will take care of the rest!
         </p>
-        <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="true">Submit for Review</contained-button>
+        <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
       </div>
       <div class="docs-header__price">
         <div class="estimate">
@@ -74,7 +74,7 @@
             Accident Reports
           </div>
           <div class="document-row__status">
-            <div class="status">PENDING</div>
+            <div class="status" :class="{'success': isAccidentReportsReady}">{{ isAccidentReportsReady ? 'UPLOADED':'PENDING' }}</div>
           </div>
           <div class="document-row__children">
             <div v-for="(report, index) in accidentReports" :key="report.id" class="document-row">
@@ -90,15 +90,16 @@
               </div>
             </div>
             <div class="documents__add-accident">
-              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="isAddAccidentDisabled"><basic-button text="Add Accident Report" :disabled="isAddAccidentDisabled"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
+              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="!isAccidentReportsReady"><basic-button text="Add Accident Report" :disabled="!isAccidentReportsReady"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="submit-review">
-      <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="true">Submit for Review</contained-button>
+      <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
     </div>
+    <modal-broker-record></modal-broker-record>
   </div>
 </template>
 
@@ -126,6 +127,8 @@ import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 
+import ModalBrokerRecord from '@/apps/dashboard/components/modals/broker-record.vue'
+
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { Route } from 'vue-router';
 
@@ -145,7 +148,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt
+    IconPlusCircle, IconTrashAlt, ModalBrokerRecord
   },
   filters: {
     beautyCurrency, getFilename
@@ -156,8 +159,8 @@ export default class DashboardQuoteUploadView extends Vue {
   quoteProcess?: QuoteProcess
 
   @quoteDocs.Getter
-  quoteProcessDocuments?: QuoteProcessDocuments 
-
+  quoteProcessDocuments?: QuoteProcessDocuments
+  
   @quoteDocs.Action
   createQuoteProcessDocumentsAccidentReport!: (file: File) => Promise<void>
 
@@ -169,6 +172,9 @@ export default class DashboardQuoteUploadView extends Vue {
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
+
+  @quoteDocs.Action
+  updateQuoteProcessDocuments!: (payload: {is_broker_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
@@ -211,8 +217,8 @@ export default class DashboardQuoteUploadView extends Vue {
     return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
   }
 
-  get isAddAccidentDisabled(): boolean {
-    return this.extraAccidentReports.length !== 0 || this.quoteAccidentReports.slice(0, this.minimumAccidentReports).some(report => !report.accident_report)
+  get isAccidentReportsReady(): boolean {
+    return this.extraAccidentReports.length === 0 && this.quoteAccidentReports.slice(0, this.minimumAccidentReports).every(report => !!report.accident_report)
   } 
 
   get extraAccidentReports(): CreatedQuoteProcessDocumentAccidentReport[] {
@@ -267,6 +273,13 @@ export default class DashboardQuoteUploadView extends Vue {
     return !!this.quoteProcess ? Number(this.quoteProcess.quote_amount):0
   }
 
+  get isReadyForSubmit(): boolean {
+    return !!this.quoteProcessDocuments && !this.quoteProcessDocuments.is_submitted_for_review &&
+    this.isAccidentReportsReady && this.docs.every(
+      doc => !!this.quoteProcessDocuments![doc.field]
+    )
+  }
+
   docFieldStatus(field: string): string {
     return this.isDocUploaded(field) ? 'success':'pending'
   }
@@ -309,6 +322,12 @@ export default class DashboardQuoteUploadView extends Vue {
       await this.createQuoteProcessDocumentsAccidentReport(file);
     }
     report.disabled = false;
+  }
+
+  submitForReview(): void {
+    if (this.isReadyForSubmit) {
+      this.updateQuoteProcessDocuments({is_submitted_for_review: true});
+    }
   }
  
 

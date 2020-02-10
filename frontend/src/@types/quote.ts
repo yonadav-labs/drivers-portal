@@ -90,7 +90,7 @@ export interface QuoteProcessDocuments {
   tlc_license_back_side: string,
   proof_of_address: string,
   defensive_driving_certificat: string,
-  is_submitted_for_review: string,
+  is_submitted_for_review: boolean,
   accident_reports: QuoteProcessDocumentsAccidentReport[],
   [key: string]: any
 }

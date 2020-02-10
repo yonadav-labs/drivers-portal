@@ -3,7 +3,7 @@ import { QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport } from '@/@t
 
 import { APIProperty, APIState } from '@/store/api'
 import { 
-  retrieveQuoteProcessDocuments, updateQuoteProcessDocumentsFile,
+  retrieveQuoteProcessDocuments, updateQuoteProcessDocumentsFile, updateQuoteProcessDocuments,
   createQuoteProcessDocumentsAccidentReport, updateQuoteProcessDocumentsAccidentReport, 
   deleteQuoteProcessDocumentsAccidentReport
 } from '@/store/quote/api'
@@ -55,6 +55,18 @@ export default class QuoteDocumentsVuexModule extends VuexModule {
     try {
       const documents = await updateQuoteProcessDocumentsFile(payload.field, payload.file);
       this.context.commit('setQuoteProcessDocumentsPartial', documents)
+    } catch (e) {
+      this.context.commit('setQuoteProcessDocumentsPartial', e);
+    }
+  }
+
+  @Action
+  async updateQuoteProcessDocuments(payload: { is_broker_record_signed?: boolean, is_submitted_for_review?: boolean }): Promise<void> {
+    this.context.commit('setQuoteProcessDocumentsLoading')
+
+    try {
+      const submitted = await updateQuoteProcessDocuments(payload);
+      this.context.commit('setQuoteProcessDocumentsPartial', submitted)
     } catch (e) {
       this.context.commit('setQuoteProcessDocumentsPartial', e);
     }

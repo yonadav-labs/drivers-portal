@@ -68,6 +68,12 @@ export async function updateQuoteProcessDocumentsFile(field:string, file: File |
   return response.data
 }
 
+export async function updateQuoteProcessDocuments(payload: {is_submitted_for_review?: boolean, is_broker_record_change_signed?: boolean}): Promise<{ id: string, is_submitted_for_review: boolean}> {
+  const { is_submitted_for_review, is_broker_record_change_signed } = payload;
+  const response = await client.patch(`quote/quote_process_documents/update/`, { is_submitted_for_review, is_broker_record_change_signed })
+  return response.data
+}
+
 
 /*
 * Quote Process Documents Accident Report
