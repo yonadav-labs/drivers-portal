@@ -10,7 +10,7 @@
       <div class="docs-header__price">
         <div class="estimate">
           <p>Monthly price</p>
-          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}</p>
+          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
           <span class="estimate__info">9 payments starting on
             <br>
             {{ firstPaymentDue }}
@@ -140,6 +140,8 @@ import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 import ModalBrokerRecord from '@/apps/dashboard/components/modals/broker-record.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
+import { getHerefordFee } from '@/utils/quote'
+
 import { Route } from 'vue-router';
 
 const quote = namespace('Quote')
@@ -271,6 +273,10 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get monthlyPayment(): number {
     return (this.total * (1-(this.quoteDeposit/100)))/9;
+  }
+
+  get herefordFee(): number {
+    return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
   }
 
   get firstPaymentDue(): string {
@@ -418,6 +424,11 @@ export default class DashboardQuoteUploadView extends Vue {
       line-height: 20.43px;
       margin-top: 1rem;
       margin-bottom: 1rem;
+
+      sup {
+        font-size: $fs-sm;
+        font-weight: $fw-semibold;
+      }
     }
   }
   .estimate__info {

@@ -88,6 +88,11 @@
               <span class="label">Downpayment</span>
               <span class="value">{{ hasDeposit ? depositOption:'--' }}%</span>
             </div>
+            <div class="dropdown--content-row">
+              <span class="label">Hereford Monthly Fee</span>
+              <span class="value"  v-if="hasDeposit">{{ herefordFee | currency }}</span>
+              <span class="value" v-else>$--</span>
+            </div>
           </div>
         </div>
         <div class="dropdown" @click="opened == 'liability' ? opened = '' : opened = 'liability'" v-if="!!variations">
@@ -162,7 +167,7 @@
             </div>
             <div class="dropdown--content-row">
               <span class="label">Monthly Payment</span>
-              <span class="value" v-if="hasDeposit">{{ monthlyPayment | currency }}</span>
+              <span class="value" v-if="hasDeposit">{{ (monthlyPayment + herefordFee) | currency }} ({{ monthlyPayment | currency }} + {{ herefordFee | currency }})</span>
               <span class="value" v-else>$--</span>
             </div>
           </div>
@@ -170,7 +175,7 @@
         <div class="insurance-resume">
           <div class="insurance-estimated">
             <p>Monthly payment</p>
-            <p class="estimated-price">{{ monthlyPaymentText }}</p>
+            <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
             <span class="estimated-date">9 payments starting on
               <br>
               {{ firstPaymentDue }}
@@ -199,6 +204,7 @@ import IconChevronDown from '@/components/icons/icon-chevron-down.vue';
 import { QuoteProcessCalcVariations, QuoteProcessVariationPhysical } from '@/@types/quote';
 
 import { currency, beautyCurrency } from '@/utils/text'
+import { getHerefordFee } from '@/utils/quote'
 
 @Component({
   components: {
@@ -275,32 +281,12 @@ export default class ModalPremium extends Vue {
   
   opened = ''
 
-  premiumData = {
-    price: {
-      deductible: 750,
-      downpayment: '25%',
-    },
-    liability: {
-      bodily: 2467.2,
-      property: 642.4,
-      uninsored: 60,
-      personal: 1017.6,
-      aggregate: 407.2,
-      total: 4594.4,
-    },
-    physical: {
-      comprehensive: 171,
-      collision: 261.25,
-      total: 432.25,
-    },
-    total: {
-      deposit: 1256.66,
-      monthly: 418.89,
-    }
-  }
-
   get defensive(): string {
     return !!this.hasDefensive ? 'Yes': 'No'
+  }
+
+  get herefordFee(): number {
+    return !!this.depositOption ? getHerefordFee(this.depositOption):0;
   }
 
   get hasDeposit(): boolean {
@@ -455,6 +441,11 @@ export default class ModalPremium extends Vue {
             font-weight: $fw-semibold;
             margin-top: 1rem;
             margin-bottom: 1rem;
+
+            sup {
+              font-size: $fs-sm;
+              font-weight: $fw-semibold;
+            }
           }
         }
         .estimated-date {

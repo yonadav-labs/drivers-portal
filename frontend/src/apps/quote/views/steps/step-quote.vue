@@ -113,7 +113,7 @@
       <div class="insurance-resume">
         <div class="insurance-estimated">
           <p>Monthly payment</p>
-          <p class="estimated-price">{{ monthlyPaymentText }}</p>
+          <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
           <span class="estimated-date">9 payments starting on
             <br>
             {{ firstPaymentDue }}
@@ -189,7 +189,7 @@ import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical, QuoteProcessOptionsPayload } from '@/@types/quote';
 
 import { currency, beautyCurrency } from '@/utils/text'
-
+import { getHerefordFee } from '@/utils/quote'
 
 const quote = namespace('Quote')
 
@@ -200,9 +200,7 @@ const quote = namespace('Quote')
     IconArrowRight, IconInfo, QuoteSummary, ModalPremium
   },
   filters: {
-    currency(value: number): string {
-      return currency(value)
-    }
+    currency, beautyCurrency
   }
 })
 export default class StepQuote extends Vue {
@@ -305,6 +303,10 @@ export default class StepQuote extends Vue {
       return 0
     }
     return this.total * (this.internalDeposit/100)
+  }
+
+  get herefordFee(): number {
+    return !!this.internalDeposit ? getHerefordFee(this.internalDeposit):0;
   }
 
   get depositText(): string {
@@ -447,6 +449,11 @@ export default class StepQuote extends Vue {
         font-weight: $fw-semibold;
         margin-top: 1rem;
         margin-bottom: 1rem;
+
+        sup {
+          font-size: $fs-sm;
+          font-weight: $fw-semibold;
+        }
       }
     }
     .estimated-date {
