@@ -1,14 +1,16 @@
 import DashboardQuote from '@/apps/dashboard/views/quote.vue';
-import DashboardUpload from '@/apps/dashboard/views/quote/upload.vue';
+import DashboardQuoteUpload from '@/apps/dashboard/views/quote/upload.vue';
+import DashboardQuotePayment from '@/apps/dashboard/views/quote/payment.vue';
 
 import { QuoteStatus } from '@/@types/quote'
 
 export enum DashboardRouteName {
-  QUOTE = 'dashboardQuote'
+  QUOTE = 'dashboardQuote',
 }
 
 export enum DashboardQuoteRouteName {
-  UPLOAD = 'dashboardUpload',
+  UPLOAD = 'dashboardQuoteUpload',
+  PAYMENT = 'dashboardQuotePayment'
 }
 
 export class DashboardRouter {
@@ -17,6 +19,12 @@ export class DashboardRouter {
     let route: DashboardQuoteRouteName;
   
     switch (status) {
+      case 'payment':
+      case 'paid':
+        route = DashboardQuoteRouteName.PAYMENT
+        break;
+
+      case 'review':
       case 'docs':
       default:
         route = DashboardQuoteRouteName.UPLOAD
@@ -30,7 +38,8 @@ export class DashboardRouter {
 }
 
 const quoteRoutes = [
-  { path: 'upload/', component: DashboardUpload, name: DashboardQuoteRouteName.UPLOAD },
+  { path: 'upload/', component: DashboardQuoteUpload, name: DashboardQuoteRouteName.UPLOAD },
+  { path: 'payment/', component: DashboardQuotePayment, name: DashboardQuoteRouteName.PAYMENT }
 ]
 
 export default [
