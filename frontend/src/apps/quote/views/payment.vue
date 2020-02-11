@@ -51,14 +51,14 @@
     <div slot="right-column">
       <div class="insurance-info">
         <p class="insurance-title">Your insurance</p>
-        <div class="insurance-text">
+        <div class="insurance-text" v-if="!!liability">
           <span>Liability</span>
-          <span>{{ liabilityText }}</span>
+          <span>{{ liability }}</span>
         </div>
-        <div class="insurance-text">
+        <div class="insurance-text" v-if="hasDeductible">
           <div>
             <span>Physical coverage</span>
-            <span class="insurance-price" v-if="hasDeductible">Deductible {{ quoteDeductible | currency }}</span>
+            <span class="insurance-price" v-if="!!quoteDeductible">Deductible {{ quoteDeductible | currency }}</span>
           </div>
           <span
             v-if="hasDeductible"
@@ -235,8 +235,8 @@ export default class StepQuote extends Vue {
     return this.formatDate(addMonths(selectedDate, 3))
   }
 
-  get liabilityText(): string {
-    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):'$--'
+  get liability(): string {
+    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):0
   }
 
   get monthlyPaymentText(): string {
