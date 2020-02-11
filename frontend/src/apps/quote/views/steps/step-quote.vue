@@ -99,7 +99,7 @@
             v-if="hasDeductible"
           >{{ physicalAmount| currency }}</span>
           <span v-else-if="internalDeductible == 0">$0</span>
-          <span v-else>$-</span>
+          <span v-else>$--</span>
         </div>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>

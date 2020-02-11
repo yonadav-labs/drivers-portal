@@ -15,7 +15,7 @@ import { RouteName } from '@/router'
 const users = namespace('Users')
 
 @Component
-export default class MainView extends Vue {
+export default class QuoteProcessView extends Vue {
 
   @users.Getter
   user?: User
@@ -24,7 +24,7 @@ export default class MainView extends Vue {
 
   async beforeRouteEnter(to: Route, from: Route, next: any): Promise<void> {
 
-    next(async (vm: MainView) => {
+    next(async (vm: QuoteProcessView) => {
       if (!!vm.user && vm.user.quoteprocess) {
         vm.$router.replace({ name: RouteName.DASHBOARD })
       } else {

@@ -4,6 +4,6 @@ const herefordFeeByDeposit:  Record<15 | 20 | 25, number> = {
   25: 20,
 }
 
-export function getHerefordFee(deposit: 15 | 20 | 25): number {
-  return herefordFeeByDeposit[deposit]
+export function getHerefordFee(deposit: number): number {
+  return herefordFeeByDeposit[deposit as 15 | 20 | 25] || 0
 }

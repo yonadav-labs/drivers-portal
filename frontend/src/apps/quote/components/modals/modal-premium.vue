@@ -129,7 +129,7 @@
             </div>
           </div>
         </div>
-        <div class="dropdown" @click="opened == 'physical' ? opened = '' : opened = 'physical'" v-if="hasDeductible">
+        <div class="dropdown" @click="opened == 'physical' ? opened = '' : opened = 'physical'" v-if="hasDeductible && physical">
           <div class="dropdown--header">
             <span>physical coverage</span>
             <span>{{ physical.physical_total | currency }}</span>

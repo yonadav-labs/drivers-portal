@@ -5,7 +5,8 @@ import { format } from 'date-fns';
 import { 
   QuoteProcess, QuoteProcessPayload, QuoteSoftFallout,
   QuoteProcessCalcVariations, QuoteProcessOptionsPayload, QuoteProcessOptions,
-  QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport
+  QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
+  QuoteProcessPayment
   
  } from '@/@types/quote';
 
@@ -96,4 +97,13 @@ export async function updateQuoteProcessDocumentsAccidentReport(id:string, file:
 
 export async function deleteQuoteProcessDocumentsAccidentReport(id: string): Promise<void> {
   await client.delete(`quote/quote_process_documents_accident_report/${id}/delete/`)
+}
+
+/*
+* Quote Process Payment
+*/
+
+export async function retrieveQuoteProcessPayment(): Promise<QuoteProcessPayment> {
+  const response = await client.get(`quote/quote_process_payment/retrieve/`)
+  return response.data
 }
