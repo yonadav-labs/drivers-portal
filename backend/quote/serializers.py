@@ -4,7 +4,8 @@ from users.models import User, MagicLink
 
 from quote.models import (
   QuoteProcess, QuoteSoftFallout, QuoteProcessDocuments,
-  QuoteProcessDocumentsAccidentReport)
+  QuoteProcessDocumentsAccidentReport,
+  QuoteProcessPayment)
 
 
 class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
@@ -24,7 +25,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
-        'deposit' , 'start_date', 'quote_amount'
+        'deposit' , 'start_date', 'quote_amount', 'deductible'
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -33,7 +34,8 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email', 'status', 'deposit' , 'start_date', 'quote_amount'
+        'email', 'status', 'deposit' , 'start_date', 'quote_amount',
+        'deductible'
     )
     model = QuoteProcess
 
@@ -237,3 +239,15 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     )
     read_only_fields = ('id', )
     model = QuoteProcessDocuments
+
+
+class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    fields = (
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+    )
+    read_only_fields = (
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+    )
+    model = QuoteProcessPayment

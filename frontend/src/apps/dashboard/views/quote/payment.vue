@@ -1,11 +1,11 @@
 <template>
   <div class="docs-view" ref="main">
-    <h3 class="title">Upload Documents</h3>
+    <h3 class="title">Your Official Hereford Quote is ready!</h3>
     <div class="docs-header">
       <div class="docs-header__info">
-        <p class="docs-header__explain">In order to validate the quote we just showed you, please upload the documents below and our team will take care of the rest!
+        <p class="docs-header__explain">Our team has reviewed the documents provided and your Official Hereford Quote is ready.
         </p>
-        <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
+        <contained-button class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
       <div class="docs-header__price">
         <div class="estimate">
@@ -37,53 +37,37 @@
       </div>
     </div>
     <div class="docs-section" v-if="!!quoteProcessDocuments">
-      <div class="success-message" v-if="isSubmittedForReview">
-        <div class="success-message__info">
-          <div class="success-message__title">Thank you for submitting all of your documents!</div>
-          <p class="success-message__explain">
-            Stable has kicked off the automated underwriting process. You will be notified in {{ user.email }} when your policy is ready! 
+      <div class="info-message" v-if="oldQuote != total">
+        <div class="info-message__info">
+          <div class="info-message__title">Why is my quote different?</div>
+          <p class="info-message__explain">
+            After reviewing the documentation, the Stable team found some differences between the data provided
+            during the quote process and the documents provided. If you have additional questions, please, reach
+            our team at <a class="info-message__link" href="mailto:support@stableins.com">support@stableins.com</a>
           </p>
         </div>
       </div>
-      <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record" :class="{'broker-section--submitted': isSubmittedForReview}">
+      <div class="broker-section broker-section--submitted">
         <div class="broker-section__info">
-          <div class="broker-section__title">Broker of Record Change <div class="status" :class="{'success': isBrokerOfRecordReady}">{{ isBrokerOfRecordReady ? 'SIGNED':'PENDING' }}</div></div>
-          <p class="broker-section__explain">
-            Please review and sign our broker of record change so Stable can get you your insurance documents ASAP!
-          </p>
+          <div class="broker-section__title">Broker of Record Change</div>
         </div>
         <div class="broker-section__cta">
-          <contained-button color="blue" icon="pen-alt" v-if="!quoteProcessDocuments.is_broker_of_record_signed" @click="showBrokerModal = true">Sign now</contained-button>
-          <div class="broker-section__signed" v-else>Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
+          <div class="broker-section__signed">Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
         </div>
       </div>
-      <div class="documents" :class="{'documents--disabled': !isBrokerOfRecordReady, 'documents--done': isSubmittedForReview}">
-        <div class="documents__header">
-          <div class="documents__header-name documents__header-name--document">Document</div>
-          <div class="documents__header-name documents__header-name--status">Status</div>
-          <div class="documents__header-name documents__header-name--actions">Actions</div>
-        </div>
+      <div class="documents documents--done">
         <div class="document-row" v-for="doc in docs" :key="doc.title">
           <div class="document-row__name">
             <span class="document-row__doc-title">{{ doc.title }}</span>
-            <span class="document-row__filename" v-if="isDocUploaded(doc.field)" :title="getDocumentUrl(doc.field) | getFilename">{{ getDocumentUrl(doc.field) | getFilename }}</span>
-          </div>
-          <div class="document-row__status">
-            <div class="status" :class="docFieldStatus(doc.field)">{{ docFieldStatusCopy(doc.field) }}</div>
+            <span class="document-row__filename" :title="getDocumentUrl(doc.field) | getFilename">{{ getDocumentUrl(doc.field) | getFilename }}</span>
           </div>
           <div class="document-row__actions">
-            <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download" v-if="!isSubmittedForReview"><icon-file-download></icon-file-download></button-icon>
-            <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove" v-if="!isSubmittedForReview"><icon-cross></icon-cross></button-icon>
-            <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled" v-if="!isSubmittedForReview"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
-            <contained-button color="grey" icon="file-download" @click="downloadDoc(getDocumentUrl(doc.field))" v-else>Download</contained-button>
+            <contained-button color="grey" icon="file-download" @click="downloadDoc(getDocumentUrl(doc.field))">Download</contained-button>
           </div>
         </div>
-        <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
+        <div class="document-row document-row--has-children" v-if="!!accidentReports">
           <div class="document-row__name">
             Accident Reports
-          </div>
-          <div class="document-row__status">
-            <div class="status" :class="{'success': isAccidentReportsReady}">{{ isAccidentReportsReady ? 'UPLOADED':'PENDING' }}</div>
           </div>
           <div class="document-row__children">
             <div v-for="(report, index) in accidentReports" :key="report.id" class="document-row">
@@ -93,22 +77,12 @@
               </div>
               <div class="document-row__actions">
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" @click="downloadDoc(report.accident_report)"><icon-file-download></icon-file-download></button-icon>
-                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-if="!isSubmittedForReview && index < minimumAccidentReports" @click="createOrUpdateReport(report, '')"><icon-cross></icon-cross></button-icon>
-                <button-icon class="document-row__action-icon" :disabled="!report.accident_report" v-else-if="!isSubmittedForReview" @click="deleteQuoteProcessDocumentsAccidentReport(report.id)"><icon-trash-alt></icon-trash-alt></button-icon>
-                <file-upload-handler @change="(file) => createOrUpdateReport(report, file)" :disabled="!isBrokerOfRecordReady || report.disabled" v-if="!isSubmittedForReview"><button-icon class="document-row__action-icon" :disabled="!isBrokerOfRecordReady || report.disabled"><icon-file-upload class="icon-report-upload"></icon-file-upload></button-icon></file-upload-handler>
               </div>
-            </div>
-            <div class="documents__add-accident">
-              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="!isAccidentReportsReady" v-if="!isSubmittedForReview"><basic-button text="Add Accident Report" :disabled="!isAccidentReportsReady"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="submit-review">
-      <contained-button v-if="!isSubmittedForReview" class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
-    </div>
-    <modal-broker-record v-if="showBrokerModal" @close="showBrokerModal=false" @submit="signBroker"></modal-broker-record>
   </div>
 </template>
 
@@ -120,8 +94,9 @@ import { Getter, Action, namespace } from 'vuex-class';
 import { format, addMonths } from 'date-fns';
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
+import { RouteName } from '@/router'
 
-import { QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport, QuoteProcessPayment } from '@/@types/quote';
 import { User } from '@/@types/users';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
@@ -131,13 +106,7 @@ import ContainedButton from '@/components/buttons/contained-button.vue'
 import FileUploadHandler from '@/components/inputs/file-upload-handler.vue'
 
 import IconCheckCircle from '@/components/icons/icon-check-circle.vue'
-import IconCross from '@/components/icons/icon-cross.vue'
 import IconFileDownload from '@/components/icons/icon-file-download.vue'
-import IconFileUpload from '@/components/icons/icon-file-upload.vue'
-import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
-import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
-
-import ModalBrokerRecord from '@/apps/dashboard/components/modals/broker-record.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { getHerefordFee } from '@/utils/quote'
@@ -146,6 +115,7 @@ import { Route } from 'vue-router';
 
 const quote = namespace('Quote')
 const quoteDocs = namespace('QuoteDocuments')
+const quotePayment = namespace('QuotePayment')
 const users = namespace('Users')
 
 interface DocElement {
@@ -154,46 +124,32 @@ interface DocElement {
   disabled: boolean
 }
 
-type QuoteProcessDocumentsAccidentReportElm = QuoteProcessDocumentsAccidentReport & { disabled: boolean }
-type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccidentReportElm, 'id'>
-
-
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt, ModalBrokerRecord
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconFileDownload,
   },
   filters: {
     beautyCurrency, getFilename
   }
 })
-export default class DashboardQuoteUploadView extends Vue {
+export default class DashboardQuotePaymentView extends Vue {
   @quote.Getter
   quoteProcess?: QuoteProcess
 
   @quoteDocs.Getter
   quoteProcessDocuments?: QuoteProcessDocuments
 
+  @quotePayment.Getter
+  quoteProcessPayment?: QuoteProcessPayment
+
   @users.Getter
   user!: User
-  
-  @quoteDocs.Action
-  createQuoteProcessDocumentsAccidentReport!: (file: File) => Promise<void>
-
-  @quoteDocs.Action
-  deleteQuoteProcessDocumentsAccidentReport!: (id: string) => Promise<void>
 
   @quoteDocs.Action
   retrieveQuoteProcessDocuments!: () => Promise<void>
 
-  @quoteDocs.Action
-  updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
-
-  @quoteDocs.Action
-  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
-
-  @quoteDocs.Action
-  updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
+  @quotePayment.Action
+  retrieveQuoteProcessPayment!: () => Promise<void>
 
 
   docs: DocElement[] = [
@@ -229,42 +185,8 @@ export default class DashboardQuoteUploadView extends Vue {
     },
   ]
 
-  showBrokerModal = false;
-
-  get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
-    return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
-  }
-
-  get isAccidentReportsReady(): boolean {
-    return this.extraAccidentReports.length === 0 && this.quoteAccidentReports.slice(0, this.minimumAccidentReports).every(report => !!report.accident_report)
-  } 
-
-  get isBrokerOfRecordReady(): boolean {
-    return !!this.quoteProcessDocuments && (!this.quoteProcessDocuments.requires_broker_of_record || this.quoteProcessDocuments.is_broker_of_record_signed)
-  }
-
-  get extraAccidentReports(): CreatedQuoteProcessDocumentAccidentReport[] {
-    const extraDocs = this.minimumAccidentReports - this.quoteAccidentReports.length
-    return extraDocs > 0 ? ([...Array(extraDocs)].map(
-      _ => ({
-        accident_report: '',
-        disabled: false
-      })
-    )):[]
-  }
-
-  get quoteAccidentReports(): QuoteProcessDocumentsAccidentReportElm[] {
-    return !!this.quoteProcessDocuments ? this.quoteProcessDocuments.accident_reports.map(r => ({...r, disabled: false})):[];
-  }
-
-  get minimumAccidentReports(): number {
-    if (!!this.quoteProcess) {
-      const accidents = parseInt(this.quoteProcess.fault_accidents_last_months, 0)
-      if (!isNaN(accidents)) {
-        return accidents
-      }
-    }
-    return 0
+  get accidentReports(): QuoteProcessDocumentsAccidentReport[] {
+    return !!this.quoteProcessDocuments ? this.quoteProcessDocuments.accident_reports:[];
   }
 
   get depositAmount(): number {
@@ -287,6 +209,10 @@ export default class DashboardQuoteUploadView extends Vue {
     return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
   }
 
+  get oldQuote(): number {
+    return Number(this.quoteProcess!.quote_amount)
+  }
+
   get startDate(): string {
     return (!!this.quoteProcess && this.quoteProcess.start_date) || ''
   }
@@ -296,27 +222,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get total(): number {
-    return !!this.quoteProcess ? Number(this.quoteProcess.quote_amount):0
-  }
-
-  get isReadyForSubmit(): boolean {
-    return !!this.quoteProcessDocuments && !this.quoteProcessDocuments.is_submitted_for_review &&
-    this.isBrokerOfRecordReady && this.isAccidentReportsReady && 
-    this.docs.every(
-      doc => !!this.quoteProcessDocuments![doc.field]
-    )
-  }
-
-  get isSubmittedForReview(): boolean {
-    return !!this.quoteProcessDocuments && this.quoteProcessDocuments.is_submitted_for_review
-  }
-
-  docFieldStatus(field: string): string {
-    return this.isDocUploaded(field) ? 'success':'pending'
-  }
-
-  docFieldStatusCopy(field: string): string {
-    return this.isDocUploaded(field) ? 'uploaded':'pending'
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.official_hereford_quote):0
   }
 
   downloadDoc(url: string): void {
@@ -327,54 +233,18 @@ export default class DashboardQuoteUploadView extends Vue {
     link.click();
   }
 
-  isDocUploaded(field: string): boolean {
-    return !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[field]
-  }
-
   getDocumentUrl(field: string): string {
-    return this.isDocUploaded(field) ? this.quoteProcessDocuments![field]:''
-  }
-
-  async removeDoc(doc: DocElement): Promise<void> {
-    await this.updateQuoteProcessDocumentsFile({field: doc.field, file: ''})
-  }
-
-  async uploadDoc(doc: DocElement, file: File): Promise<void> {
-    doc.disabled = true;
-    await this.updateQuoteProcessDocumentsFile({field: doc.field, file})
-    doc.disabled = false;
-  }
-
-  async createOrUpdateReport(report: QuoteProcessDocumentsAccidentReportElm, file: File | ''): Promise<void> {
-    report.disabled = true;
-    if (!!report.id) {
-      await this.updateQuoteProcessDocumentsAccidentReport({ id: report.id, file })
-    } else if (file instanceof File) {
-      await this.createQuoteProcessDocumentsAccidentReport(file);
-    }
-    report.disabled = false;
-  }
-
-  async signBroker(): Promise<void> {
-    await this.updateQuoteProcessDocuments({ is_broker_of_record_signed: true});
-    this.showBrokerModal = false;
-  }
-
-  submitForReview(): void {
-    if (this.isReadyForSubmit) {
-      this.updateQuoteProcessDocuments({is_submitted_for_review: true});
-    }
-    window.scroll({
-      top: 0,  
-      behavior: 'smooth'
-    });
-
+    return this.quoteProcessDocuments![field]
   }
  
+  goToPayment(): void {
+    this.$router.push({ name: RouteName.PAYMENT, params: {quoteId: this.quoteProcess!.id}})
+  }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
-    next((vm: DashboardQuoteUploadView) => {
-      vm.retrieveQuoteProcessDocuments()
+    next(async (vm: DashboardQuotePaymentView) => {
+      await vm.retrieveQuoteProcessDocuments()
+      await vm.retrieveQuoteProcessPayment()
     })
   }
 }
@@ -691,41 +561,6 @@ export default class DashboardQuoteUploadView extends Vue {
     }
   }
 
-  &.documents--disabled {
-    .document-row {
-      background-color: $grey-opacity;
-      border: none;
-
-      &.document-row--has-children {
-        .document-row__children {
-          .document-row {
-            background-color: transparent;
-          }
-        }
-
-      }
-
-      .document-row__actions {
-        > :not(.file-upload-handler) {
-          .svg-icon-center {
-            color: $grey !important;
-          }
-        }
-      }
-    }
-
-    .documents__add-accident {
-      background-color: rgba(206, 212, 218, 0.4);
-      border-radius: 4px;
-      
-      button {
-        span {
-          color: $grey-darker !important;  
-        }
-      }
-    }
-  }
-
   &.documents--done {
 
     .documents__header {
@@ -775,7 +610,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 }
 
-.success-message {
+.info-message {
   align-items: center;
   background-color: rgba(66,99,235,0.04);
   border: 1px solid $blue;
@@ -785,10 +620,10 @@ export default class DashboardQuoteUploadView extends Vue {
   margin-bottom: 1.875rem;
   padding: 1.25rem 1.875rem;
 
-  .success-message__info {
+  .info-message__info {
     padding-left: 0.625rem;
 
-    .success-message__title {
+    .info-message__title {
       align-items: center;
       color: $blue-dark;
       display: flex;
@@ -796,11 +631,16 @@ export default class DashboardQuoteUploadView extends Vue {
       line-height: 24px;
     }
 
-    .success-message__explain {
+    .info-message__explain {
       color: $grey-darker;
       line-height: 24px;
       margin-top: 0.25rem;
     }
+  }
+
+  .info-message__link {
+    color: $blue;
+    font-weight: $fw-semibold;
   }
 }
 

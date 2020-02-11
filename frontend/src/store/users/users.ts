@@ -2,8 +2,8 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { QuoteStatus } from '@/@types/quote';
 import { User } from '@/@types/users';
 
-import { APIProperty, APIState, setAuthToken } from '@/store/api'
-import { getCurrentUser, getMagicLink, updateUserPassword } from '@/store/users/api'
+import { APIProperty, APIState, setAuthToken, clearAuthToken } from '@/store/api'
+import { getCurrentUser, getMagicLink, updateUserPassword, login } from '@/store/users/api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
@@ -52,6 +52,12 @@ export default class UsersVuexModule extends VuexModule {
   }
 
   @Action
+  async logout(): Promise<void> {
+    clearAuthToken();
+    this.context.dispatch('resetStore')
+  }
+
+  @Action
   async retrieveUser(): Promise<void> {
     this.context.commit('setUserLoading')
 
@@ -83,6 +89,21 @@ export default class UsersVuexModule extends VuexModule {
       this.context.commit('setUserPartial', user)
     } catch (e) {
       this.context.commit('setPasswordErrors', e);
+    }
+  }
+
+  @Action
+  async login(payload: { user: string, password: string }): Promise<void> {
+    this.context.commit('setUserBlank')
+
+    const { user, password } = payload
+
+    try {
+      const { token } = await login(user, password)
+      setAuthToken(token);
+      await this.context.dispatch('retrieveUser')
+    } catch (e) {
+      // pass
     }
   }
 }

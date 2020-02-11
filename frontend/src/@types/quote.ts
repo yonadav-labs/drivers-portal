@@ -96,3 +96,10 @@ export interface QuoteProcessDocuments {
   accident_reports: QuoteProcessDocumentsAccidentReport[],
   [key: string]: any
 }
+
+export interface QuoteProcessPayment {
+  official_hereford_quote: number,
+  liability_amount?: number,
+  physical_amount?: number,
+  payment_date: string
+}

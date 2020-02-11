@@ -1,57 +1,22 @@
 <template>
-  <quote-process-columns-layout>
+  <quote-process-columns-layout v-if="!!quoteProcessPayment" :hide-breadcrumbs="true" :on-back="back">
     <quote-summary></quote-summary>
     <div class="questions">
-      <banner
-        title="Physical Coverage"
-        text="If you want Physical (Collision and Comprehensive) Coverage, please select your desired Deductible."
-        :active="focus=='physical'"
-        :info="true"
-      >
-        <basic-select
-          v-model="internalDeductible"
-          :selected="internalDeductible"
-          :options="PHYSICAL_OPTIONS"
-          :default-option-value="-1"
-          @focus="focus='physical'"
-        ></basic-select>
-      </banner>
+      <div class="questions__result">
+        <p class="questions__title">Physical Coverage</p>
+        <p class="questions__value">{{ !!quoteDeductible ? `$${quoteDeductible}`:'No' }}</p>
+      </div>
       <div class="divider"></div>
-      <banner
-        title="Add Deposit"
-        text="Choose the the deposit amount you would like to pay. This is due immediately."
-        :active="focus=='deposit'"
-      >
-        <basic-select
-          v-model="internalDeposit"
-          :selected="internalDeposit"
-          :options="DEPOSIT_OPTIONS"
-          :default-option-value="0"
-          :disabled="!isDeductibleSet"
-          @focus="focus='deposit'"
-        ></basic-select>
-      </banner>
+      <div class="questions__result">
+        <p class="questions__title">Deposit</p>
+        <p class="questions__value">{{ quoteDeposit }}%</p>
+      </div>
       <div class="divider"></div>
-      <banner
-        title="When would you like your policy to start? "
-        text="Choose a date up to 20 days in advance."
-        :active="focus=='date'"
-      >
-        <input-datepicker
-          class="input"
-          placeholder="Select date"
-          v-model="internalDate"
-          :disabled-dates="disabledDates"
-          format="MMM d yyyy"
-          :disabled="!isDeductibleSet || !isDepositSet"
-          @focus="focus='date'">
-        </input-datepicker>
-      </banner>
+      <div class="questions__result">
+        <p class="questions__title">Desired Policy Start Date</p>
+        <p class="questions__value">{{ formatDate(quoteStartDate) }}</p>
+      </div>
       <div class="divider"></div>
-      <banner
-        title="Your insurance includes"
-        text="The following coverages are mandated by the NYC Taxi & Limousine Commission."
-      ></banner>
       <dropdown-info
         title="Bodily injury"
         price="$100,000 - $300,000"
@@ -86,19 +51,19 @@
     <div slot="right-column">
       <div class="insurance-info">
         <p class="insurance-title">Your insurance</p>
-        <div class="insurance-text">
+        <div class="insurance-text" v-if="!!liability">
           <span>Liability</span>
-          <span>{{ liabilityText }}</span>
+          <span>{{ liability }}</span>
         </div>
-        <div class="insurance-text">
+        <div class="insurance-text" v-if="hasDeductible">
           <div>
             <span>Physical coverage</span>
-            <span class="insurance-price" v-if="hasDeductible">Deductible {{ internalDeductible | currency }}</span>
+            <span class="insurance-price" v-if="!!quoteDeductible">Deductible {{ quoteDeductible | currency }}</span>
           </div>
           <span
             v-if="hasDeductible"
           >{{ physicalAmount| currency }}</span>
-          <span v-else-if="internalDeductible == 0">$0</span>
+          <span v-else-if="quoteDeductible == 0">$0</span>
           <span v-else>$--</span>
         </div>
         <div class="insurance-text insurance-text--total">
@@ -122,15 +87,13 @@
         <div class="insurance-estimated">
           <p>Deposit</p>
           <p class="estimated-price">{{ depositText }}</p>
-          <span class="estimated-date">{{ isDepositSet ? `${internalDeposit}%`:'--%' }} of total price</span>
+          <span class="estimated-date">{{ quoteDeposit ? `${quoteDeposit}%`:'--%' }} of total price</span>
         </div>
       </div>
       <button
-        class="insurance-action"
-        :class="{'active': ctaEnabled}"
-        :disabled="!ctaEnabled"
-        @click="getPolicy"
-      >Get Your Insurance Policy!
+        class="insurance-action active"
+        @click="pay"
+      >Pay {{ deposit | beautyCurrency }}
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
     </div>
@@ -149,10 +112,8 @@
       :base-number="quoteProcess.base_number"
       :insurance-name="quoteProcess.insurance_carrier_name"
       :insurance-policy="quoteProcess.insurance_policy_number"
-      :deposit-option="internalDeposit"
-      :deductible-option="internalDeductible"
-      :variations="quoteProcessCalcVariations"
-      :physical="selectedPhysical"
+      :deposit-option="quoteDeposit"
+      :deductible-option="quoteDeductible"
       :total="total"
       :monthly-payment="monthlyPayment"
       :deposit="deposit"
@@ -172,9 +133,7 @@ import { Route } from 'vue-router';
 
 import { addDays, addMonths, format } from 'date-fns';
 
-import Banner from '@/components/containers/banner.vue'
 import BasicButton from '@/components/buttons/basic-button.vue'
-import BasicSelect from '@/components/inputs/basic-select.vue'
 import DropdownInfo from '@/components/containers/dropdown-info.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import IconInfo from '@/components/icons/icon-info.vue'
@@ -186,17 +145,20 @@ import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 import { RouteName } from '@/router'
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
-import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical, QuoteProcessOptionsPayload } from '@/@types/quote';
+import { QuoteProcess, QuoteProcessPayment } from '@/@types/quote';
+import { User } from '@/@types/users';
 
 import { currency, beautyCurrency } from '@/utils/text'
 import { getHerefordFee } from '@/utils/quote'
 
 const quote = namespace('Quote')
+const quotePayment = namespace('QuotePayment')
+const users = namespace('Users')
 
 // Ninth Step 
 @Component({
   components: {
-    Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
+    BasicButton, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
     IconArrowRight, IconInfo, QuoteSummary, ModalPremium
   },
   filters: {
@@ -209,160 +171,104 @@ export default class StepQuote extends Vue {
   quoteId!: string
 
   @quote.Getter
-  magicLink!: string;
-
-  @quote.Getter
   quoteProcess?: QuoteProcess
 
   @quote.Getter
   quoteProcessId?: string
 
-  @quote.Getter
-  quoteProcessCalcVariations?: QuoteProcessCalcVariations
+  @quotePayment.Getter
+  quoteProcessPayment?: QuoteProcessPayment
+
+  @users.Getter
+  user?: User
 
   @quote.Action
   retrieveDeconstructQuoteProcess!: (id: string) => Promise<void>
 
-  @quote.Action
-  retrieveQuoteProcessCalcVariations!: (id: string) => Promise<void>
-
-  @quote.Action
-  updateQuoteProcessOptions!: (payload: QuoteProcessOptionsPayload) => Promise<void>
-
-  @quote.Action
-  updateQuoteProcessUser!: (userEmail: string) => Promise<void>
-
-  DEPOSIT_OPTIONS = [
-    {
-      text: '15%',
-      value: 15
-    },
-    {
-      text: '20%',
-      value: 20
-    },
-    {
-      text: '25%',
-      value: 25
-    }
-  ]
-
-  PHYSICAL_OPTIONS = [
-    {
-      text: 'No',
-      value: 0
-    },
-    {
-      text: '$750',
-      value: 750
-    },
-    {
-      text: '$1,000',
-      value: 1000
-    },
-    {
-      text: '$1,500',
-      value: 1500
-    }
-  ]
-
-  internalDeductible = -1
-  internalDeposit = 0
-  internalDate = ''
+  @quotePayment.Action
+  retrieveQuoteProcessPayment!: () => Promise<void>
   
   disabledDates = {
     to: new Date(),
     from: addDays(new Date(), 20)
   }
 
-  focus = 'physical'
   showPremium = false;
 
-  get ctaEnabled(): boolean {
-    return this.isDeductibleSet && this.isDepositSet && this.internalDate !== ''
-  }
-
   get hasDeductible(): boolean {
-    return this.internalDeductible > 0;
-  }
-
-  get isDepositSet(): boolean {
-    return this.internalDeposit > 0;
-  }
-
-  get isDeductibleSet(): boolean {
-    return this.internalDeductible !== -1;
+    return !!this.quoteProcess!.deductible;
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.internalDeposit/100)))/9;
+    return (this.total * (1-(this.quoteDeposit/100)))/9;
+  }
+
+  get quoteDeductible(): number {
+    return !!this.quoteProcess && !!this.quoteProcess.deductible ? this.quoteProcess.deductible:0
+  }
+
+  get quoteDeposit(): number {
+    return !!this.quoteProcess ? this.quoteProcess.deposit!:0
+  }
+
+  get quoteStartDate(): string {
+    return !!this.quoteProcess ? this.quoteProcess.start_date!:''
   }
 
   get deposit(): number {
-    if (!this.isDepositSet) {
-      return 0
-    }
-    return this.total * (this.internalDeposit/100)
+    return this.total * (this.quoteDeposit/100)
   }
 
   get herefordFee(): number {
-    return !!this.internalDeposit ? getHerefordFee(this.internalDeposit):0;
+    return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
   }
 
   get depositText(): string {
-    return this.isDepositSet ? beautyCurrency(this.deposit):'$--'
+    return this.quoteDeposit ? beautyCurrency(this.deposit):'$--'
   }
 
   get firstPaymentDue(): string {
-    if (!this.internalDate) {
+    if (!this.quoteStartDate) {
       return '--'
     }
-    const selectedDate = new Date(this.internalDate)
-    return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
+    const selectedDate = new Date(this.quoteStartDate)
+    return this.formatDate(addMonths(selectedDate, 3))
   }
 
-  get liabilityText(): string {
-    return !!this.quoteProcessCalcVariations ? currency(this.quoteProcessCalcVariations.liability_total):'$--'
+  get liability(): string {
+    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):0
   }
 
   get monthlyPaymentText(): string {
-    return this.isDepositSet ? beautyCurrency(this.monthlyPayment):'$--'
-  }
-
-  get selectedPhysical(): QuoteProcessVariationPhysical | undefined {
-    if (!!this.quoteProcessCalcVariations && this.hasDeductible) {
-      return this.quoteProcessCalcVariations.deductible[this.internalDeductible]
-    }
+    return this.quoteDeposit ? beautyCurrency(this.monthlyPayment):'$--'
   }
 
   get physicalAmount(): number {
-    return this.hasDeductible ? this.selectedPhysical!.physical_total:0
+    return !!this.quoteProcessPayment!.physical_amount ? Number(this.quoteProcessPayment!.physical_amount):0
   }
   
   get total(): number {
-    if (!this.quoteProcessCalcVariations) {
-      return 0;
-    }
-    return this.quoteProcessCalcVariations.liability_total + this.physicalAmount
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.official_hereford_quote):0
   }
 
-  @Watch('internalDeductible')
-  onPhysicalChange(val: string): void {
-    if (!!val) {
-      this.focus = 'deposit'
-    }
+  back(): void {
+    this.$router.push({ name: RouteName.DASHBOARD })
   }
 
-  @Watch('internalDeposit')
-  onDepositChange(val: string): void {
-    if (!!val) {
-      this.focus = 'date'
-    }
+  formatDate(date: Date | string): string {
+    return format(new Date(date), 'MMM d, yyyy')
   }
 
+  async pay(): Promise<void> {
+  
+  }
+
+  setShowPremium(value: boolean): void {
+    this.showPremium = value;
+  }
   async beforeRouteEnter (to: Route, from: Route, next: any): Promise<void> {
     next(async (vm: StepQuote) => {
-      if (!vm.quoteId) {
+      if (!vm.quoteId || !vm.user) {
         vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
       } else {
         if (!vm.quoteProcess) {
@@ -371,34 +277,14 @@ export default class StepQuote extends Vue {
             vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
           }
         }
-
-        if(!vm.quoteProcessCalcVariations) {
-          await vm.retrieveQuoteProcessCalcVariations(vm.quoteId);
-          if (!vm.quoteProcessCalcVariations) {
+        if (!vm.quoteProcessPayment) {
+          await vm.retrieveQuoteProcessPayment();
+          if (!vm.quoteProcessPayment) {
             vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
           }
         }
       }
     })
-  }
-
-  async getPolicy(): Promise<void> {
-    await this.updateQuoteProcessOptions({
-      deposit: this.internalDeposit,
-      deductible: this.hasDeductible ? this.internalDeductible:undefined,
-      start_date: this.internalDate
-    })
-    if (this.quoteProcess && !!this.quoteProcess.deposit) {
-      await this.updateQuoteProcessUser(this.quoteProcess.email)
-      
-      if (!!this.magicLink) {
-        this.$router.push({ name: RouteName.MAGIC_LINK, params: { id: this.magicLink } })
-      }
-    }
-  }
-
-  setShowPremium(value: boolean): void {
-    this.showPremium = value;
   }
 }
 </script>
@@ -517,5 +403,19 @@ export default class StepQuote extends Vue {
 
 .questions {
   margin-top: 1rem;
+
+  .questions__result {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 1.25rem;
+
+    .questions__title {
+      color:$blue-dark;
+      font-size: $fs-lg;
+      font-weight: $fw-bold;
+      line-height: 1.22;
+    }
+  }
 }
 </style>

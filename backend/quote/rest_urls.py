@@ -9,7 +9,7 @@ from quote.rest_views import (
   CreateQuoteProcessDocumentsAccidentReportView, 
   UpdateQuoteProcessDocumentsAccidentReportView,
   DeleteQuoteProcessDocumentsAccidentReportView,
-  UpdateQuoteProcessDocumentsView
+  UpdateQuoteProcessDocumentsView, RetrieveQuoteProcessPaymentView
 )
 
 urlpatterns = [
@@ -77,5 +77,10 @@ urlpatterns = [
       'quote_process_documents_accident_report/<uuid:pk>/delete/',
       DeleteQuoteProcessDocumentsAccidentReportView.as_view(),
       name="delete_quote_process_documents_accident_report"
+    ),
+    path(
+      'quote_process_payment/retrieve/',
+      RetrieveQuoteProcessPaymentView.as_view(),
+      name="retrieve_quote_process_payment"
     ),
 ]

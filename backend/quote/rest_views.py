@@ -12,7 +12,8 @@ from rest_framework.response import Response
 from users.models import User
 
 from quote.models import (
-  QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport)
+  QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
+  QuoteProcessPayment)
 from quote.serializers import (
   RetrieveUpdateQuoteProcessSerializer, CreateQuoteProcessSerializer,
   RetrieveQuoteProcessSerializer, CreateQuoteSoftFalloutSerializer,
@@ -20,8 +21,8 @@ from quote.serializers import (
   UpdateQuoteProcessDocumentsFileSerializer, 
   CreateQuoteProcessDocumentsAccidentReportSerializer,
   UpdateQuoteProcessDocumentsAccidentReportSerializer,
-  RetrieveQuoteProcessDocumentsSerializer,
-  UpdateQuoteProcessDocumentsSerializer
+  RetrieveQuoteProcessDocumentsSerializer, UpdateQuoteProcessDocumentsSerializer, 
+  RetrieveQuoteProcessPaymentSerializer
 )
 from quote.utils import generate_variations
 
@@ -143,4 +144,14 @@ class DeleteQuoteProcessDocumentsAccidentReportView(DestroyAPIView):
   def get_queryset(self):
     return QuoteProcessDocumentsAccidentReport.objects.filter(
       quote_process_documents__quote_process__user=self.request.user
+    )
+
+# Quote Process Payment
+class RetrieveQuoteProcessPaymentView(RetrieveAPIView):
+  permission_classes = (IsAuthenticated, )
+  serializer_class = RetrieveQuoteProcessPaymentSerializer
+
+  def get_object(self):
+    return QuoteProcessPayment.objects.get(
+      quote_process__user=self.request.user
     )

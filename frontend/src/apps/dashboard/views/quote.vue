@@ -39,10 +39,10 @@ export default class DashboardView extends Vue {
     next(async (vm: DashboardView)  => {
       if (!vm.quoteProcess) {
         await vm.retrieveQuoteProcess(vm.user.quoteprocess!)
-        const nextRoute = DashboardRouter.getRouteForQuoteStatus(vm.quoteProcess!.status)
-        if (nextRoute.name !== vm.$route.name) {
-          vm.$router.replace(nextRoute)
-        }
+      }
+      const nextRoute = DashboardRouter.getRouteForQuoteStatus(vm.quoteProcess!.status)
+      if (nextRoute.name !== vm.$route.name) {
+        vm.$router.replace(nextRoute)
       }
       vm.showDashboard = true;
     })

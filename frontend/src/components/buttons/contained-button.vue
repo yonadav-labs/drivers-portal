@@ -17,11 +17,12 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 
 import IconCheck from '@/components/icons/icon-check.vue'
+import IconDollar from '@/components/icons/icon-dollar.vue'
 import IconFileDownload from '@/components/icons/icon-file-download.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPenAlt from '@/components/icons/icon-pen-alt.vue'
 
-type Icon = ''| 'check' | 'file-download' | 'file-upload' | 'pen-alt'
+type Icon = ''| 'check' | 'dollar' | 'file-download' | 'file-upload' | 'pen-alt'
 
 @Component
 export default class ContainedButton extends Vue {
@@ -48,6 +49,8 @@ export default class ContainedButton extends Vue {
     switch (this.icon) {
       case 'check':
         return IconCheck;
+      case 'dollar':
+        return IconDollar;
       case 'file-download':
         return IconFileDownload
       case 'file-upload':

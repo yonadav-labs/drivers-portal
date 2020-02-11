@@ -21,3 +21,8 @@ export async function updateUserPassword(password: string): Promise<User> {
   const response = await client.put(`users/current/set_password/`, { password })
   return response.data
 }
+
+export async function login(user: string, password: string): Promise<{ id: string, token: string }> {
+  const response = await client.post(`users/login/`, { user, password })
+  return response.data
+}
