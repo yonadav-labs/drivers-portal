@@ -11,17 +11,17 @@
           ></breadcrumbs>
           <div
             class="header"
-            :class="{'simple-header': false && `goDriverBack != 'TLC' && activeStepName != 'SLOAD'`}"
+            :class="{'simple-header': simpleHeader}"
           >
             <h1>Stable</h1>
-            <p>Lets get you a TLC Insurance Quote!</p>
+            <p v-if="showSubText">Lets get you a TLC Insurance Quote!</p>
           </div>
           <slot></slot>
         </div>
 
         <div
           class="footer"
-          :class="{'footer--simple': false && `goDriverBack == 'TLC' || activeStepName === 'STY'|| activeStepName === 'SLOAD'`}"
+          :class="{'footer--simple': !showBack && !hideLogin}"
         >
           <basic-button
             class="back-button"
@@ -31,6 +31,15 @@
           >
             <icon-arrow-left size="16" class="icon--grey-darker" slot="before"></icon-arrow-left>
           </basic-button>
+          <basic-button
+            class="back-button"
+            text="Log In"
+            @click="login()"
+            v-if="!hideLogin"
+          >
+            <icon-user size="16" class="icon--grey-darker"></icon-user>
+          </basic-button>
+      
         </div>
       </div>
     </div>
@@ -41,31 +50,51 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
-import Breadcrumbs from './breadcrumbs.vue'
+import Breadcrumbs from '@/apps/quote/components/layout/breadcrumbs.vue'
 import IconArrowLeft from '@/components/icons/icon-arrow-left.vue'
+import IconUser from '@/components/icons/icon-user.vue'
 
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
+import { RouteName } from '@/router';
 
 @Component({
   components: {
-    BasicButton, Breadcrumbs, IconArrowLeft
+    BasicButton, Breadcrumbs, IconArrowLeft, IconUser
   }
 })
 export default class QuoteProcessLayout extends Vue {
+  @Prop({ default: false })
+  simpleHeader!: boolean
+
+  @Prop({ default: false })
+  showSubText!: boolean
 
   @Prop({ default: false })
   hideBack!: boolean
 
   @Prop({ default: false })
+  hideLogin!: boolean
+
+  @Prop({ default: false })
   hideBreadcrumbs!: boolean
+
+  @Prop()
+  onBack?: () => void
 
   get showBack(): boolean {
     return !this.hideBack && QuoteProcessRouter.hasPrevious(this.$route.name!);
   }
 
   back(): void {
-    this.$emit('back')
-    this.$router.push(QuoteProcessRouter.previousRoute(this.$route.name!))
+    if (!!this.onBack) {
+      this.onBack()
+    } else {
+      this.$router.push(QuoteProcessRouter.previousRoute(this.$route.name!))
+    }
+  }
+
+  login(): void {
+    this.$router.push({ name: RouteName.LOGIN })
   }
 }
 </script>
@@ -241,6 +270,7 @@ export default class QuoteProcessLayout extends Vue {
         background-color: $grey-medium;
         border-radius: 8px 8px 0 0;
         display: flex;
+        flex-flow: row;
         justify-content: space-between;
         height: 3.75rem;
         margin: 0 auto;

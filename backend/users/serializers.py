@@ -63,3 +63,28 @@ class RetrieveMagicLinkSerializer(serializers.ModelSerializer):
     model = MagicLink
     fields = ('id', 'email', 'token')
     read_only_fields = ('id', 'email')
+
+
+class LoginSerializer(serializers.Serializer):
+  user = serializers.EmailField(write_only=True)
+  password = serializers.CharField(write_only=True)
+
+  def validate_user(self, value):
+    try: 
+      user = User.objects.get(email=value)
+    except User.DoesNotExist:
+      raise serializers.ValidationError(
+          'Incorrect email or password'
+      )
+    return user
+  
+  def validate(self, data):
+    user = data.get('user')
+    password = data.get('password')
+    if not user.check_password(password):
+      raise serializers.ValidationError({
+        "user": [
+          'Incorrect email or password'
+        ]
+      })
+    return data

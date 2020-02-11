@@ -1,5 +1,5 @@
 <template>
-  <quote-process-layout :hide-breadcrumbs="showAnimation" :hide-back="showAnimation">
+  <quote-process-layout :hide-breadcrumbs="showAnimation" :hide-back="showAnimation" :hide-login="showAnimation">
     <quote-summary v-if="!showAnimation"></quote-summary>
     <div class='form' v-if="!showAnimation">
         <p class='form__explain'>Great! We just need your <span>email</span> to verify.</p>
@@ -46,7 +46,7 @@ import { Route } from 'vue-router';
 import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
-import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
 import LoadingQuote from '@/apps/quote/components/containers/loading-quote.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
