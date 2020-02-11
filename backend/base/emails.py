@@ -1,6 +1,7 @@
 from django.core.mail import EmailMessage
+from django.conf import settings
 
-from base.constants import DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
+from base.constants import MAIN_TEMPLATE_ID
 
 
 def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
@@ -39,3 +40,74 @@ def send_email(
             message.attach_file(attachment)
 
     message.send()
+
+
+def send_user_welcome_email(user, cta_url):
+    return send_email(
+        receiver=user.email,
+        subject="Welcome to Stable!",
+        context={
+            "subject": "Welcome to Stable!",
+            "title": "Welcome to Stable!",
+            "content": (
+                "Thank you for creating a quote with us! You are almost done. "
+                "Just upload the few documents in your dashboard and well get "
+                "your policy going in no time!"
+            ),
+            "cta": "Go to Stable",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
+
+
+def send_user_documents_submitted(user, cta_url):
+    return send_email(
+        receiver=user.email,
+        subject="Thank you for submitting all of your documents!",
+        context={
+            "subject": "Thank you for submitting all of your documents!",
+            "title": "Thank you for submitting all of your documents!",
+            "content": (
+                "Stable has kicked off the automated underwriting process. "
+                "You will be notified soon when your policy is ready!"
+            ).format(time),
+            "cta": "Go to Stable",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
+
+
+def send_user_policy_ready(user, cta_url):
+    return send_email(
+        receiver=user.email,
+        subject="Your policy is ready!",
+        context={
+            "subject": "Your policy is ready!",
+            "title": "Your policy is ready!",
+            "content": (
+                "Stable has completed your policy!"
+            ),
+            "cta": "Go to Stable",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
+
+
+def send_admin_notification_documents_submitted_email(user, cta_url):
+    return send_email(
+        receiver=settings.ADMIN_EMAIL,
+        subject="User has submitted all of their documents",
+        context={
+            "subject": "User has submitted all of their documents!",
+            "title": "User has submitted all of their documents!",
+            "content": (
+                "{} has submitted all of their documents."
+            ).format(user.full_name),
+            "cta": "Go to Dashboard",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
