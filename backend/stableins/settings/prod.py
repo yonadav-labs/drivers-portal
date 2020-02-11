@@ -8,7 +8,18 @@ DEBUG = False
 
 STAGE_ENV = 'production'
 
-ALLOWED_HOSTS = ()
+ALLOWED_HOSTS = (
+    'api.stableins.com',
+)
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 # Set the pdf generation system on debug mode
 # - watermarking
@@ -35,6 +46,10 @@ PLAID_CLIENT_SECRET_KEY = env("PLAID_CLIENT_PRODUCTION_SECRET_KEY")
 
 # HelloSign
 HELLOSIGN_CLIENTID = env("HELLOSIGN_CLIENTID_PROD")
+
+CORS_ORIGIN_WHITELIST = [
+    "app.stableins.com",
+]
 
 # Try to import local settings, if exists
 try:
