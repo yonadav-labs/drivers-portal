@@ -12,6 +12,7 @@ django-anymail[sendgrid]==5.0
 django-admin-tools==0.9.0
 django-object-actions==2.0.0
 django-nested-admin==3.2.4
+django-reverse-admin==2.8.2
 
 # Database
 psycopg2==2.7.6

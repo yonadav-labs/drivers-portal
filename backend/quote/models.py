@@ -1,6 +1,7 @@
 import os
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models, transaction
 
@@ -130,13 +131,13 @@ class QuoteProcess(BaseModel):
         null=True
     )
     deposit = models.PositiveIntegerField(
-        verbose_name='Deposit',
+        verbose_name='Deposit (%)',
         choices=QUOTE_PROCESS_DEPOSIT_CHOICES,
         blank=True,
         null=True
     )
     deductible = models.PositiveIntegerField( 
-        verbose_name='Physical Coverage', # Phsyical Coverage
+        verbose_name='Physical Coverage ($)', # Phsyical Coverage
         choices=QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
         blank=True,
         null=True
@@ -407,6 +408,24 @@ class QuoteProcessPayment(BaseModel):
         decimal_places=2
     )
 
+    liability_amount = models.DecimalField(
+      verbose_name='Liability Amount',
+      help_text="Just in case you want to show the amount to the user",
+      max_digits=7,
+      decimal_places=2,
+      blank=True,
+      null=True
+    )
+
+    physical_amount = models.DecimalField(
+      verbose_name='Physical Amount',
+      help_text="Just in case you want to show the amount to the user",
+      max_digits=7,
+      decimal_places=2,
+      blank=True,
+      null=True
+    )
+
     payment_date = models.DateTimeField(
         verbose_name='Payment Date',
         null=True,
@@ -417,8 +436,18 @@ class QuoteProcessPayment(BaseModel):
     def is_paid(self):
       return self.payment_date
 
+    def clean(self):
+      has_liability = self.liability_amount is not None
+      has_physical = self.physical_amount is not None
+      if has_liability and not has_physical or has_physical and not has_liability:
+        raise ValidationError("Both liability and phisical fields must be blank or set")
+      
+      if has_liability and has_physical:
+        if (self.liability_amount + self.physical_amount) != self.official_hereford_quote:
+          raise ValidationError("The sum of liability and physical must be equal to the official hereford quote")
+
     def save(self, *args, **kwargs):
-      created = not self.pk
+      created = self._state.adding is True
       was_paid = self.is_paid
       
       super().save(*args, **kwargs)

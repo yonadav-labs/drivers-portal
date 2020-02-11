@@ -1,0 +1,51 @@
+{% extends "admin/change_form.html" %}
+{% load quote_admin_utils %}
+
+{% block after_related_objects %}
+{{ block.super }}
+
+{% get_quote_process as quote %}
+
+{% if quote %}
+<fieldset class="djn-fieldset module ">
+  <h2>
+    Quote Process
+  </h2>
+  <div
+    class="djn-item djn-module djn-inline-form has_original inline-related dynamic-form grp-dynamic-form djn-dynamic-form-quote-quoteprocessdocuments"
+    data-inline-model="quote-quoteprocessdocuments" data-is-initial="true" id="quoteprocessdocuments-0">
+    <h3 class=" djn-drag-handler">
+      <span class="inline_label">
+        {{ quote }}
+      </span>
+    </h3>
+    <fieldset class="module aligned djn-module  has-inlines">
+      <div class="form-row field-dmv_license_front_side">
+        <div class="field-dmv_license_front_side">
+          <label for="id_quoteprocessdocuments-0-dmv_license_front_side">Estimated amount:</label>
+          <p>${{ quote.quote_amount }}</p>
+        </div>
+      </div>
+      <div class="form-row field-dmv_license_front_side">
+        <div class="field-dmv_license_front_side">
+          <label for="id_quoteprocessdocuments-0-dmv_license_front_side">Physical Coverage Deductible:</label>
+          <p>{% if quote.deductible %}${{ quote.get_deductible_display }}{% else %}No{% endif %}</p>
+        </div>
+      </div>
+      <div class="form-row field-dmv_license_front_side">
+        <div class="field-dmv_license_front_side">
+          <label for="id_quoteprocessdocuments-0-dmv_license_front_side">Deposit:</label>
+          <p>{{ quote.get_deposit_display }}</p>
+        </div>
+      </div>
+      <div class="form-row field-dmv_license_front_side">
+        <div class="field-dmv_license_front_side">
+          <label for="id_quoteprocessdocuments-0-dmv_license_front_side">Start Date:</label>
+          <p>{{ quote.start_date }}</p>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</fieldset>
+{% endif %}
+{% endblock %}
