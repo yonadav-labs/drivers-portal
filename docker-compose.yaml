@@ -1,0 +1,171 @@
+version: '3'
+
+services:
+  db:
+    image: "postgres:11-alpine"
+    restart: always
+    environment:
+      POSTGRES_DB: django
+      POSTGRES_USER: ${DATABASE_USER:-django}
+      POSTGRES_PASSWORD: ${DATABASE_PASS:-django}
+    volumes:
+      - "./dbdata:/var/lib/postgresql/data"
+
+  # Web client to inspect the DB
+  # adminer:
+  #   image: "adminer:latest"
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - db
+
+  redis:
+    image: "redis:5-alpine"
+    restart: always
+
+  web:
+    restart: on-failure
+    command: "./start.sh"
+    user: "${USER_ID:-1000:1000}"
+    build:
+      context: "."
+      dockerfile: "backend/Dockerfile"
+    environment:
+      USERNAME: ${USERNAME:-app}
+      GROUPNAME: ${GROUPNAME:-app}
+      GID: ${GID:-1000}
+      UID: ${UID:-1000}
+      ALLOWED_HOSTS:
+      ENV:
+      DJANGO_SECRET_KEY:
+      DATABASE_NAME: ${DATABASE_NAME:-django}
+      DATABASE_USER: ${DATABASE_USER:-django}
+      DATABASE_PASS: ${DATABASE_PASS:-django}
+      DATABASE_HOST: ${DATABASE_HOST:-db}
+      NYC_OPEN_DATA_SECRET_TOKEN: ${NYC_OPEN_DATA_SECRET_TOKEN}
+      NYC_OPEN_DATA_API_TOKEN: ${NYC_OPEN_DATA_API_TOKEN}
+      NYC_OPEN_DATA_API_USER: ${NYC_OPEN_DATA_API_USER}
+      NYC_OPEN_DATA_API_PASSWORD: ${NYC_OPEN_DATA_API_PASSWORD}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      STRIPE_LIVE_PUBLIC_KEY: ${STRIPE_LIVE_PUBLIC_KEY}
+      STRIPE_LIVE_SECRET_KEY: ${STRIPE_LIVE_SECRET_KEY}
+      STRIPE_TEST_PUBLIC_KEY: ${STRIPE_TEST_PUBLIC_KEY}
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY}
+      DEV_LOCALTUNNEL_SUB: ${DEV_LOCALTUNNEL_SUB:-stableins}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+      PLAID_CLIENT_PUBLIC_KEY: ${PLAID_CLIENT_PUBLIC_KEY}
+      PLAID_CLIENT_SANDBOX_SECRET_KEY: ${PLAID_CLIENT_SANDBOX_SECRET_KEY}
+      PLAID_CLIENT_DEVELOPMENT_SECRET_KEY: ${PLAID_CLIENT_DEVELOPMENT_SECRET_KEY}
+      PLAID_CLIENT_PRODUCTION_SECRET_KEY: ${PLAID_CLIENT_PRODUCTION_SECRET_KEY}
+      HELLOSIGN_APIKEY: ${HELLOSIGN_APIKEY}
+      HELLOSIGN_CLIENTID_DEV: ${HELLOSIGN_CLIENTID_DEV}
+      HELLOSIGN_CLIENTID_STAG: ${HELLOSIGN_CLIENTID_STAG}
+      HELLOSIGN_CLIENTID_PROD: ${HELLOSIGN_CLIENTID_PROD}
+      HELLOSIGN_TERMS_TEMPLATE_ID: ${HELLOSIGN_TERMS_TEMPLATE_ID}
+    volumes:
+      - "./backend:/code"
+    tmpfs:
+      - /tmp
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    command: celery -A stableins worker -l info
+    build:
+      context: "."
+      dockerfile: "backend/Dockerfile"
+    environment:
+      USERNAME: ${USERNAME:-app}
+      GROUPNAME: ${GROUPNAME:-app}
+      GID: ${GID:-1000}
+      UID: ${UID:-1000}
+      ALLOWED_HOSTS:
+      ENV:
+      DJANGO_SECRET_KEY:
+      DATABASE_NAME: ${DATABASE_NAME:-django}
+      DATABASE_USER: ${DATABASE_USER:-django}
+      DATABASE_PASS: ${DATABASE_PASS:-django}
+      DATABASE_HOST: ${DATABASE_HOST:-db}
+      NYC_OPEN_DATA_SECRET_TOKEN: ${NYC_OPEN_DATA_SECRET_TOKEN}
+      NYC_OPEN_DATA_API_TOKEN: ${NYC_OPEN_DATA_API_TOKEN}
+      NYC_OPEN_DATA_API_USER: ${NYC_OPEN_DATA_API_USER}
+      NYC_OPEN_DATA_API_PASSWORD: ${NYC_OPEN_DATA_API_PASSWORD}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      STRIPE_LIVE_PUBLIC_KEY: ${STRIPE_LIVE_PUBLIC_KEY}
+      STRIPE_LIVE_SECRET_KEY: ${STRIPE_LIVE_SECRET_KEY}
+      STRIPE_TEST_PUBLIC_KEY: ${STRIPE_TEST_PUBLIC_KEY}
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY}
+      DEV_LOCALTUNNEL_SUB: ${DEV_LOCALTUNNEL_SUB:-stableins}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+      PLAID_CLIENT_PUBLIC_KEY: ${PLAID_CLIENT_PUBLIC_KEY}
+      PLAID_CLIENT_SANDBOX_SECRET_KEY: ${PLAID_CLIENT_SANDBOX_SECRET_KEY}
+      PLAID_CLIENT_DEVELOPMENT_SECRET_KEY: ${PLAID_CLIENT_DEVELOPMENT_SECRET_KEY}
+      PLAID_CLIENT_PRODUCTION_SECRET_KEY: ${PLAID_CLIENT_PRODUCTION_SECRET_KEY}
+      HELLOSIGN_APIKEY: ${HELLOSIGN_APIKEY}
+      HELLOSIGN_CLIENTID_DEV: ${HELLOSIGN_CLIENTID_DEV}
+      HELLOSIGN_CLIENTID_STAG: ${HELLOSIGN_CLIENTID_STAG}
+      HELLOSIGN_CLIENTID_PROD: ${HELLOSIGN_CLIENTID_PROD}
+      HELLOSIGN_TERMS_TEMPLATE_ID: ${HELLOSIGN_TERMS_TEMPLATE_ID}
+    volumes:
+      - "./backend:/code"
+    tmpfs:
+      - /tmp
+    depends_on:
+      - db
+      - redis
+
+  beat:
+    command: celery -A stableins beat -l info
+    build:
+      context: "."
+      dockerfile: "backend/Dockerfile"
+    environment:
+      USERNAME: ${USERNAME:-app}
+      GROUPNAME: ${GROUPNAME:-app}
+      GID: ${GID:-1000}
+      UID: ${UID:-1000}
+      ALLOWED_HOSTS:
+      ENV:
+      DJANGO_SECRET_KEY:
+      DATABASE_NAME: ${DATABASE_NAME:-django}
+      DATABASE_USER: ${DATABASE_USER:-django}
+      DATABASE_PASS: ${DATABASE_PASS:-django}
+      DATABASE_HOST: ${DATABASE_HOST:-db}
+      NYC_OPEN_DATA_SECRET_TOKEN: ${NYC_OPEN_DATA_SECRET_TOKEN}
+      NYC_OPEN_DATA_API_TOKEN: ${NYC_OPEN_DATA_API_TOKEN}
+      NYC_OPEN_DATA_API_USER: ${NYC_OPEN_DATA_API_USER}
+      NYC_OPEN_DATA_API_PASSWORD: ${NYC_OPEN_DATA_API_PASSWORD}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      STRIPE_LIVE_PUBLIC_KEY: ${STRIPE_LIVE_PUBLIC_KEY}
+      STRIPE_LIVE_SECRET_KEY: ${STRIPE_LIVE_SECRET_KEY}
+      STRIPE_TEST_PUBLIC_KEY: ${STRIPE_TEST_PUBLIC_KEY}
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY}
+      DEV_LOCALTUNNEL_SUB: ${DEV_LOCALTUNNEL_SUB:-stableins}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+      PLAID_CLIENT_PUBLIC_KEY: ${PLAID_CLIENT_PUBLIC_KEY}
+      PLAID_CLIENT_SANDBOX_SECRET_KEY: ${PLAID_CLIENT_SANDBOX_SECRET_KEY}
+      PLAID_CLIENT_DEVELOPMENT_SECRET_KEY: ${PLAID_CLIENT_DEVELOPMENT_SECRET_KEY}
+      PLAID_CLIENT_PRODUCTION_SECRET_KEY: ${PLAID_CLIENT_PRODUCTION_SECRET_KEY}
+      HELLOSIGN_APIKEY: ${HELLOSIGN_APIKEY}
+      HELLOSIGN_CLIENTID_DEV: ${HELLOSIGN_CLIENTID_DEV}
+      HELLOSIGN_CLIENTID_STAG: ${HELLOSIGN_CLIENTID_STAG}
+      HELLOSIGN_CLIENTID_PROD: ${HELLOSIGN_CLIENTID_PROD}
+      HELLOSIGN_TERMS_TEMPLATE_ID: ${HELLOSIGN_TERMS_TEMPLATE_ID}
+    volumes:
+      - "./backend:/code"
+    tmpfs:
+      - /tmp
+    depends_on:
+      - db
+      - redis
+  
+  localtunnel:
+    image: efrecon/localtunnel
+    restart: on-failure
+    links:
+      - web
+    command:
+      --subdomain ${DEV_LOCALTUNNEL_SUB:-stableins} --local-host web --port 8000

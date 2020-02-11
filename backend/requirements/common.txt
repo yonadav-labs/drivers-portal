@@ -1,0 +1,38 @@
+# Django
+Django>=2.1.4,<3
+djangorestframework>=3.9.0,<4
+django-cors-headers==2.4.0
+pytest==4.1.1
+pytest-django==3.4.5
+factory-boy==2.11.1
+django-environ==0.4.4
+django-anymail[sendgrid]==5.0
+
+# Admin
+django-admin-tools==0.9.0
+django-object-actions==2.0.0
+django-nested-admin==3.2.4
+
+# Database
+psycopg2==2.7.6
+
+# Celery
+celery[redis]==4.2.1
+redis==3.3.11
+
+sodapy==1.5.0
+requests==2.21.0
+python-rapidjson==0.7.0
+
+# Stripe
+stripe==2.21.0
+# Plaid
+plaid-python==2.4.1
+
+# xlsx
+xlrd==1.2.0
+
+# HelloSign
+hellosign-python-sdk==3.8.7
+
+glom==19.2.0

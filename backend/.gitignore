@@ -1,0 +1,5 @@
+celerybeat-schedule
+celerybeat.pid
+
+#django
+static/
