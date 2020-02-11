@@ -1,5 +1,5 @@
 <template>
-  <div class="docs-view">
+  <div class="docs-view" ref="main">
     <h3 class="title">Upload Documents</h3>
     <div class="docs-header">
       <div class="docs-header__info">
@@ -11,7 +11,7 @@
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}</p>
-          <span class="estimate__info">First Payment Due
+          <span class="estimate__info">9 payments starting on
             <br>
             {{ firstPaymentDue }}
           </span>
@@ -72,9 +72,10 @@
             <div class="status" :class="docFieldStatus(doc.field)">{{ docFieldStatusCopy(doc.field) }}</div>
           </div>
           <div class="document-row__actions">
-            <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download"><icon-file-download></icon-file-download></button-icon>
+            <button-icon class="document-row__action-icon" @click="downloadDoc(getDocumentUrl(doc.field))" :disabled="!isDocUploaded(doc.field)" title="Download" v-if="!isSubmittedForReview"><icon-file-download></icon-file-download></button-icon>
             <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove" v-if="!isSubmittedForReview"><icon-cross></icon-cross></button-icon>
             <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled" v-if="!isSubmittedForReview"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
+            <contained-button color="grey" icon="file-download" @click="downloadDoc(getDocumentUrl(doc.field))" v-else>Download</contained-button>
           </div>
         </div>
         <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
@@ -88,7 +89,7 @@
             <div v-for="(report, index) in accidentReports" :key="report.id" class="document-row">
               <div class="document-row__name">
                 Accident Report #{{ index + 1}} 
-                <span class="document-row__filename" v-if="!!report.accident_report" :title="report.accident_report | getFilename">&nbsp;— {{ report.accident_report | getFilename }}</span>
+                <span class="document-row__filename" v-if="!!report.accident_report" :title="report.accident_report | getFilename">{{ report.accident_report | getFilename }}</span>
               </div>
               <div class="document-row__actions">
                 <button-icon class="document-row__action-icon" :disabled="!report.accident_report" @click="downloadDoc(report.accident_report)"><icon-file-download></icon-file-download></button-icon>
@@ -98,7 +99,7 @@
               </div>
             </div>
             <div class="documents__add-accident">
-              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="!isAccidentReportsReady"><basic-button text="Add Accident Report" :disabled="!isAccidentReportsReady"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
+              <file-upload-handler @change="createQuoteProcessDocumentsAccidentReport" :disabled="!isAccidentReportsReady" v-if="!isSubmittedForReview"><basic-button text="Add Accident Report" :disabled="!isAccidentReportsReady"><icon-plus-circle slot="before"></icon-plus-circle></basic-button></file-upload-handler>
             </div>
           </div>
         </div>
@@ -357,6 +358,11 @@ export default class DashboardQuoteUploadView extends Vue {
     if (this.isReadyForSubmit) {
       this.updateQuoteProcessDocuments({is_submitted_for_review: true});
     }
+    window.scroll({
+      top: 0,  
+      behavior: 'smooth'
+    });
+
   }
  
 
@@ -504,6 +510,7 @@ export default class DashboardQuoteUploadView extends Vue {
   &.broker-section--submitted {
     background-color: transparent;
     border: 1px solid $grey-medium-light;
+    margin-bottom: 0.25rem;
     padding: 0.75rem 1.875rem;
 
     .broker-section__info {
@@ -654,6 +661,15 @@ export default class DashboardQuoteUploadView extends Vue {
           line-height: 24px;
           max-width: calc(100% - 10rem);
           padding-left: calc(1.125rem);
+
+          .document-row__filename {
+            &::before {
+              content: "—";
+              margin-left: 0.5rem;
+              margin-right: 0.5rem;
+              position: relative;
+            }
+          }
         }
 
         .document-row__actions {
@@ -702,16 +718,47 @@ export default class DashboardQuoteUploadView extends Vue {
   &.documents--done {
 
     .documents__header {
-      .documents__header-name {
-        &.documents__header-name--actions {
-          text-align: right;
-        }
-      }
+      display: none;
     }
 
     .document-row {
       .document-row__actions {
         justify-content: flex-end;
+        flex-basis: 8rem;
+        flex-grow: 1;
+        margin-right: 1.875rem;
+      }
+
+      .document-row__status {
+        display: none;
+      }
+
+      .status {
+        display: none;
+      }
+
+      .document-row__name {
+        align-items: center;
+        flex-basis: calc(100% - 12.25rem);
+        flex-flow: row nowrap;
+        max-width: calc(100% - 12.25rem);
+      }
+
+      .document-row__filename {
+        &::before {
+          content: "—";
+          margin-left: 0.5rem;
+          margin-right: 0.5rem;
+          position: relative;
+        }
+      }
+
+      .document-row__children {
+        .document-row__actions {
+          .svg-icon-center {
+            color: $blue !important;
+          }
+        }
       }
     }
   }

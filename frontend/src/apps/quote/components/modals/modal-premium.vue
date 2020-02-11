@@ -171,7 +171,7 @@
           <div class="insurance-estimated">
             <p>Monthly payment</p>
             <p class="estimated-price">{{ monthlyPaymentText }}</p>
-            <span class="estimated-date">First Payment Due
+            <span class="estimated-date">9 payments starting on
               <br>
               {{ firstPaymentDue }}
             </span>

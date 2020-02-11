@@ -15,7 +15,10 @@ export default class FileUploadHandler extends Vue {
 
   change(event: Event): void {
     const target = (event.target! as HTMLInputElement)
-    this.$emit('change', (target.files || [])[0]);
+    const file = (target.files || [])[0];
+    if (!!file) {
+      this.$emit('change', file);
+    }
   }
 }
 </script>

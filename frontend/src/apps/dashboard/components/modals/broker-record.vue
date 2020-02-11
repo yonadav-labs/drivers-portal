@@ -66,7 +66,7 @@ import { Colors } from '@/utils/colors'
 export default class ModalBrokerRecord extends Vue {
   accepted: boolean | string = '';
 
-  accept() {
+  accept():void {
     this.$emit('submit')
   }
 }
