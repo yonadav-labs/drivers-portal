@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import { QuoteStatus } from '@/@types/quote';
 import { User } from '@/@types/users';
 
-import { APIProperty, APIState, setAuthToken } from '@/store/api'
+import { APIProperty, APIState, setAuthToken, clearAuthToken } from '@/store/api'
 import { getCurrentUser, getMagicLink, updateUserPassword } from '@/store/users/api'
 
 @Module({ namespaced: true })
@@ -49,6 +49,12 @@ export default class UsersVuexModule extends VuexModule {
   @Mutation
   setUserPartial(payload: User | Error): void {
     this.apiUser = APIState.patch(this.apiUser, payload)
+  }
+
+  @Action
+  async logout(): Promise<void> {
+    clearAuthToken();
+    this.context.dispatch('resetStore')
   }
 
   @Action

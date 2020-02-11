@@ -2,7 +2,7 @@
   <nav class="container">
     <span class="logo">Stable</span>
     <div class="notifications-container">
-      <div class="logout">
+      <div class="logout" @click="onLogout">
         <span>Log out</span><icon-logout size="18"></icon-logout>
       </div>
     </div>
@@ -12,11 +12,15 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
+import { Action, namespace } from 'vuex-class'
+
 import DashboardMenu from '@/apps/dashboard/components/navigation/dashboard-menu.vue'
 import IconLogout from '@/components/icons/icon-logout.vue'
 
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
+
+const users = namespace('Users')
 
 @Component({
   components: {
@@ -24,7 +28,15 @@ import { DashboardQuoteRouteName } from '@/router/dashboard'
   }
 })
 export default class DashboardNavbar extends Vue {
-    routeNames = DashboardQuoteRouteName
+  @users.Action
+  logout!: () => void;
+
+  routeNames = DashboardQuoteRouteName
+
+  async onLogout(): Promise<void> {
+    await this.logout();
+    window.location.reload()
+  }
 }
 </script>
 
