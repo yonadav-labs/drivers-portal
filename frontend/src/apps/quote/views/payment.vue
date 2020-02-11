@@ -236,7 +236,7 @@ export default class StepQuote extends Vue {
   }
 
   get liability(): string {
-    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):0
+    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):'0'
   }
 
   get monthlyPaymentText(): string {
