@@ -16,7 +16,7 @@ import { Route } from 'vue-router';
 import { QuestionsStep } from '@/@types/quote';
 
 import QuoteProcessYesNoForm from '@/apps/quote/components/forms/quote-process-yes-no-form.vue'
-import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'

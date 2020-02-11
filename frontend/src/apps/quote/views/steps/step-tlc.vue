@@ -66,7 +66,7 @@ import BasicInput from '@/components/inputs/basic-input.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import IconCheck from '@/components/icons/icon-check.vue'
 import IconCross from '@/components/icons/icon-cross.vue'
-import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import ErrorMessage from '@/components/error-message.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
