@@ -9,6 +9,10 @@ from rest_framework.generics import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from payment.serializers import (
+  StripeDepositChargeCreateSerializer,
+  PlaidDepositChargeCreateSerializer
+)
 from users.models import User
 
 from quote.models import (
@@ -155,3 +159,22 @@ class RetrieveQuoteProcessPaymentView(RetrieveAPIView):
     return QuoteProcessPayment.objects.get(
       quote_process__user=self.request.user
     )
+
+
+class PayQuoteProcessPaymentBaseView(CreateAPIView):
+  permission_classes = (IsAuthenticated, )
+  
+  def perform_create(self, serializer):
+    payment = get_object_or_404(QuoteProcessPayment.objects.get(
+      quote_process__user=self.request.user,
+      payment_date__isnull=True 
+    ))
+    charge = serializer.save()
+    payment.mark_as_paid(charge)
+
+
+class StripePayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
+  serializer_class = StripeDepositChargeCreateSerializer
+
+class PlaidPayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
+  serializer_class = PlaidDepositChargeCreateSerializer

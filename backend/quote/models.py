@@ -4,8 +4,10 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models, transaction
+from django.utils import timezone
 
 from base.models import BaseModel
+from payment.models import StripeCharge
 
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
@@ -431,6 +433,14 @@ class QuoteProcessPayment(BaseModel):
         null=True,
         blank=True
     )
+
+    stripe_charge = models.OneToOneField(
+      verbose_name='Stripe Charge',
+      to=StripeCharge,
+      on_delete=models.SET_NULL,
+      null=True,
+      blank=True
+    )
   
     @property
     def is_paid(self):
@@ -454,6 +464,12 @@ class QuoteProcessPayment(BaseModel):
       
       if created or (not was_paid and self.is_paid):
         self.quote_process.update_status()
+
+    def mark_as_paid(charge):
+      self.stripe_charge = charge
+      self.payment_date = timezone.now()
+      self.save()
+      self.quote_process.update_status()
 
     class Meta:
         verbose_name = 'Quote Process Payment'
