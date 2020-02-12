@@ -26,12 +26,13 @@ const routes = [
         ...DashboardRoutes
       ]
     },
+    // TODO: Move this two to Quote
     {
-      path: '/test/:quoteId/', component: DepositPaymentView, name: 'test', props: true
-    }, 
-    {
-      path: '/quote/review/:quoteId/', component: QuoteProcessReviewView, name: RouteName.REVIEW, props: true
+      path: '/quote/review/', component: QuoteProcessReviewView, name: RouteName.REVIEW,
     },
+    {
+      path: '/quote/pay/', component: DepositPaymentView, name: RouteName.PAYMENT,
+    }, 
     {
       path: '/login/', component: LoginView, name: RouteName.LOGIN
     },
