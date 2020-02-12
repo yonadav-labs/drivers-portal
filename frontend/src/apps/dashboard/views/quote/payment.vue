@@ -238,7 +238,7 @@ export default class DashboardQuotePaymentView extends Vue {
   }
  
   goToPayment(): void {
-    this.$router.push({ name: RouteName.PAYMENT, params: {quoteId: this.quoteProcess!.id}})
+    this.$router.push({ name: RouteName.REVIEW, params: {quoteId: this.quoteProcess!.id}})
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {

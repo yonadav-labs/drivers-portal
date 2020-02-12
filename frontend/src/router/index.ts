@@ -3,8 +3,9 @@ import VueRouter from 'vue-router'
 import QuoteRoutes from './quote'
 import DashboardRoutes from './dashboard'
 
+import DepositPaymentView from '@/apps/quote/views/deposit-payment.vue'
 import QuoteProcessMainView from '@/apps/quote/views/quote-process.vue'
-import QuoteProcessPaymentView from '@/apps/quote/views/payment.vue'
+import QuoteProcessReviewView from '@/apps/quote/views/quote-review.vue'
 import DashboardMainView from '@/apps/dashboard/views/main.vue'
 
 import LoginView from '@/views/login.vue'
@@ -15,6 +16,7 @@ export enum RouteName {
   DASHBOARD = 'dashboard',
   PAYMENT = 'payment',
   LOGIN = 'login',
+  REVIEW = 'review'
 }
 
 const routes = [
@@ -25,7 +27,10 @@ const routes = [
       ]
     },
     {
-      path: '/payment/:quoteId/', component: QuoteProcessPaymentView, name: RouteName.PAYMENT, props: true
+      path: '/test/:quoteId/', component: DepositPaymentView, name: 'test', props: true
+    }, 
+    {
+      path: '/quote/review/:quoteId/', component: QuoteProcessReviewView, name: RouteName.REVIEW, props: true
     },
     {
       path: '/login/', component: LoginView, name: RouteName.LOGIN
