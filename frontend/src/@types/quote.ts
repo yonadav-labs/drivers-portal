@@ -105,4 +105,6 @@ export interface QuoteProcessPayment {
   deposit: number,
   monthly_payment: number,
   hereford_fee: number,
+  stripe_fee: number,
+  plaid_fee: number
 }

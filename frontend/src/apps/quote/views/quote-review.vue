@@ -257,7 +257,7 @@ export default class StepQuoteReview extends Vue {
   }
   async beforeRouteEnter (to: Route, from: Route, next: any): Promise<void> {
     next(async (vm: StepQuoteReview) => {
-      if (!vm.user || !vm.quoteProcess || !vm.quoteProcessPayment) {
+      if (!vm.user || !vm.quoteProcess || !vm.quoteProcessPayment || !!vm.quoteProcessPayment.payment_date) {
           // We want the user to came from the dashboard
           vm.$router.push({ name: RouteName.DASHBOARD })
         }

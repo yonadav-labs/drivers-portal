@@ -100,7 +100,7 @@
       </div>
     </form>
     <basic-button
-      text="Pay now"
+      :text="`Pay ${currencyAmount}`"
       class="payment-button"
       color="#F76707"
       @click.prevent="submitForm"
@@ -124,6 +124,8 @@ import BasicButton from '@/components/buttons/basic-button.vue';
 import BasicInput from '@/components/inputs/basic-input.vue';
 import BasicInputStripe from '@/components/inputs/basic-input-stripe.vue';
 
+import { currency } from '@/utils/text'
+
 import { getStripeClient } from '@/utils/payment'
 
 const stripeRequiredValidator = (value: string) => !value;
@@ -132,9 +134,15 @@ const stripeRequiredValidator = (value: string) => !value;
   components: {
     BasicButton, BasicInput, BasicInputStripe,
   },
-  mixins: [validationMixin, ]
+  filters: {
+    currency,
+  },
+  mixins: [validationMixin, ],
 })
 export default class CreditCardForm extends Vue {
+
+  @Prop()
+  amount!: number
   
   @Validations()
   validations =  {
@@ -195,6 +203,10 @@ export default class CreditCardForm extends Vue {
   stripeCli: any = undefined
   creditCard = false
 
+  get currencyAmount(): string {
+    return currency(this.amount)
+  }
+
   stripeFieldsInvalid(): boolean {
     return (
       this.form.cardNumber.error ||
@@ -229,10 +241,14 @@ export default class CreditCardForm extends Vue {
     if (this.$v.$invalid || this.stripeFieldsInvalid()) {
       return;
     }
-    this.loading = true;
+    this.$emit('loading')
     const token = await this.stripeCreateCardToken();
     if (token !== null) {
-      this.$emit('success', token);
+      this.$emit('success', {
+        source: token.id,
+        name: this.form.name.trim(),
+        card_id: token.card.id
+      });
     }
   }
 
