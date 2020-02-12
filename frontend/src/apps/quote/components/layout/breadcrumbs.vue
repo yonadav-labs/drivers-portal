@@ -32,6 +32,9 @@ export default class Breadcrumbs extends Vue {
       OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
       OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
       OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+      OrderedQuoteRouteName.QUESTION_DASHCAM,
+      OrderedQuoteRouteName.QUESTION_HYBRID,
+      OrderedQuoteRouteName.QUESTION_DWI,
       OrderedQuoteRouteName.EMAIL,
       OrderedQuoteRouteName.QUOTE,
   ]
@@ -43,6 +46,9 @@ export default class Breadcrumbs extends Vue {
     OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
     OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
     OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+    OrderedQuoteRouteName.QUESTION_DASHCAM,
+    OrderedQuoteRouteName.QUESTION_HYBRID,
+    OrderedQuoteRouteName.QUESTION_DWI,
   ]
 
   get filteredSteps(): string[] {

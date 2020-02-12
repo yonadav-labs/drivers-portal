@@ -1,8 +1,11 @@
 <template>
   <quote-process-layout>
     <quote-summary></quote-summary>
-    <quote-process-radio-form :answers="answers" name="years" v-model="value" @next="onNext">
+    <quote-process-radio-form :answers="answers" name="years" v-model="value" @next="onNext" v-if="!extraAccidents">
       How many at fault accidents do you have in the last 36 months? 
+    </quote-process-radio-form>
+    <quote-process-radio-form :answers="extraAnswers" name="extra" v-model="extraValue" @next="onNext" v-else>
+      How many accidents (not at fault) do you have in the last 72 months? 
     </quote-process-radio-form>
   </quote-process-layout>
 </template>
@@ -47,6 +50,8 @@ export default class StepQuestionFaultAccidents extends Vue {
   updateQuestionAnswers!: (payload: QuestionsStep) => void;
 
   value = ''
+  extraValue = ''
+  extraAccidents = false;
   
   answers = [
     {
@@ -67,10 +72,36 @@ export default class StepQuestionFaultAccidents extends Vue {
     },
   ]
 
+  extraAnswers = [
+    {
+      label: '0',
+      value: '0'
+    },
+    {
+      label: '1-3',
+      value: '1-3'
+    },
+    {
+      label: '4+',
+      value: '4+'
+    },
+  ]
+
   onNext(): void {
-    this.updateQuestionAnswers({ fault_accidents_last_months: this.value })
-    this.updateStepStatus({ step: this.$route.name!, value: true });
-    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
+    if (!this.extraAccidents) {
+      this.updateQuestionAnswers({ fault_accidents_last_months: this.value })
+      if (this.value === '0') {
+        this.extraAccidents = true;
+      } else {
+        this.updateStepStatus({ step: this.$route.name!, value: true });
+        this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
+      }
+    } else {
+      this.updateQuestionAnswers({ accidents_72_months: this.extraValue })
+      this.updateStepStatus({ step: this.$route.name!, value: true });
+      this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
+    }
+
   }
 
   resetState(): void {

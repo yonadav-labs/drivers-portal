@@ -2,7 +2,7 @@
   <quote-process-layout>
     <quote-summary></quote-summary>
     <quote-process-yes-no-form @yes="yes" @no="no">
-      Does your vehicle have an accident avoidance system? 
+      Is your vehicle electric or hybrid?
     </quote-process-yes-no-form>
   </quote-process-layout>
 </template>
@@ -30,7 +30,7 @@ const quote = namespace('Quote')
     QuoteProcessLayout, QuoteProcessYesNoForm, QuoteSummary
   }
 })
-export default class StepQuestionAccidentAvoidance extends Vue {
+export default class StepQuestionHybrid extends Vue {
   @quote.Getter
   stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
@@ -41,17 +41,17 @@ export default class StepQuestionAccidentAvoidance extends Vue {
   updateQuestionAnswers!: (payload: QuestionsStep) => void;
 
   yes(): void {
-    this.updateQuestionAnswers({ accident_avoidance_system: true })
+    this.updateQuestionAnswers({ vehicle_is_hybrid: true })
     this.next()
   }
 
   no(): void {
-    this.updateQuestionAnswers({ accident_avoidance_system: false })
+    this.updateQuestionAnswers({ vehicle_is_hybrid: false })
     this.next()
   }
 
   resetState(): void {
-    this.updateQuestionAnswers({ accident_avoidance_system: undefined });
+    this.updateQuestionAnswers({ vehicle_is_hybrid: undefined });
     this.updateStepStatus({ step: this.$route.name!, value: false });
   }
 
@@ -61,7 +61,7 @@ export default class StepQuestionAccidentAvoidance extends Vue {
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
-    next((vm: StepQuestionAccidentAvoidance) => {
+    next((vm: StepQuestionHybrid) => {
       vm.resetState();
       
       if (!vm.stepCompletedByName(QuoteProcessRouter.previousRouteName(vm.$route.name!))) {
