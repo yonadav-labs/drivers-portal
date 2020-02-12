@@ -242,12 +242,26 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
 
 
 class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
+  deposit = serializers.SerializerMethodField()
+  monthly_payment = serializers.SerializerMethodField()
+  hereford_fee = serializers.SerializerMethodField()
+
+  def get_deposit(self, obj):
+    return obj.get_deposit()
+
+  def get_monthly_payment(self, obj):
+    return obj.get_monthly_payment()
+
+  def get_hereford_fee(self, obj):
+    return obj.get_hereford_fee()
 
   class Meta:
     fields = (
-      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
+      'deposit', 'monthly_payment', 'hereford_fee'
     )
     read_only_fields = (
-      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
+      'deposit', 'monthly_payment', 'hereford_fee'
     )
     model = QuoteProcessPayment

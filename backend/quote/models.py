@@ -16,7 +16,8 @@ from quote.constants import (
     QUOTE_STATUS_DOCS
 )
 from quote.managers import QuoteProcessQuerySet
-from quote.utils import generate_variations, get_quote_status
+from quote.utils import (
+  generate_variations, get_quote_status, get_hereford_fee)
 
 # Create your models here.
 class QuoteProcess(BaseModel):
@@ -465,11 +466,21 @@ class QuoteProcessPayment(BaseModel):
       if created or (not was_paid and self.is_paid):
         self.quote_process.update_status()
 
-    def mark_as_paid(charge):
+    def mark_as_paid(self, charge):
       self.stripe_charge = charge
       self.payment_date = timezone.now()
       self.save()
       self.quote_process.update_status()
+
+    def get_monthly_payment(self):
+      deposit = self.quote_process.deposit
+      return (float(self.official_hereford_quote) * (1-(deposit/100)))/9
+
+    def get_hereford_fee(self):
+      return get_hereford_fee(self.quote_process.deposit)
+
+    def get_deposit(self):
+      return float(self.official_hereford_quote) * (self.quote_process.deposit/100)
 
     class Meta:
         verbose_name = 'Quote Process Payment'
