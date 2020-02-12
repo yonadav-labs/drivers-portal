@@ -13,7 +13,7 @@ from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
     FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
-    QUOTE_STATUS_DOCS
+    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
 from quote.utils import (
@@ -119,6 +119,29 @@ class QuoteProcess(BaseModel):
     accident_avoidance_system = models.BooleanField(
         verbose_name='Accident avoidance system',
     )
+
+    # New questions
+    dash_cam = models.BooleanField(
+        verbose_name='Dash Cam',
+    )
+    accidents_72_months = models.CharField(
+        verbose_name='Accidents in last 72 months',
+        max_length=2,
+        choices=ACCIDENTS_72_CHOICES
+    )
+    vehicle_is_hybrid = models.BooleanField(
+        verbose_name='Vehicle is hybrid',
+    )
+    dwi_36_months = models.BooleanField(
+      verbose_name='DWI or DUI violation within the past 36 months',
+    )
+    fault_accident_pedestrian = models.BooleanField(
+      verbose_name='Fault accident w/ pedestrian/bicyclist 24 months',
+    )
+    speeding_violation =models.BooleanField(
+      verbose_name='Speeding violation > 30 MPH within the last 24 months',
+    )
+
 
     # Step 4
     email = models.EmailField(

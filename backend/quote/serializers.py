@@ -26,7 +26,9 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
-        'deposit' , 'start_date', 'quote_amount', 'deductible'
+        'deposit' , 'start_date', 'quote_amount', 'deductible',
+        'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 'dwi_36_months', 
+        'fault_accident_pedestrian', 'speeding_violation', 
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -36,7 +38,8 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'deposit' , 'start_date', 'quote_amount',
-        'deductible'
+        'deductible', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
     )
     model = QuoteProcess
 
@@ -55,7 +58,8 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
     )
     model = QuoteProcess
 
@@ -81,7 +85,8 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
     )
     model = QuoteProcess
 
