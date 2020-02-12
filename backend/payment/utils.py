@@ -10,6 +10,7 @@ from rest_framework import serializers
 from payment.constants import (
     STRIPE_PAYMENT_CHARGE_SUCCESS,
     STRIPE_PAYMENT_CHARGE_PENDING,
+    STRIPE_PERCENTAGE_FEE, STRIPE_FIXED_FEE, PLAID_FEE
 )
 from payment.client import get_stripe_cli, get_plaid_cli
 from payment.models import StripeCharge, StripeCustomer
@@ -182,9 +183,35 @@ def get_or_create_stripe_customer(
         customer = StripeCustomer.objects.get(**q_params)
         # Update stripe customer sources
         stripe = get_stripe_cli()
-        stripe_customer = stripe.Customer.modify(
-            customer.stripe_id, **{"metadata": metadata, "source": source}
-        )
+
+        try:
+          stripe_customer = stripe.Customer.modify(
+              customer.stripe_id, **{"metadata": metadata, "source": source}
+          )
+        except error.CardError as charge_exception:
+            raise serializers.ValidationError(charge_exception.user_message)
+        except stripe.error.InvalidRequestError as charge_exception:
+            # Invalid parameters were supplied to Stripe's API
+            # No such customer
+            if (
+                charge_exception.code == "resource_missing"
+                and charge_exception.param == "customer"
+            ):
+                raise serializers.ValidationError("Temporary error. Please try again.")
+            elif (
+                charge_exception.code is None
+                and charge_exception.user_message == "This account cannot create payments."
+            ):
+                # This seems a bug on the plaid + stripe testing  platform
+                # Raise a validation error so customer can pay choose
+                # to pay with credit card
+                raise serializers.ValidationError("Temporary error. Please try again.")
+            else:
+                raise charge_exception
+        except error.StripeError as charge_exception:
+            if payment_type == "bank_account":
+                raise serializers.ValidationError(charge_exception.user_message)
+            raise charge_exception
         default_source = glom(stripe_customer, "default_source", default="")
         customer.last_default_source_id = default_source
         customer.save()
@@ -243,3 +270,9 @@ def is_quote_process_paid_or_pending(quote_process_id, user):
         return True
     except StripeCharge.DoesNotExist:
         return False
+
+def apply_stripe_fee(amount):
+  return (amount + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENTAGE_FEE)
+
+def apply_plaid_fee(amount):
+  return amount + PLAID_FEE

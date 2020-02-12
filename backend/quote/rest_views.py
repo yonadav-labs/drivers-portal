@@ -8,11 +8,13 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 from payment.serializers import (
   StripeDepositChargeCreateSerializer,
   PlaidDepositChargeCreateSerializer
 )
+from payment.utils import apply_plaid_fee, apply_stripe_fee
 from users.models import User
 
 from quote.models import (
@@ -163,18 +165,46 @@ class RetrieveQuoteProcessPaymentView(RetrieveAPIView):
 
 class PayQuoteProcessPaymentBaseView(CreateAPIView):
   permission_classes = (IsAuthenticated, )
-  
-  def perform_create(self, serializer):
-    payment = get_object_or_404(QuoteProcessPayment.objects.get(
+
+  def _get_amount(self, quote_process_payment):
+    raise NotImplementedError("_get_amount must be implemented")
+
+  def create(self, request, *args, **kwargs):
+    payment = get_object_or_404(QuoteProcessPayment.objects, 
       quote_process__user=self.request.user,
       payment_date__isnull=True 
-    ))
+    )
+    data = {
+      **request.data,
+      'amount': self._get_amount(payment),
+      'email': payment.quote_process.email
+    }
+    serializer = self.serializer_class(
+      data=data, 
+      context={
+        'request': request, 
+        'concept': str(payment.quote_process),
+        'product': str(payment.quote_process.id)
+      })
+    serializer.is_valid(raise_exception=True)
     charge = serializer.save()
     payment.mark_as_paid(charge)
-
+    return Response({
+      'id': str(payment.id),
+      'payment_date': payment.payment_date
+    }, status=status.HTTP_201_CREATED)
+  
 
 class StripePayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
   serializer_class = StripeDepositChargeCreateSerializer
 
+  def _get_amount(self, payment):
+    return apply_stripe_fee(payment.get_deposit())
+    
+
 class PlaidPayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
   serializer_class = PlaidDepositChargeCreateSerializer
+
+  def _get_amount(self, payment):
+    return apply_plaid_fee(payment.get_deposit())
+    

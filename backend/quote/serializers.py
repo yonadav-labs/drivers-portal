@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
 
 from quote.models import (
@@ -245,6 +246,8 @@ class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
   deposit = serializers.SerializerMethodField()
   monthly_payment = serializers.SerializerMethodField()
   hereford_fee = serializers.SerializerMethodField()
+  stripe_fee = serializers.SerializerMethodField()
+  plaid_fee = serializers.SerializerMethodField()
 
   def get_deposit(self, obj):
     return obj.get_deposit()
@@ -255,13 +258,21 @@ class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
   def get_hereford_fee(self, obj):
     return obj.get_hereford_fee()
 
+  def get_stripe_fee(self, obj):
+    deposit = obj.get_deposit()
+    return apply_stripe_fee(deposit) - deposit
+
+  def get_plaid_fee(self, obj):
+    deposit = obj.get_deposit()
+    return apply_plaid_fee(deposit) - deposit
+
   class Meta:
     fields = (
       'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
-      'deposit', 'monthly_payment', 'hereford_fee'
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
     )
     read_only_fields = (
       'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
-      'deposit', 'monthly_payment', 'hereford_fee'
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
     )
     model = QuoteProcessPayment

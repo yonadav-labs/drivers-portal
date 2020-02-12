@@ -20,19 +20,19 @@ class BaseStripeDepositChargeCreateSerializer:
         return self.payment_type
 
     def gen_customer_description(self):
-        return "Customer {email} for Quote process {process} user {user}".format(
+        return "Customer {email} for {process} user {user}".format(
             **{
                 "email": self.validated_data["email"],
-                "process": self.validated_data["quote_process"].id.hex,
+                "process": self.context.get("concept", 'Stable'),
                 "user": self.user.id.hex,
             }
         )
 
     def gen_charge_description(self):
-        return "Stableins deposit charge to {email}. Quote process {process}.".format(
+        return "Stableins charge to {email}. Concept: {process}.".format(
             **{
                 "email": self.validated_data["email"],
-                "process": self.validated_data["quote_process"].id.hex,
+                "process": self.context.get("concept", 'Stable'),
             }
         )
 
@@ -55,9 +55,9 @@ class BaseStripeDepositChargeCreateSerializer:
             "user": self.user,
             "metadata": {
                 "user": self.user.id.hex,
-                "quote_process": self.validated_data["quote_process"].id.hex,
+                "concept": self.context.get("concept", 'Stable'),
             },
-            "product": self.validated_data["quote_process"].id.hex,
+            "product": self.context["product"]
         }
         if customer:
             data.update({"customer": customer})
