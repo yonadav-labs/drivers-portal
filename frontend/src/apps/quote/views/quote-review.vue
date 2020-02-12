@@ -3,11 +3,6 @@
     <quote-summary></quote-summary>
     <div class="questions">
       <div class="questions__result">
-        <p class="questions__title">Physical Coverage</p>
-        <p class="questions__value">{{ !!quoteDeductible ? `$${quoteDeductible}`:'No' }}</p>
-      </div>
-      <div class="divider"></div>
-      <div class="questions__result">
         <p class="questions__title">Deposit</p>
         <p class="questions__value">{{ quoteDeposit }}%</p>
       </div>
@@ -51,21 +46,6 @@
     <div slot="right-column">
       <div class="insurance-info">
         <p class="insurance-title">Your insurance</p>
-        <div class="insurance-text" v-if="!!liability">
-          <span>Liability</span>
-          <span>{{ liability }}</span>
-        </div>
-        <div class="insurance-text" v-if="hasDeductible">
-          <div>
-            <span>Physical coverage</span>
-            <span class="insurance-price" v-if="!!quoteDeductible">Deductible {{ quoteDeductible | currency }}</span>
-          </div>
-          <span
-            v-if="hasDeductible"
-          >{{ physicalAmount| currency }}</span>
-          <span v-else-if="quoteDeductible == 0">$0</span>
-          <span v-else>$--</span>
-        </div>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
           <span>{{ total | currency }}</span>

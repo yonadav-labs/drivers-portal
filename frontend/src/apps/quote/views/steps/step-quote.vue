@@ -3,21 +3,6 @@
     <quote-summary></quote-summary>
     <div class="questions">
       <banner
-        title="Physical Coverage"
-        text="If you want Physical (Collision and Comprehensive) Coverage, please select your desired Deductible."
-        :active="focus=='physical'"
-        :info="true"
-      >
-        <basic-select
-          v-model="internalDeductible"
-          :selected="internalDeductible"
-          :options="PHYSICAL_OPTIONS"
-          :default-option-value="-1"
-          @focus="focus='physical'"
-        ></basic-select>
-      </banner>
-      <div class="divider"></div>
-      <banner
         title="Add Deposit"
         text="Choose the the deposit amount you would like to pay. This is due immediately."
         :active="focus=='deposit'"
@@ -86,21 +71,6 @@
     <div slot="right-column">
       <div class="insurance-info">
         <p class="insurance-title">Your insurance</p>
-        <div class="insurance-text">
-          <span>Liability</span>
-          <span>{{ liabilityText }}</span>
-        </div>
-        <div class="insurance-text">
-          <div>
-            <span>Physical coverage</span>
-            <span class="insurance-price" v-if="hasDeductible">Deductible {{ internalDeductible | currency }}</span>
-          </div>
-          <span
-            v-if="hasDeductible"
-          >{{ physicalAmount| currency }}</span>
-          <span v-else-if="internalDeductible == 0">$0</span>
-          <span v-else>$--</span>
-        </div>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
           <span>{{ total | currency }}</span>
@@ -266,7 +236,7 @@ export default class StepQuote extends Vue {
     }
   ]
 
-  internalDeductible = -1
+  internalDeductible = 0 // HARDCODED TO NO. CHANGE TO -1 WHEN ENABLED AGAIN
   internalDeposit = 0
   internalDate = ''
   
@@ -275,7 +245,7 @@ export default class StepQuote extends Vue {
     from: addDays(new Date(), 20)
   }
 
-  focus = 'physical'
+  focus = 'deposit'
   showPremium = false;
 
   get ctaEnabled(): boolean {
