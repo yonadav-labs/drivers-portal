@@ -17,7 +17,7 @@ import { QuestionsStep } from '@/@types/quote';
 
 import { RadioElement } from '@/apps/quote/components/@types/forms'
 import QuoteProcessRadioForm from '@/apps/quote/components/forms/quote-process-radio-form.vue'
-import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'

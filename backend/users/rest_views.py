@@ -14,7 +14,8 @@ from rest_framework.views import APIView
 from users.models import User, MagicLink
 from users.serializers import (
   RetrieveUserExistsSerializer, RetrieveCurrentUserSerializer,
-  UpdateUserPasswordSerializer, RetrieveMagicLinkSerializer
+  UpdateUserPasswordSerializer, RetrieveMagicLinkSerializer,
+  LoginSerializer
 )
 
 
@@ -65,3 +66,16 @@ class CheckTokenView(APIView):
     return Response({ 'status': 'ok' })
 
   
+class LoginView(APIView):
+  allowed_methods = ('OPTIONS', 'POST')
+  serializer_class = LoginSerializer
+
+  def post(self, request, *args, **kwargs):
+    serializer = self.serializer_class(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data.get('user')
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({
+      'id': str(user.id),
+      'token': token.key
+    })

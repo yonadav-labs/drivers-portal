@@ -80,7 +80,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Action, namespace } from 'vuex-class';
 import { Route } from 'vue-router';
 
-import QuoteProcessLayout from '@/apps/quote/components/layout/quote-process-layout.vue'
+import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
