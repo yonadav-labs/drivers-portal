@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
 
@@ -50,6 +51,13 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError("A user with this email already exists")
     return value
 
+  def update(self, validated_data):
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    return QuoteProcess.objects.create(
+      **validated_data,
+      base_type=base_type
+    )
+
   class Meta:
     fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner', 
@@ -76,6 +84,13 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         "A quote process with this email already exists"
       )
     return value
+
+  def create(self, validated_data):
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    return QuoteProcess.objects.create(
+      **validated_data,
+      base_type=base_type
+    )
 
   class Meta:
     fields = (

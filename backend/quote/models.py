@@ -29,7 +29,13 @@ class QuoteProcess(BaseModel):
         blank=True,
         null=True
     )
-
+    base_type = models.ForeignKey(
+      verbose_name='Base Type',
+      to='importer.BaseType',
+      on_delete=models.SET_NULL,
+      blank=True,
+      null=True
+    )
     # Step 1
     tlc_number = models.CharField(
         verbose_name='TLC #',
@@ -60,12 +66,6 @@ class QuoteProcess(BaseModel):
     base_number = models.CharField(
         verbose_name='Base Number',
         max_length=6
-    )
-    base_type = models.CharField(
-        verbose_name='Base Type',
-        max_length=255,
-        blank=True,
-        null=True
     )
     vehicle_year = models.PositiveIntegerField(
         verbose_name='Vehicle Year',

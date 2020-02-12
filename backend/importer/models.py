@@ -414,7 +414,8 @@ class ImportProcessLogTask(BaseModel):
 class BaseType(BaseModel):
   base_number = models.CharField(
       verbose_name="Base number",
-      max_length=6
+      max_length=6,
+      db_index=True
   )
   base_name = models.CharField(
       verbose_name="Base name",
@@ -435,4 +436,7 @@ class BaseType(BaseModel):
   )
 
   def __str__(self):
-    return f"{self.base_number} | {self.base_name} | {self.get_base_type_display}"
+    return (
+      f"{self.base_number} | {self.base_name} | {self.get_base_type_display()} | "
+      f"Luxury: {'Y' if self.luxury_discount else 'N'} | Loss Control: {'Y' if self.loss_control_discount else 'N'}"
+    )
