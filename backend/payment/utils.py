@@ -11,7 +11,7 @@ from payment.constants import (
     STRIPE_PAYMENT_CHARGE_SUCCESS,
     STRIPE_PAYMENT_CHARGE_PENDING,
 )
-from payment.clients import get_stripe_cli, get_plaid_cli
+from payment.client import get_stripe_cli, get_plaid_cli
 from payment.models import StripeCharge, StripeCustomer
 
 

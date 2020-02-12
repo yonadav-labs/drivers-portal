@@ -1,4 +1,11 @@
+import uuid
+
+from django.conf import settings
 from django.db import models
+
+from base.models import BaseModel
+
+from payment.fields import StripeDecimalCurrencyAmountField
 
 # Create your models here.
 class StripeCharge(BaseModel):

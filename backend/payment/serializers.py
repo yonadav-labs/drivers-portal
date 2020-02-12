@@ -1,13 +1,10 @@
 from rest_framework import serializers
 
-from quotes.models import QuoteProcess
 from payment.utils import (
     create_stripe_charge,
     get_or_create_stripe_customer,
     exchange_plaid_token,
 )
-
-from payment.models import Payment
 
 
 class BaseStripeDepositChargeCreateSerializer:
@@ -97,9 +94,6 @@ class PlaidDepositChargeCreateSerializer(
 ):
     payment_type = "bank_account"
     _bank_token = None
-    quote_process = serializers.PrimaryKeyRelatedField(
-        queryset=QuoteProcess.objects.all()
-    )
     amount = serializers.FloatField()
     email = serializers.EmailField(required=False)
     public_token = serializers.CharField()
@@ -109,7 +103,6 @@ class PlaidDepositChargeCreateSerializer(
         return self._bank_token
 
     def create(self, validated_data):
-        quote_process_instance = validated_data.pop("quote_process")
         exchange_data = {
             "public_token": validated_data["public_token"],
             "account_id": validated_data["account_id"],
