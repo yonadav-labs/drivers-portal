@@ -243,10 +243,14 @@ class QuoteProcess(BaseModel):
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
+          # QuoteProcessDocuments.objects.create(
+          #     quote_process=self,
+          #     requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
+          # ) ORIGINAL
           QuoteProcessDocuments.objects.create(
               quote_process=self,
-              requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
-          )
+              requires_broker_of_record=False
+          ) # HARCODED
 
     def _create_variations(self):
       with transaction.atomic():
