@@ -7,7 +7,7 @@
         </p>
         <contained-button class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <div class="docs-header__price">
+      <div class="docs-header__price" v-if="!!quoteProcessPayment">
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
@@ -17,7 +17,7 @@
           </span>
         </div>
       </div>
-      <div class="docs-header__deposit">
+      <div class="docs-header__deposit" v-if="!!quoteProcessPayment">
         <div class="estimate">
           <p>Deposit</p>
           <p class="estimate__price">{{ depositAmount|beautyCurrency }}</p>
@@ -26,7 +26,7 @@
           </span>
         </div>
       </div>
-      <div class="docs-header__total">
+      <div class="docs-header__total" v-if="!!quoteProcessPayment">
         <div class="estimate">
           <p>Total</p>
           <p class="estimate__price">{{ total|beautyCurrency }}</p>
@@ -190,15 +190,15 @@ export default class DashboardQuotePaymentView extends Vue {
   }
 
   get depositAmount(): number {
-    return this.quoteDeposit/100 * this.total
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.deposit:0;
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.quoteDeposit/100)))/9;
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.monthly_payment:0;
   }
 
   get herefordFee(): number {
-    return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.hereford_fee:0;
   }
 
   get firstPaymentDue(): string {
@@ -238,7 +238,7 @@ export default class DashboardQuotePaymentView extends Vue {
   }
  
   goToPayment(): void {
-    this.$router.push({ name: RouteName.REVIEW, params: {quoteId: this.quoteProcess!.id}})
+    this.$router.push({ name: RouteName.REVIEW })
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {

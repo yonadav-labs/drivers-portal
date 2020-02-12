@@ -1,5 +1,5 @@
 <template>
-   <quote-process-layout :hide-breadcrumbs="true" :hide-back="true" :hide-login="true" :simple-header="true">
+   <quote-process-layout :hide-breadcrumbs="true" :on-back="() => {openCreditCardForm = false}" :hide-back="!openCreditCardForm" :hide-login="true" :simple-header="true">
     <div class="payment-info">
       <p class="form-explain">Deposit Payment</p>
       <p class="payment-info--price">$750</p>
@@ -46,27 +46,40 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class'
+
+import { Route } from 'vue-router';
+
 import { QuoteProcess, QuoteProcessPayment } from '@/@types/quote';
+import { User } from '@/@types/users';
 
 import CreditCardForm from '@/components/forms/credit-card-form.vue'
 import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import PayButton from '@/components/buttons/pay-button.vue'
 import PlaidButton from '@/components/buttons/plaid-button.vue'
 
+import { RouteName } from '@/router'
+
 const quote = namespace('Quote')
 const quotePayment = namespace('QuotePayment')
+const users = namespace('Users')
 
 @Component({
   components: {
     CreditCardForm, PayButton, PlaidButton, QuoteProcessLayout
   }
 })
-export default class DepositPayment extends Vue {
+export default class DepositPaymentView extends Vue {
   @quote.Getter
-  quoteProcess?: QuoteProcess
+  quoteProcess!: QuoteProcess
+
+  @quote.Getter
+  quoteProcessId?: string
 
   @quotePayment.Getter
-  quoteProcessPayment?: QuoteProcessPayment
+  quoteProcessPayment!: QuoteProcessPayment
+
+  @users.Getter
+  user?: User
 
   disabledBank = false
   error = false
@@ -85,6 +98,14 @@ export default class DepositPayment extends Vue {
 
   startPay(): void {
     this.openCreditCardForm = true;
+  }
+
+  async beforeRouteEnter (to: Route, from: Route, next: any): Promise<void> {
+    next(async (vm: DepositPaymentView) => {
+      if (!vm.user || !vm.quoteProcess || !vm.quoteProcessPayment) {
+        vm.$router.push({ name: RouteName.DASHBOARD })
+      }
+    })
   }
 
 }
