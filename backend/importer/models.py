@@ -5,7 +5,8 @@ from base.models import BaseModel
 
 from importer.mixins import HashedRawMixin
 from importer.constants import (
-    IMPORT_PROCESS_STATUS_CHOICES, IMPORT_PROCESS_STATUS_PROCESSING)
+    IMPORT_PROCESS_STATUS_CHOICES, IMPORT_PROCESS_STATUS_PROCESSING,
+    BASE_TYPE_TYPES)
 
 # TODO: Add a manager to query by indexed fields
 
@@ -408,3 +409,30 @@ class ImportProcessLogTask(BaseModel):
 
     def __str__(self):
         return "Import task-{}-{}".format(self.id, self.dataset_name)
+
+
+class BaseType(BaseModel):
+  base_number = models.CharField(
+      verbose_name="Base number",
+      max_length=6
+  )
+  base_name = models.CharField(
+      verbose_name="Base name",
+      max_length=511
+  )
+  base_type = models.CharField(
+    verbose_name="Base type",
+    choices=BASE_TYPE_TYPES,
+    max_length=8
+  )
+  luxury_discount = models.BooleanField(
+    verbose_name="Luxury discount",
+    default=False
+  )
+  loss_control_discount = models.BooleanField(
+    verbose_name="Loss control discount",
+    default=False
+  )
+
+  def __str__(self):
+    return f"{self.base_number} | {self.base_name} | {self.get_base_type_display}"
