@@ -1,13 +1,16 @@
 <template>
-  <div class="docs-view" ref="main">
-    <h3 class="title">Your Official Hereford Quote is ready!</h3>
+  <div class="docs-view" ref="main" v-if="!!quoteProcessPayment">
+    <h3 class="title" v-if="!isPaymentDone">Your Official Hereford Quote is ready!</h3>
+    <h3 class="title" v-else>Your payment has been received!</h3>
     <div class="docs-header">
       <div class="docs-header__info">
-        <p class="docs-header__explain">Our team has reviewed the documents provided and your Official Hereford Quote is ready.
+        <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready.
         </p>
-        <contained-button class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
+        <p class="docs-header__explain" v-else>Our team is preparing your new policy documents. You will be notified in {{ user.email }} when your policy is ready! 
+        </p>
+        <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <div class="docs-header__price">
+      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
@@ -17,7 +20,7 @@
           </span>
         </div>
       </div>
-      <div class="docs-header__deposit">
+      <div class="docs-header__deposit" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Deposit</p>
           <p class="estimate__price">{{ depositAmount|beautyCurrency }}</p>
@@ -26,7 +29,7 @@
           </span>
         </div>
       </div>
-      <div class="docs-header__total">
+      <div class="docs-header__total" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Total</p>
           <p class="estimate__price">{{ total|beautyCurrency }}</p>
@@ -37,7 +40,7 @@
       </div>
     </div>
     <div class="docs-section" v-if="!!quoteProcessDocuments">
-      <div class="info-message" v-if="oldQuote != total">
+      <div class="info-message" v-if="!isPaymentDone && oldQuote != total">
         <div class="info-message__info">
           <div class="info-message__title">Why is my quote different?</div>
           <p class="info-message__explain">
@@ -190,15 +193,19 @@ export default class DashboardQuotePaymentView extends Vue {
   }
 
   get depositAmount(): number {
-    return this.quoteDeposit/100 * this.total
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.deposit:0;
+  }
+
+  get isPaymentDone(): boolean {
+    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.payment_date
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.quoteDeposit/100)))/9;
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.monthly_payment:0;
   }
 
   get herefordFee(): number {
-    return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.hereford_fee:0;
   }
 
   get firstPaymentDue(): string {
@@ -238,7 +245,7 @@ export default class DashboardQuotePaymentView extends Vue {
   }
  
   goToPayment(): void {
-    this.$router.push({ name: RouteName.PAYMENT, params: {quoteId: this.quoteProcess!.id}})
+    this.$router.push({ name: RouteName.REVIEW })
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {

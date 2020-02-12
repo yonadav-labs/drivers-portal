@@ -1,7 +1,7 @@
 from quote.constants import (
   QUOTE_PROCESS_DEDUCTIBLE_750, QUOTE_PROCESS_DEDUCTIBLE_1000, QUOTE_PROCESS_DEDUCTIBLE_1500,
     QUOTE_STATUS_CREATED, QUOTE_STATUS_DOCS, QUOTE_STATUS_REVIEW, QUOTE_STATUS_PAYMENT, 
-    QUOTE_STATUS_PAID, QUOTE_STATUS_DONE
+    QUOTE_STATUS_PAID, QUOTE_STATUS_DONE, HEREFORD_FEES
 )
 
 def generate_variations(quote_process):
@@ -54,3 +54,6 @@ def get_quote_status(quote_process):
   
   return QUOTE_STATUS_DONE
 
+
+def get_hereford_fee(deposit):
+  return HEREFORD_FEES.get(deposit)

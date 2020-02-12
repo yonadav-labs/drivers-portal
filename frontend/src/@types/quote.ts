@@ -101,5 +101,10 @@ export interface QuoteProcessPayment {
   official_hereford_quote: number,
   liability_amount?: number,
   physical_amount?: number,
-  payment_date: string
+  payment_date: string,
+  deposit: number,
+  monthly_payment: number,
+  hereford_fee: number,
+  stripe_fee: number,
+  plaid_fee: number
 }

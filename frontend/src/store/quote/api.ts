@@ -2,6 +2,7 @@ import { client } from '@/store/api'
 
 import { format } from 'date-fns';
 
+import { StripeChargePayload, PlaidChargePayload } from '@/@types/payment';
 import { 
   QuoteProcess, QuoteProcessPayload, QuoteSoftFallout,
   QuoteProcessCalcVariations, QuoteProcessOptionsPayload, QuoteProcessOptions,
@@ -105,5 +106,15 @@ export async function deleteQuoteProcessDocumentsAccidentReport(id: string): Pro
 
 export async function retrieveQuoteProcessPayment(): Promise<QuoteProcessPayment> {
   const response = await client.get(`quote/quote_process_payment/retrieve/`)
+  return response.data
+}
+
+export async function payDepositStripe(charge: StripeChargePayload): Promise<any> {
+  const response = await client.post(`/quote/quote_process_payment/pay/stripe/`, charge)
+  return response.data
+}
+
+export async function payDepositPlaid(charge: PlaidChargePayload): Promise<any> {
+  const response = await client.post(`/quote/quote_process_payment/pay/plaid/`, charge)
   return response.data
 }
