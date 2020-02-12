@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='quoteprocess',
             name='accidents_72_months',
-            field=models.CharField(choices=[('0', '0'), ('1-3', '1-3'), ('4+', '4+')], default=0, max_length=2, verbose_name='Accidents in last 72 months'),
+            field=models.CharField(choices=[('0', '0'), ('1-3', '1-3'), ('4+', '4+')], default=0, max_length=3, verbose_name='Accidents in last 72 months'),
             preserve_default=False,
         ),
         migrations.AddField(
