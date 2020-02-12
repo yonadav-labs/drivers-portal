@@ -53,12 +53,12 @@ export default class StepQuestionLongDmv extends Vue {
       value: '3+'
     },
     {
-      label: '2 - 3 years',
-      value: '2-3'
+      label: '1-2 years',
+      value: '1-2'
     },
     {
-      label: '<2 year',
-      value: '<2'
+      label: '<1 year',
+      value: '<1'
     }
   ]
 

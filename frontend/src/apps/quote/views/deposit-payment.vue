@@ -99,7 +99,7 @@ export default class DepositPaymentView extends Vue {
   payDepositStripe!: (charge: StripeChargePayload) => void;
 
   @quotePayment.Action
-  payDepositPlaid!: (charge: StripeChargePayload) => void;
+  payDepositPlaid!: (charge: PlaidChargePayload) => void;
 
   @quotePayment.Action
   resetPayments!: () => void;
@@ -147,17 +147,17 @@ export default class DepositPaymentView extends Vue {
     this.loading = true;
     await this.payDepositPlaid({
       public_token,
-      account_id: metadata.account_id
+      account_id: metadata.account_id,
     })
     this.$router.push({ name: DashboardQuoteRouteName.PAYMENT })
   }
 
-  plaidExitHandler({ result, err, metadata }: { result: string, err: any, metadata: any }) {
-    if (result==="plaid_error") {
+  plaidExitHandler({ result, err, metadata }: { result: string, err: any, metadata: any }): void {
+    if (result==='plaid_error') {
       this.disabledBank = true;
       this.loading = false;
       this.error = true;
-      this.errorDisplay = "There was an error paying with Bank"
+      this.errorDisplay = 'There was an error paying with Bank'
     }
   }
 

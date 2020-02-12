@@ -23,7 +23,13 @@ export interface QuestionsStep {
   driver_points_last_months?: string,
   fault_accidents_last_months?: string,
   defensive_driving_certificate?: boolean,
-  accident_avoidance_system?: boolean
+  accident_avoidance_system?: boolean,
+  dash_cam?: boolean,
+  accidents_72_months?: string,
+  vehicle_is_hybrid?: boolean,
+  dwi_36_months?: boolean,
+  fault_accident_pedestrian?: boolean,
+  speeding_violation?: boolean,
 }
 
 
