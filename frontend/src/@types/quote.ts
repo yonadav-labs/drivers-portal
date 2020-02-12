@@ -17,7 +17,7 @@ export interface VINStepInsuranceInfo {
   insurance_policy_number: string,
 }
 
-export interface QuestionsStep {
+interface MandatoryQuestionStep {
   tlc_license_years?: string,
   dmv_license_years?: string,
   driver_points_last_months?: string,
@@ -25,11 +25,14 @@ export interface QuestionsStep {
   defensive_driving_certificate?: boolean,
   accident_avoidance_system?: boolean,
   dash_cam?: boolean,
-  accidents_72_months?: string,
   vehicle_is_hybrid?: boolean,
   dwi_36_months?: boolean,
   fault_accident_pedestrian?: boolean,
-  speeding_violation?: boolean,
+  speeding_violation?: boolean,  
+}
+
+export interface QuestionsStep extends MandatoryQuestionStep {
+  accidents_72_months?: string
 }
 
 
@@ -46,15 +49,16 @@ export interface QuoteProcessOptionsPayload {
   start_date: string,
 }
 
-export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo, Required<QuestionsStep> {
-  email: string
+export interface QuoteProcessPayload extends TLCStepLicenseName, VINStepFHVInfo, VINStepInsuranceInfo, Required<MandatoryQuestionStep> {
+  email: string,
+  accidents_72_months?: string
 }
 
 export type QuoteStatus = 'created' | 'docs' | 'review' | 'payment' | 'paid' | 'done'
 
 export interface QuoteProcess extends QuoteProcessPayload, QuoteProcessOptions  {
   id: string,
-  status: QuoteStatus
+  status: QuoteStatus,
 }
 
 export interface QuoteSoftFallout {

@@ -127,7 +127,9 @@ class QuoteProcess(BaseModel):
     accidents_72_months = models.CharField(
         verbose_name='Accidents in last 72 months',
         max_length=3,
-        choices=ACCIDENTS_72_CHOICES
+        choices=ACCIDENTS_72_CHOICES,
+        null=True,
+        blank=True
     )
     vehicle_is_hybrid = models.BooleanField(
         verbose_name='Vehicle is hybrid',
