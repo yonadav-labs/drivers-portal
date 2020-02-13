@@ -108,7 +108,6 @@ class RetrieveQuoteProcessDocumentsView(RetrieveAPIView):
     )
 
 class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
-  allowed_methods = ['OPTIONS', 'PUT', 'PATCH', ]
   permission_classes = (IsAuthenticated, )
   serializer_class = UpdateQuoteProcessDocumentsFileSerializer
 
