@@ -26,23 +26,31 @@ export default class Breadcrumbs extends Vue {
   steps = [
       OrderedQuoteRouteName.TLC,
       OrderedQuoteRouteName.VIN,
+      OrderedQuoteRouteName.QUESTION_OWNER,
       OrderedQuoteRouteName.QUESTION_LONG_TLC,
       OrderedQuoteRouteName.QUESTION_LONG_DMV,
       OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
       OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
       OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
       OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+      OrderedQuoteRouteName.QUESTION_DASHCAM,
+      OrderedQuoteRouteName.QUESTION_HYBRID,
+      OrderedQuoteRouteName.QUESTION_DWI,
       OrderedQuoteRouteName.EMAIL,
       OrderedQuoteRouteName.QUOTE,
   ]
 
   groupedSteps = [
+    OrderedQuoteRouteName.QUESTION_OWNER,
     OrderedQuoteRouteName.QUESTION_LONG_TLC,
     OrderedQuoteRouteName.QUESTION_LONG_DMV,
     OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
     OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
     OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
     OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+    OrderedQuoteRouteName.QUESTION_DASHCAM,
+    OrderedQuoteRouteName.QUESTION_HYBRID,
+    OrderedQuoteRouteName.QUESTION_DWI,
   ]
 
   get filteredSteps(): string[] {

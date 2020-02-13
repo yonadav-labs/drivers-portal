@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from importer.models import BaseType
+from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
 
 from quote.models import (
@@ -25,7 +27,9 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
-        'deposit' , 'start_date', 'quote_amount', 'deductible'
+        'deposit' , 'start_date', 'quote_amount', 'deductible',
+        'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 'dwi_36_months', 
+        'fault_accident_pedestrian', 'speeding_violation', 'vehicle_owner'
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -35,7 +39,9 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'deposit' , 'start_date', 'quote_amount',
-        'deductible'
+        'deductible', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -46,6 +52,13 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError("A user with this email already exists")
     return value
 
+  def update(self, obj, validated_data):
+    obj = super().update(obj, validated_data)
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    obj.base_type = base_type
+    obj.save()
+    return obj
+
   class Meta:
     fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner', 
@@ -54,7 +67,9 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -72,6 +87,13 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
       )
     return value
 
+  def create(self, validated_data):
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    return QuoteProcess.objects.create(
+      **validated_data,
+      base_type=base_type
+    )
+
   class Meta:
     fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -80,7 +102,9 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -242,12 +266,36 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
 
 
 class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
+  deposit = serializers.SerializerMethodField()
+  monthly_payment = serializers.SerializerMethodField()
+  hereford_fee = serializers.SerializerMethodField()
+  stripe_fee = serializers.SerializerMethodField()
+  plaid_fee = serializers.SerializerMethodField()
+
+  def get_deposit(self, obj):
+    return obj.get_deposit()
+
+  def get_monthly_payment(self, obj):
+    return obj.get_monthly_payment()
+
+  def get_hereford_fee(self, obj):
+    return obj.get_hereford_fee()
+
+  def get_stripe_fee(self, obj):
+    deposit = obj.get_deposit()
+    return apply_stripe_fee(deposit) - deposit
+
+  def get_plaid_fee(self, obj):
+    deposit = obj.get_deposit()
+    return apply_plaid_fee(deposit) - deposit
 
   class Meta:
     fields = (
-      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
     )
     read_only_fields = (
-      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date'
+      'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
     )
     model = QuoteProcessPayment

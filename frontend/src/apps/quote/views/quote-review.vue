@@ -3,11 +3,6 @@
     <quote-summary></quote-summary>
     <div class="questions">
       <div class="questions__result">
-        <p class="questions__title">Physical Coverage</p>
-        <p class="questions__value">{{ !!quoteDeductible ? `$${quoteDeductible}`:'No' }}</p>
-      </div>
-      <div class="divider"></div>
-      <div class="questions__result">
         <p class="questions__title">Deposit</p>
         <p class="questions__value">{{ quoteDeposit }}%</p>
       </div>
@@ -51,21 +46,6 @@
     <div slot="right-column">
       <div class="insurance-info">
         <p class="insurance-title">Your insurance</p>
-        <div class="insurance-text" v-if="!!liability">
-          <span>Liability</span>
-          <span>{{ liability }}</span>
-        </div>
-        <div class="insurance-text" v-if="hasDeductible">
-          <div>
-            <span>Physical coverage</span>
-            <span class="insurance-price" v-if="!!quoteDeductible">Deductible {{ quoteDeductible | currency }}</span>
-          </div>
-          <span
-            v-if="hasDeductible"
-          >{{ physicalAmount| currency }}</span>
-          <span v-else-if="quoteDeductible == 0">$0</span>
-          <span v-else>$--</span>
-        </div>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
           <span>{{ total | currency }}</span>
@@ -143,7 +123,6 @@ import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-proc
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
 import { RouteName } from '@/router'
-import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
 import { QuoteProcess, QuoteProcessPayment } from '@/@types/quote';
 import { User } from '@/@types/users';
@@ -165,11 +144,7 @@ const users = namespace('Users')
     currency, beautyCurrency
   }
 })
-export default class StepQuote extends Vue {
-
-  @Prop({ default: ''})
-  quoteId!: string
-
+export default class StepQuoteReview extends Vue {
   @quote.Getter
   quoteProcess?: QuoteProcess
 
@@ -182,12 +157,6 @@ export default class StepQuote extends Vue {
   @users.Getter
   user?: User
 
-  @quote.Action
-  retrieveDeconstructQuoteProcess!: (id: string) => Promise<void>
-
-  @quotePayment.Action
-  retrieveQuoteProcessPayment!: () => Promise<void>
-  
   disabledDates = {
     to: new Date(),
     from: addDays(new Date(), 20)
@@ -200,7 +169,7 @@ export default class StepQuote extends Vue {
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.quoteDeposit/100)))/9;
+    return this.quoteProcessPayment!.monthly_payment;
   }
 
   get quoteDeductible(): number {
@@ -216,11 +185,11 @@ export default class StepQuote extends Vue {
   }
 
   get deposit(): number {
-    return this.total * (this.quoteDeposit/100)
+    return this.quoteProcessPayment!.deposit;
   }
 
   get herefordFee(): number {
-    return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+    return this.quoteProcessPayment!.hereford_fee;
   }
 
   get depositText(): string {
@@ -236,7 +205,7 @@ export default class StepQuote extends Vue {
   }
 
   get liability(): string {
-    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):'0'
+    return !!this.quoteProcessPayment && !!this.quoteProcessPayment.liability_amount ? currency(Number(this.quoteProcessPayment.liability_amount)):''
   }
 
   get monthlyPaymentText(): string {
@@ -260,30 +229,18 @@ export default class StepQuote extends Vue {
   }
 
   async pay(): Promise<void> {
-  
+    this.$router.push({ name: RouteName.PAYMENT })
   }
 
   setShowPremium(value: boolean): void {
     this.showPremium = value;
   }
   async beforeRouteEnter (to: Route, from: Route, next: any): Promise<void> {
-    next(async (vm: StepQuote) => {
-      if (!vm.quoteId || !vm.user) {
-        vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
-      } else {
-        if (!vm.quoteProcess) {
-          await vm.retrieveDeconstructQuoteProcess(vm.quoteId);
-          if (!vm.quoteProcess) {
-            vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
-          }
+    next(async (vm: StepQuoteReview) => {
+      if (!vm.user || !vm.quoteProcess || !vm.quoteProcessPayment || !!vm.quoteProcessPayment.payment_date) {
+          // We want the user to came from the dashboard
+          vm.$router.push({ name: RouteName.DASHBOARD })
         }
-        if (!vm.quoteProcessPayment) {
-          await vm.retrieveQuoteProcessPayment();
-          if (!vm.quoteProcessPayment) {
-            vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
-          }
-        }
-      }
     })
   }
 }

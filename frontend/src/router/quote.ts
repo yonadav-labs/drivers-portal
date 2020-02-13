@@ -1,11 +1,15 @@
 import StepTLC from '@/apps/quote/views/steps/step-tlc.vue'
 import StepVIN from '@/apps/quote/views/steps/step-vin.vue'
+import StepQuestionOwner from '@/apps/quote/views/steps/step-question-owner.vue'
 import StepQuestionLongTLC from '@/apps/quote/views/steps/step-question-long-tlc.vue'
 import StepQuestionLongDMV from '@/apps/quote/views/steps/step-question-long-dmv.vue'
 import StepQuestionDriverPoints from '@/apps/quote/views/steps/step-question-driver-points.vue'
 import StepQuestionFaultAccidents from '@/apps/quote/views/steps/step-question-fault-accidents.vue'
 import StepQuestionDefensiveCertificate from '@/apps/quote/views/steps/step-question-defensive-certificate.vue'
 import StepQuestionAccidentAvoidance from '@/apps/quote/views/steps/step-question-accident-avoidance.vue'
+import StepQuestionDashcam from '@/apps/quote/views/steps/step-question-dashcam.vue'
+import StepQuestionHybrid from '@/apps/quote/views/steps/step-question-hybrid.vue'
+import StepQuestionDwi from '@/apps/quote/views/steps/step-question-dwi.vue'
 import StepEmail from '@/apps/quote/views/steps/step-email.vue'
 import StepQuote from '@/apps/quote/views/steps/step-quote.vue'
 import StepQuoteSoftFallout from '@/apps/quote/views/steps/step-quote-soft-fallout.vue'
@@ -13,12 +17,16 @@ import StepQuoteSoftFallout from '@/apps/quote/views/steps/step-quote-soft-fallo
 export enum OrderedQuoteRouteName {
   TLC = 'quoteTlc',
   VIN = 'quoteVin',
+  QUESTION_OWNER = 'questionOwner',
   QUESTION_LONG_TLC = 'quoteQuestionLongTLC',
   QUESTION_LONG_DMV = 'quoteQuestionLongDMV',
   QUESTION_DRIVER_POINTS = 'quoteQuestionDriverPoints',
   QUESTION_FAULT_ACCIDENTS = 'quoteQuestionFaultAccidents',
   QUESTION_DEFENSIVE_CERTIFICATE = 'quoteQuestionDefensiveCertificate',
   QUESTION_ACCIDENT_AVOIDANCE = 'quoteQuestionAccidentAvoidance',
+  QUESTION_DASHCAM = 'quoteQuestionDashcam',
+  QUESTION_HYBRID = 'quoteQuestionHybrid',
+  QUESTION_DWI = 'quoteQuestionDwi',
   EMAIL = 'quoteEmail',
   QUOTE = 'quoteQuote'
 }
@@ -30,25 +38,33 @@ export enum ExtraQuoteRouteNames {
 const quoteRoutesOrder = {
   [OrderedQuoteRouteName.TLC]: 0,
   [OrderedQuoteRouteName.VIN]: 1,
-  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 2,
-  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 3,
-  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 4,
-  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 5,
-  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 6,
-  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 7,
-  [OrderedQuoteRouteName.EMAIL]: 8,
-  [OrderedQuoteRouteName.QUOTE]: 9
+  [OrderedQuoteRouteName.QUESTION_OWNER]: 2,
+  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 3,
+  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 4,
+  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 5,
+  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 6,
+  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 7,
+  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 8,
+  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 9,
+  [OrderedQuoteRouteName.QUESTION_HYBRID]: 10,
+  [OrderedQuoteRouteName.QUESTION_DWI]: 11,
+  [OrderedQuoteRouteName.EMAIL]: 12,
+  [OrderedQuoteRouteName.QUOTE]: 13
 }
 
 const quoteRoutesByOrder = {
   [quoteRoutesOrder[OrderedQuoteRouteName.TLC]]: OrderedQuoteRouteName.TLC,
   [quoteRoutesOrder[OrderedQuoteRouteName.VIN]]: OrderedQuoteRouteName.VIN,
+  [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_OWNER]]: OrderedQuoteRouteName.QUESTION_OWNER,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_LONG_TLC]]: OrderedQuoteRouteName.QUESTION_LONG_TLC,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_LONG_DMV]]: OrderedQuoteRouteName.QUESTION_LONG_DMV,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]]: OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]]: OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]]: OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]]: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+  [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DASHCAM]]: OrderedQuoteRouteName.QUESTION_DASHCAM,
+  [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_HYBRID]]: OrderedQuoteRouteName.QUESTION_HYBRID,
+  [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DWI]]: OrderedQuoteRouteName.QUESTION_DWI,
   [quoteRoutesOrder[OrderedQuoteRouteName.EMAIL]]: OrderedQuoteRouteName.EMAIL,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUOTE]]: OrderedQuoteRouteName.QUOTE,
 }
@@ -56,12 +72,16 @@ const quoteRoutesByOrder = {
 const quoteRoutesTitles = {
   [OrderedQuoteRouteName.TLC]: 'TLC License',
   [OrderedQuoteRouteName.VIN]: `Vehicle's VIN`,
-  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 'Driver Questions(1 of 6)',
-  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 'Driver Questions(2 of 6)',
-  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 'Driver Questions(3 of 6)',
-  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(4 of 6)',
-  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(5 of 6)',
-  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(6 of 6)',
+  [OrderedQuoteRouteName.QUESTION_OWNER]: 'Driver Questions(1 of 10)',
+  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 'Driver Questions(2 of 10)',
+  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 'Driver Questions(3 of 10)',
+  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 'Driver Questions(4 of 10)',
+  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(5 of 10)',
+  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(6 of 10)',
+  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(7 of 10)',
+  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 'Driver Questions(8 of 10)',
+  [OrderedQuoteRouteName.QUESTION_HYBRID]: 'Driver Questions(9 of 10)',
+  [OrderedQuoteRouteName.QUESTION_DWI]: 'Driver Questions(10 of 10)',
   [OrderedQuoteRouteName.EMAIL]: 'Verify Email Address',
   [OrderedQuoteRouteName.QUOTE]: 'Quote'
 }
@@ -125,12 +145,16 @@ export class QuoteProcessRouter {
 export default [
   { path: '', component: StepTLC, name: OrderedQuoteRouteName.TLC},
   { path: 'vin/', component: StepVIN, name: OrderedQuoteRouteName.VIN },
+  { path: 'question-owner/', component: StepQuestionOwner, name: OrderedQuoteRouteName.QUESTION_OWNER },
   { path: 'question-tlc/', component: StepQuestionLongTLC, name: OrderedQuoteRouteName.QUESTION_LONG_TLC },
   { path: 'question-dmv/', component: StepQuestionLongDMV, name: OrderedQuoteRouteName.QUESTION_LONG_DMV },
   { path: 'question-driver-points/', component: StepQuestionDriverPoints, name: OrderedQuoteRouteName.QUESTION_DRIVER_POINTS },
   { path: 'question-fault-accidents/', component: StepQuestionFaultAccidents, name: OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS },
   { path: 'question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE },
   { path: 'question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE },
+  { path: 'question-dashcam/', component: StepQuestionDashcam, name: OrderedQuoteRouteName.QUESTION_DASHCAM },
+  { path: 'question-hybrid/', component: StepQuestionHybrid, name: OrderedQuoteRouteName.QUESTION_HYBRID },
+  { path: 'question-apply/', component: StepQuestionDwi, name: OrderedQuoteRouteName.QUESTION_DWI},
   { path: 'email/', component: StepEmail, name: OrderedQuoteRouteName.EMAIL },
   { path: 'quote/:quoteId/', component: StepQuote, name: OrderedQuoteRouteName.QUOTE, props: true },
   { path: 'error/', component: StepQuoteSoftFallout, name: ExtraQuoteRouteNames.SOFT_FALLOUT }

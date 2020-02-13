@@ -9,7 +9,8 @@ from quote.rest_views import (
   CreateQuoteProcessDocumentsAccidentReportView, 
   UpdateQuoteProcessDocumentsAccidentReportView,
   DeleteQuoteProcessDocumentsAccidentReportView,
-  UpdateQuoteProcessDocumentsView, RetrieveQuoteProcessPaymentView
+  UpdateQuoteProcessDocumentsView, RetrieveQuoteProcessPaymentView,
+  StripePayQuoteProcessPaymentView, PlaidPayQuoteProcessPaymentView
 )
 
 urlpatterns = [
@@ -82,5 +83,15 @@ urlpatterns = [
       'quote_process_payment/retrieve/',
       RetrieveQuoteProcessPaymentView.as_view(),
       name="retrieve_quote_process_payment"
+    ),
+    path(
+      'quote_process_payment/pay/stripe/',
+      StripePayQuoteProcessPaymentView.as_view(),
+      name="pay_quote_process_payment_stripe"
+    ),
+    path(
+      'quote_process_payment/pay/plaid/',
+      PlaidPayQuoteProcessPaymentView.as_view(),
+      name="pay_quote_process_payment_plaid"
     ),
 ]

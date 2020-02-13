@@ -2,7 +2,7 @@
   <quote-process-layout>
     <quote-summary></quote-summary>
     <quote-process-yes-no-form @yes="yes" @no="no">
-      Does your vehicle have an accident avoidance or dash cam system? 
+      Does your vehicle have an accident avoidance system? 
     </quote-process-yes-no-form>
   </quote-process-layout>
 </template>

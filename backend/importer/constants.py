@@ -27,3 +27,11 @@ NYC_XLSX_VEHICLES_INSURANCE_HEADER = [
         "vehicle_owner_name",
         "affiliated_base_or_taxi_agent_or_fleet_license_number",
     ]
+
+BASE_TYPE_LIVERY = 'livery'
+BASE_TYPE_BLACKCAR = 'blackcar'
+
+BASE_TYPE_TYPES = (
+  (BASE_TYPE_LIVERY, 'Livery', ),
+  (BASE_TYPE_BLACKCAR, 'Black Car' )
+)

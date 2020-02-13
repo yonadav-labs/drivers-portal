@@ -4,17 +4,21 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models, transaction
+from django.utils import timezone
 
 from base.models import BaseModel
+from payment.models import StripeCharge
 
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
     FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
-    QUOTE_STATUS_DOCS
+    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES, VEHICLE_OWNER_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
-from quote.utils import generate_variations, get_quote_status
+from quote.utils import (
+  get_quote_status, get_hereford_fee)
+from quote.quote_calc import get_quote_variations
 
 # Create your models here.
 class QuoteProcess(BaseModel):
@@ -26,7 +30,13 @@ class QuoteProcess(BaseModel):
         blank=True,
         null=True
     )
-
+    base_type = models.ForeignKey(
+      verbose_name='Base Type',
+      to='importer.BaseType',
+      on_delete=models.SET_NULL,
+      blank=True,
+      null=True
+    )
     # Step 1
     tlc_number = models.CharField(
         verbose_name='TLC #',
@@ -57,12 +67,6 @@ class QuoteProcess(BaseModel):
     base_number = models.CharField(
         verbose_name='Base Number',
         max_length=6
-    )
-    base_type = models.CharField(
-        verbose_name='Base Type',
-        max_length=255,
-        blank=True,
-        null=True
     )
     vehicle_year = models.PositiveIntegerField(
         verbose_name='Vehicle Year',
@@ -116,6 +120,38 @@ class QuoteProcess(BaseModel):
     accident_avoidance_system = models.BooleanField(
         verbose_name='Accident avoidance system',
     )
+
+    # New questions
+    vehicle_owner = models.CharField(
+        verbose_name='Vehicle Owner',
+        max_length=12,
+        choices=VEHICLE_OWNER_CHOICES,
+        null=True,
+        blank=True
+    )
+    dash_cam = models.BooleanField(
+        verbose_name='Dash Cam',
+    )
+    accidents_72_months = models.CharField(
+        verbose_name='Accidents in last 72 months',
+        max_length=3,
+        choices=ACCIDENTS_72_CHOICES,
+        null=True,
+        blank=True
+    )
+    vehicle_is_hybrid = models.BooleanField(
+        verbose_name='Vehicle is hybrid',
+    )
+    dwi_36_months = models.BooleanField(
+      verbose_name='DWI or DUI violation within the past 36 months',
+    )
+    fault_accident_pedestrian = models.BooleanField(
+      verbose_name='Fault accident w/ pedestrian/bicyclist 24 months',
+    )
+    speeding_violation =models.BooleanField(
+      verbose_name='Speeding violation > 30 MPH within the last 24 months',
+    )
+
 
     # Step 4
     email = models.EmailField(
@@ -215,10 +251,14 @@ class QuoteProcess(BaseModel):
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
+          # QuoteProcessDocuments.objects.create(
+          #     quote_process=self,
+          #     requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
+          # ) ORIGINAL
           QuoteProcessDocuments.objects.create(
               quote_process=self,
-              requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
-          )
+              requires_broker_of_record=False
+          ) # HARCODED
 
     def _create_variations(self):
       with transaction.atomic():
@@ -226,7 +266,7 @@ class QuoteProcess(BaseModel):
         if variations:
           variations.delete()
         if self.deposit:
-          variations = generate_variations(self)
+          variations = get_quote_variations(self)
           deductibles = variations.pop('deductible')
           deductible_data = deductibles[self.deductible] if self.deductible \
             else {}
@@ -431,6 +471,14 @@ class QuoteProcessPayment(BaseModel):
         null=True,
         blank=True
     )
+
+    stripe_charge = models.OneToOneField(
+      verbose_name='Stripe Charge',
+      to=StripeCharge,
+      on_delete=models.SET_NULL,
+      null=True,
+      blank=True
+    )
   
     @property
     def is_paid(self):
@@ -454,6 +502,22 @@ class QuoteProcessPayment(BaseModel):
       
       if created or (not was_paid and self.is_paid):
         self.quote_process.update_status()
+
+    def mark_as_paid(self, charge):
+      self.stripe_charge = charge
+      self.payment_date = timezone.now()
+      self.save()
+      self.quote_process.update_status()
+
+    def get_monthly_payment(self):
+      deposit = self.quote_process.deposit
+      return (float(self.official_hereford_quote) * (1-(deposit/100)))/9
+
+    def get_hereford_fee(self):
+      return get_hereford_fee(self.quote_process.deposit)
+
+    def get_deposit(self):
+      return float(self.official_hereford_quote) * (self.quote_process.deposit/100)
 
     class Meta:
         verbose_name = 'Quote Process Payment'

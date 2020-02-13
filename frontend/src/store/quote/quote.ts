@@ -31,12 +31,16 @@ export default class QuoteMainVuexModule extends VuexModule {
   stepsCompleted = {
     [OrderedQuoteRouteName.TLC]: false,
     [OrderedQuoteRouteName.VIN]: false,
+    [OrderedQuoteRouteName.QUESTION_OWNER]: false,
     [OrderedQuoteRouteName.QUESTION_LONG_TLC]: false,
     [OrderedQuoteRouteName.QUESTION_LONG_DMV]: false,
     [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: false,
     [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: false,
     [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: false,
     [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: false,
+    [OrderedQuoteRouteName.QUESTION_DASHCAM]: false,
+    [OrderedQuoteRouteName.QUESTION_HYBRID]: false,
+    [OrderedQuoteRouteName.QUESTION_DWI]: false,
     [OrderedQuoteRouteName.EMAIL]: false,
     [OrderedQuoteRouteName.QUOTE]: false
   }

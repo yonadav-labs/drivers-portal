@@ -77,7 +77,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'importer.apps.ImporterConfig',
     'quote.apps.QuoteConfig',
-    'policy.apps.PolicyConfig'
+    'payment.apps.PaymentConfig',
+    'policy.apps.PolicyConfig',
 ]
 
 MIDDLEWARE = [
