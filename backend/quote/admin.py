@@ -11,7 +11,7 @@ from base.tasks import send_user_quote_task
 
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
-    QuoteProcessPayment
+    QuoteProcessPayment, QuoteSoftFallout
 )
 from quote.forms import AdminQuoteProcessPaymentForm
 
@@ -113,3 +113,6 @@ class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
       )
 
 stable_admin.register(QuoteProcessPayment, QuoteProcessPaymentAdmin)
+
+stable_admin.register(QuoteSoftFallout)
+admin.site.register(QuoteSoftFallout)
