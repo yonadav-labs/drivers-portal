@@ -17,7 +17,8 @@ from quote.constants import (
 )
 from quote.managers import QuoteProcessQuerySet
 from quote.utils import (
-  generate_variations, get_quote_status, get_hereford_fee)
+  get_quote_status, get_hereford_fee)
+from quote.quote_calc import get_quote_variations
 
 # Create your models here.
 class QuoteProcess(BaseModel):
@@ -265,7 +266,7 @@ class QuoteProcess(BaseModel):
         if variations:
           variations.delete()
         if self.deposit:
-          variations = generate_variations(self)
+          variations = get_quote_variations(self)
           deductibles = variations.pop('deductible')
           deductible_data = deductibles[self.deductible] if self.deductible \
             else {}

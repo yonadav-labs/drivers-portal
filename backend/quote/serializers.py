@@ -52,12 +52,12 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError("A user with this email already exists")
     return value
 
-  def update(self, validated_data):
+  def update(self, obj, validated_data):
+    obj = super().update(obj, validated_data)
     base_type = BaseType.objects.get(base_number=validated_data['base_number'])
-    return QuoteProcess.objects.create(
-      **validated_data,
-      base_type=base_type
-    )
+    obj.base_type = base_type
+    obj.save()
+    return obj
 
   class Meta:
     fields = (

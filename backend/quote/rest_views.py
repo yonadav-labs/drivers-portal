@@ -30,7 +30,7 @@ from quote.serializers import (
   RetrieveQuoteProcessDocumentsSerializer, UpdateQuoteProcessDocumentsSerializer, 
   RetrieveQuoteProcessPaymentSerializer
 )
-from quote.utils import generate_variations
+from quote.quote_calc import get_quote_variations
 
 class CreateQuoteProcessView(CreateAPIView):
   permission_classes = (AllowAny, )
@@ -50,7 +50,7 @@ class RetrieveCalcQuoteProcessVariationsView(RetrieveAPIView):
   
   def retrieve(self, request, *args, **kwargs):
     obj = self.get_object()
-    return Response(generate_variations(obj))
+    return Response(get_quote_variations(obj))
 
 class RetrieveQuoteProcessView(RetrieveAPIView):
   queryset = QuoteProcess.objects.all()
