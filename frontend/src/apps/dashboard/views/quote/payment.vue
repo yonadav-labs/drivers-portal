@@ -177,6 +177,11 @@ export default class DashboardQuotePaymentView extends Vue {
       disabled: false
     },
     {
+      title: 'Base Letter',
+      field: 'base_letter',
+      disabled: false
+    },
+    {
       title: 'Proof of Address',
       field: 'proof_of_address',
       disabled: false

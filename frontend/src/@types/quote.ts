@@ -100,7 +100,8 @@ export interface QuoteProcessDocuments {
   tlc_license_front_sid: string,
   tlc_license_back_side: string,
   proof_of_address: string,
-  defensive_driving_certificat: string,
+  base_letter: string,
+  defensive_driving_certificate: string,
   is_submitted_for_review: boolean,
   is_broker_of_record_signed: boolean,
   requires_broker_of_record: boolean
