@@ -103,7 +103,7 @@
       >Get Your Insurance Policy!
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
-      <div class="disclaimer">This is a soft quote only and final premium is dependent upon verification and accuracy of the information you provided.</div>
+      <div class="disclaimer">This is a projected quote only and final premium is dependent upon verification and accuracy of the information you provided.</div>
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
