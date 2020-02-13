@@ -1,7 +1,7 @@
 from django.core.mail import EmailMessage
 from django.conf import settings
 
-from base.constants import MAIN_TEMPLATE_ID
+from base.constants import MAIN_TEMPLATE_ID, DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
 
 
 def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
@@ -71,7 +71,7 @@ def send_user_documents_submitted(user, cta_url):
             "content": (
                 "Stable has kicked off the automated underwriting process. "
                 "You will be notified soon when your policy is ready!"
-            ).format(time),
+            ),
             "cta": "Go to Stable",
             "cta_url": cta_url
         },
