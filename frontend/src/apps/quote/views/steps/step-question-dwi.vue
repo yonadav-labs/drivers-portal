@@ -116,11 +116,11 @@ export default class StepQuestionLongDwi extends Vue {
     this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
   }
 
-  onNotNone(val): void {
+  onNotNone(val: boolean): void {
     this.none_above = '';
   }
 
-  onNone(val): void {
+  onNone(val: boolean): void {
     if (val === true) {
       this.dwi_36_months = ''
       this.fault_accident_pedestrian = ''
