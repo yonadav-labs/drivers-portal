@@ -2,7 +2,7 @@
   <quote-process-layout>
     <quote-summary></quote-summary>
     <quote-process-radio-form :answers="answers" name="years" v-model="value" @next="onNext">
-      How long have you had your DMV license?
+      Who owns this car?
     </quote-process-radio-form>
   </quote-process-layout>
 </template>
@@ -20,8 +20,7 @@ import QuoteProcessRadioForm from '@/apps/quote/components/forms/quote-process-r
 import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
-
-import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
+import { OrderedQuoteRouteName, QuoteProcessRouter, ExtraQuoteRouteNames } from '@/router/quote'
 
 // Question Step 
 
@@ -32,12 +31,13 @@ const quote = namespace('Quote')
     QuoteProcessLayout, QuoteProcessRadioForm, QuoteSummary
   }
 })
-export default class StepQuestionLongDmv extends Vue {
-  @quote.Getter
-  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
+export default class StepQuestionDriverPoints extends Vue {
 
   @quote.Getter
   questionAnswers!: QuestionsStep;
+
+  @quote.Getter
+  stepCompletedByName!: (route: OrderedQuoteRouteName) => boolean
 
   @quote.Action
   updateStepStatus!: (payload: { step: string, value: boolean }) => void;
@@ -49,37 +49,52 @@ export default class StepQuestionLongDmv extends Vue {
   
   answers = [
     {
-      label: '+3 years',
-      value: '3+'
+      label: 'I am the owner and the only driver of this car',
+      value: 'owner-driver'
     },
     {
-      label: '1-2 years',
-      value: '1-2'
+      label: 'I am the owner and there is only 1 additional driver for this policy.',
+      value: 'owner-named'
     },
     {
-      label: '<1 year',
-      value: '<1'
+      label: 'I am the owner and there are more than 1 additional drivers oaths policy.',
+      value: 'corporate-1'
+    },
+    {
+      label: 'This car is owned by a fleet or LLC',
+      value: 'corporate-2'
+    },
+    {
+      label: 'Other',
+      value: 'other'
     }
   ]
+  
 
   onNext(): void {
-    this.updateQuestionAnswers({ dmv_license_years: this.value })
-    this.updateStepStatus({ step: this.$route.name!, value: true });
-    this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
+    if (this.value === 'other') {
+      this.$router.push({ name: ExtraQuoteRouteNames.SOFT_FALLOUT })
+    } else {
+      const finalValue = this.value.startsWith('corporate') ? 'corporate':this.value
+      this.updateQuestionAnswers({ vehicle_owner: finalValue })
+      this.updateStepStatus({ step: this.$route.name!, value: true });
+      this.$router.push(QuoteProcessRouter.nextRoute(this.$route.name!))
+    }
+
   }
 
   resetState(): void {
     this.value = '';
-    this.updateQuestionAnswers({ dmv_license_years: undefined });
+    this.updateQuestionAnswers({ vehicle_owner: undefined });
     this.updateStepStatus({ step: this.$route.name!, value: false });
   }
 
   created(): void {
-    this.value = this.questionAnswers.dmv_license_years || ''
+    this.value = this.questionAnswers.vehicle_owner || ''
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
-    next((vm: StepQuestionLongDmv) => {
+    next((vm: StepQuestionDriverPoints) => {
       if (!from.name || QuoteProcessRouter.isBefore(from.name, vm.$route.name!)) {
         vm.resetState();
       }

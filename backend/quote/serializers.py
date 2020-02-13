@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
 
@@ -26,7 +27,9 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
-        'deposit' , 'start_date', 'quote_amount', 'deductible'
+        'deposit' , 'start_date', 'quote_amount', 'deductible',
+        'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 'dwi_36_months', 
+        'fault_accident_pedestrian', 'speeding_violation', 'vehicle_owner'
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -36,7 +39,9 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'status', 'deposit' , 'start_date', 'quote_amount',
-        'deductible'
+        'deductible', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -47,6 +52,13 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError("A user with this email already exists")
     return value
 
+  def update(self, obj, validated_data):
+    obj = super().update(obj, validated_data)
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    obj.base_type = base_type
+    obj.save()
+    return obj
+
   class Meta:
     fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner', 
@@ -55,7 +67,9 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -73,6 +87,13 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
       )
     return value
 
+  def create(self, validated_data):
+    base_type = BaseType.objects.get(base_number=validated_data['base_number'])
+    return QuoteProcess.objects.create(
+      **validated_data,
+      base_type=base_type
+    )
+
   class Meta:
     fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -81,7 +102,9 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'tlc_license_years', 'dmv_license_years',
         'driver_points_last_months', 'fault_accidents_last_months',
         'defensive_driving_certificate', 'accident_avoidance_system',
-        'email',
+        'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
+        'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 

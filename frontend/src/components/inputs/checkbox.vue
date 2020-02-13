@@ -65,6 +65,7 @@ export default class Checkbox extends Vue {
   
   toggle(): void {
     this.$emit('input', this.state ? '' : this.value);
+    this.$emit('change', this.state ? '' : this.value)
   }
 
   @Watch('checked')

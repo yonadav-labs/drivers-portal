@@ -3,7 +3,8 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import AllowAny
 
 from importer.models import (
-  FHVActiveDriver, ForHireVehicle, VehicleInsuranceInformation)
+  FHVActiveDriver, ForHireVehicle, VehicleInsuranceInformation,
+  BaseType)
 from importer.serializers import (
   RetrieveTLCNameSerializer, RetrieveVINInfoFHVSerializer,
   RetrieveVINInfoInsuranceSerializer
@@ -27,17 +28,21 @@ class RetrieveTLCNameView(RetrieveAPIView):
 
 
 class RetrieveVINInfoFHVView(RetrieveAPIView):
-      permission_classes = (AllowAny,)
-      queryset = ForHireVehicle.objects.all()
-      serializer_class = RetrieveVINInfoFHVSerializer
+  permission_classes = (AllowAny,)
+  serializer_class = RetrieveVINInfoFHVSerializer
 
-      def get_object(self):
-        fhv_obj = self.queryset.filter(
-          vehicle_vin_number=self.kwargs.get('vehicle_vin_number')).first()
-        
-        if not fhv_obj:
-          raise NotFound(detail="FHV Vehicle not found")
-        return fhv_obj
+  def get_queryset(self):
+    return ForHireVehicle.objects.filter(
+      base_number__in=BaseType.objects.all().values('base_number')
+    )
+
+  def get_object(self):
+    fhv_obj = self.get_queryset().filter(
+      vehicle_vin_number=self.kwargs.get('vehicle_vin_number')).first()
+    
+    if not fhv_obj:
+      raise NotFound(detail="FHV Vehicle not found")
+    return fhv_obj
 
   
 class RetrieveVINInfoInsuranceView(RetrieveAPIView):

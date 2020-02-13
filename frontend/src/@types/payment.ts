@@ -14,5 +14,4 @@ export interface StripeChargePayload {
 export interface PlaidChargePayload {
   public_token: string,
   account_id: string,
-  name: string
 }
