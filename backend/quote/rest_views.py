@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+from base.tasks import send_user_welcome_task
 from payment.serializers import (
   StripeDepositChargeCreateSerializer,
   PlaidDepositChargeCreateSerializer
@@ -88,6 +89,7 @@ class UpdateQuoteProcessUserView(UpdateAPIView):
       obj = serializer.save()
       user = User.objects.create_passwordless_user(obj.email)
       obj.add_user(user)
+    send_user_welcome_task.delay(str(user.id))
     
 
 class CreateQuoteSoftFalloutView(CreateAPIView):
