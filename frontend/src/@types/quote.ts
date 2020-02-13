@@ -28,7 +28,8 @@ interface MandatoryQuestionStep {
   vehicle_is_hybrid?: boolean,
   dwi_36_months?: boolean,
   fault_accident_pedestrian?: boolean,
-  speeding_violation?: boolean,  
+  speeding_violation?: boolean,
+  vehicle_owner?: string  
 }
 
 export interface QuestionsStep extends MandatoryQuestionStep {

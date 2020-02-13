@@ -29,7 +29,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
         'deposit' , 'start_date', 'quote_amount', 'deductible',
         'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 'dwi_36_months', 
-        'fault_accident_pedestrian', 'speeding_violation', 
+        'fault_accident_pedestrian', 'speeding_violation', 'vehicle_owner'
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -41,6 +41,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'email', 'status', 'deposit' , 'start_date', 'quote_amount',
         'deductible', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -68,6 +69,7 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 
@@ -102,6 +104,7 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
+        'vehicle_owner'
     )
     model = QuoteProcess
 

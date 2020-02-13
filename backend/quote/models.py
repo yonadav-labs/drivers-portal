@@ -13,7 +13,7 @@ from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
     FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
-    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES
+    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES, VEHICLE_OWNER_CHOICES
 )
 from quote.managers import QuoteProcessQuerySet
 from quote.utils import (
@@ -121,6 +121,13 @@ class QuoteProcess(BaseModel):
     )
 
     # New questions
+    vehicle_owner = models.CharField(
+        verbose_name='Vehicle Owner',
+        max_length=12,
+        choices=VEHICLE_OWNER_CHOICES,
+        null=True,
+        blank=True
+    )
     dash_cam = models.BooleanField(
         verbose_name='Dash Cam',
     )

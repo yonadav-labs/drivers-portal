@@ -26,6 +26,7 @@ export default class Breadcrumbs extends Vue {
   steps = [
       OrderedQuoteRouteName.TLC,
       OrderedQuoteRouteName.VIN,
+      OrderedQuoteRouteName.QUESTION_OWNER,
       OrderedQuoteRouteName.QUESTION_LONG_TLC,
       OrderedQuoteRouteName.QUESTION_LONG_DMV,
       OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
@@ -40,6 +41,7 @@ export default class Breadcrumbs extends Vue {
   ]
 
   groupedSteps = [
+    OrderedQuoteRouteName.QUESTION_OWNER,
     OrderedQuoteRouteName.QUESTION_LONG_TLC,
     OrderedQuoteRouteName.QUESTION_LONG_DMV,
     OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,

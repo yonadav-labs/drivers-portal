@@ -97,6 +97,8 @@ export default class QuoteProcessRadioForm extends Vue {
     }
 
     .question-content__radio {
+      text-align: left;
+
       &:not(:last-child) {
         margin-bottom: 1.25rem;
       }

@@ -31,6 +31,7 @@ export default class QuoteMainVuexModule extends VuexModule {
   stepsCompleted = {
     [OrderedQuoteRouteName.TLC]: false,
     [OrderedQuoteRouteName.VIN]: false,
+    [OrderedQuoteRouteName.QUESTION_OWNER]: false,
     [OrderedQuoteRouteName.QUESTION_LONG_TLC]: false,
     [OrderedQuoteRouteName.QUESTION_LONG_DMV]: false,
     [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: false,
