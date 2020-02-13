@@ -51,6 +51,8 @@ HELLOSIGN_CLIENTID = env("HELLOSIGN_CLIENTID_PROD")
 
 CORS_ORIGIN_WHITELIST = [
     "app.stableins.com",
+    "http://app.stableins.com",
+    "https://app.stableins.com",
 ]
 
 # Try to import local settings, if exists

@@ -218,11 +218,16 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=0, hour=3)
     }
 }
+CELERY_IMPORTS = (
+    'base.tasks',
+)
+
 
 # Email
 # Anymail - SendGrid
 EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
 DEFAULT_FROM_EMAIL = 'stableins <noreply@stableins.com>'
+ADMIN_EMAIL = "dani@z1.digital"
 ANYMAIL = {
     "SENDGRID_API_KEY": "{}".format(SENDGRID_API_KEY),
 }
