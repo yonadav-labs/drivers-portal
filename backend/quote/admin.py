@@ -7,6 +7,7 @@ from django_object_actions import DjangoObjectActions
 from nested_admin import NestedStackedInline, NestedModelAdmin
 
 from base.admin import stable_admin
+from base.tasks import send_user_quote_task
 
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
@@ -103,6 +104,7 @@ class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
     return form
 
   def response_add(self, request, obj):
+      send_user_quote_task.delay(str(obj.quote_process.user.id))
       messages.add_message(
           request, messages.SUCCESS, f'The Payment has been sent to the user!')
       quote_process = obj.quote_process
