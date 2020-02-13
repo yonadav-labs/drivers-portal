@@ -32,7 +32,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'email', 'status', 'quoteprocessdocuments', 'quoteprocesspayment',
         'deposit' , 'start_date', 'quote_amount', 'deductible',
         'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 'dwi_36_months', 
-        'fault_accident_pedestrian', 'speeding_violation', 'vehicle_owner'
+        'fault_accident_pedestrian', 'speeding_violation', 'vehicle_owner', 'is_hereford',
     )
     read_only_fields = (
         'id', 'tlc_number', 'tlc_name', 'vehicle_vin', 'vehicle_owner',
@@ -44,7 +44,7 @@ class RetrieveQuoteProcessSerializer(serializers.ModelSerializer):
         'email', 'status', 'deposit' , 'start_date', 'quote_amount',
         'deductible', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
-        'vehicle_owner'
+        'vehicle_owner', 'is_hereford'
     )
     model = QuoteProcess
 
@@ -57,6 +57,7 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
 
   def update(self, obj, validated_data):
     obj = super().update(obj, validated_data)
+    obj.is_hereford = "hereford" in obj.insurance_carrier_name.lower()
     base_type = BaseType.objects.get(base_number=validated_data['base_number'])
     obj.base_type = base_type
     obj.save()
@@ -72,7 +73,7 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
-        'vehicle_owner'
+        'vehicle_owner', 'is_hereford'
     )
     model = QuoteProcess
 
@@ -94,7 +95,8 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
     base_type = BaseType.objects.get(base_number=validated_data['base_number'])
     return QuoteProcess.objects.create(
       **validated_data,
-      base_type=base_type
+      base_type=base_type,
+      is_hereford="hereford" in validated_data['insurance_carrier_name'].lower()
     )
 
   class Meta:
@@ -107,7 +109,7 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
         'defensive_driving_certificate', 'accident_avoidance_system',
         'email', 'dash_cam', 'accidents_72_months', 'vehicle_is_hybrid', 
         'dwi_36_months', 'fault_accident_pedestrian', 'speeding_violation', 
-        'vehicle_owner'
+        'vehicle_owner', 'is_hereford'
     )
     model = QuoteProcess
 
@@ -216,13 +218,13 @@ class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
-      'requires_broker_of_record'
+      'requires_broker_of_record', 'loss_run', 'vehicle_title'
     )
     read_only_fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
-      'requires_broker_of_record'
+      'requires_broker_of_record', 'loss_run', 'vehicle_title'
     )
     model = QuoteProcessDocuments
 
@@ -232,6 +234,7 @@ class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
     fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
+      'loss_run', 'vehicle_title'
     )
     model = QuoteProcessDocuments
 
