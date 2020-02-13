@@ -5,7 +5,7 @@ from celery.decorators import task
 from base.emails import (
     send_admin_notification_documents_submitted_email,
     send_user_welcome_email, send_user_documents_submitted,
-    send_user_policy_ready
+    send_user_quote_ready
 )
 
 
@@ -37,9 +37,9 @@ def send_user_submitted_task(user_id):
     send_user_documents_submitted(user, ml.get_url())
 
 
-@task(name='send_user_policy_task')
-def send_user_policy_task(user_id):
+@task(name='send_user_quote_task')
+def send_user_quote_task(user_id):
     from users.models import User, MagicLink
     user = User.objects.get(id=user_id)
     ml = MagicLink.objects.create(user=user)
-    send_user_policy_ready(user, ml.get_url())
+    send_user_quote_ready(user, ml.get_url())

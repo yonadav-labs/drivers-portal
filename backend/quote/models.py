@@ -190,6 +190,11 @@ class QuoteProcess(BaseModel):
       default=QUOTE_STATUS_CREATED
     )
 
+    is_hereford = models.BooleanField(
+      verbose_name="Is Hereford",
+      default=False
+    )
+
     objects = QuoteProcessQuerySet.as_manager()
 
     class Meta:
@@ -330,6 +335,20 @@ class QuoteProcessDocuments(BaseModel):
         blank=True
     )
 
+    loss_run = models.FileField(
+        verbose_name='Loss Run Document',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
+
+    vehicle_title = models.FileField(
+        verbose_name='Vehicle Title or Bill of Sale or MV-50',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
+
     base_letter = models.FileField(
         verbose_name='Base Letter',
         upload_to=quote_process_document_upload_to,
@@ -408,8 +427,11 @@ class QuoteProcessDocuments(BaseModel):
 
       has_dmv = self.dmv_license_front_side and self.dmv_license_back_side
       has_tlc = self.tlc_license_front_side and self.tlc_license_back_side
+      hereford_docs = self.quote_process.is_hereford or \
+        (self.loss_run and self.vehicle_title)
 
       return broker_of_record_done and has_dmv and has_tlc and \
+        hereford_docs and \
         self.quoteprocessdocumentsaccidentreport_set.filter(
           accident_report__isnull=False
         ).count() >= self.get_minimum_accident_reports()

@@ -103,6 +103,7 @@
       >Get Your Insurance Policy!
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
+      <div class="disclaimer">This is a projected quote only and final premium is dependent upon verification and accuracy of the information you provided.</div>
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
@@ -495,5 +496,15 @@ export default class StepQuote extends Vue {
 
 .questions {
   margin-top: 1rem;
+}
+
+.disclaimer {
+  background-color: rgba(66,99,235,0.04);
+  border: 1px solid $blue;
+  border-radius: 4px;
+  color: $blue-dark;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  line-height: 24px;
 }
 </style>

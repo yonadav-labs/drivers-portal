@@ -57,7 +57,7 @@ export default class StepQuestionDriverPoints extends Vue {
       value: 'owner-named'
     },
     {
-      label: 'I am the owner and there are more than 1 additional drivers oaths policy.',
+      label: 'I am the owner and there are more than 1 additional drivers on this policy.',
       value: 'corporate-1'
     },
     {

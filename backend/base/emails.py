@@ -79,15 +79,15 @@ def send_user_documents_submitted(user, cta_url):
     )
 
 
-def send_user_policy_ready(user, cta_url):
+def send_user_quote_ready(user, cta_url):
     return send_email(
         receiver=user.email,
-        subject="Your policy is ready!",
+        subject="Your quote has been finalized!",
         context={
-            "subject": "Your policy is ready!",
-            "title": "Your policy is ready!",
+            "subject": "Your quote has been finalized!",
+            "title": "Your quote has been finalized!",
             "content": (
-                "Stable has completed your policy!"
+                "Check out your verified quote and payment details on your dashboard."
             ),
             "cta": "Go to Stable",
             "cta_url": cta_url
