@@ -56,7 +56,7 @@ export default class QuoteVINVuexModule extends VuexModule {
     this.context.commit('setApiFHVInfoPending');
   
     try {
-      const fhvInfo = await getVINFHVInfo(vehicle_vin_number);
+      const fhvInfo = await getVINFHVInfo(vehicle_vin_number.toUpperCase());
       this.context.commit('setApiFHVInfo', fhvInfo);
     } catch (e) {
       this.context.commit('setApiFHVInfo', e)
@@ -68,7 +68,7 @@ export default class QuoteVINVuexModule extends VuexModule {
     this.context.commit('setApiInsuranceInfoPending');
   
     try {
-      const insuranceInfo = await getVINInsuranceInfo(vin);
+      const insuranceInfo = await getVINInsuranceInfo(vin.toUpperCase());
       this.context.commit('setApiInsuranceInfo', insuranceInfo);
     } catch (e) {
       this.context.commit('setApiInsuranceInfo', e)
