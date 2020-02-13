@@ -218,9 +218,6 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=0, hour=3)
     }
 }
-CELERY_IMPORTS = (
-    'base.tasks',
-)
 
 
 # Email
@@ -284,3 +281,5 @@ ADMIN_TOOLS_APP_INDEX_DASHBOARD = {
     'base.admin.stable_admin': 'admin_dashboard.dashboard.CustomAppIndexDashboard',
     'django.contrib.admin.site': 'admin_dashboard.django_admin_dashboard.CustomAppIndexDashboard',
 }
+
+FRONTEND_URL = "localhost:8080"

@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -70,3 +71,6 @@ class MagicLink(BaseModel):
 
     def is_expired(self):
         return timezone.now() > self.expire_on
+
+    def get_url(self):
+      return f"{settings.FRONTEND_URL}/magic_link/{str(self.id)}/"

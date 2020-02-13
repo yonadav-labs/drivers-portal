@@ -53,6 +53,8 @@ CORS_ORIGIN_WHITELIST = [
     "app.stableins.com",
 ]
 
+FRONTEND_URL = "app.stableins.com"
+
 # Try to import local settings, if exists
 try:
     EXTRA_APPS = ()
