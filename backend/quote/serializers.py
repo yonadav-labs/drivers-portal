@@ -1,5 +1,8 @@
 from rest_framework import serializers
 
+from base.tasks import (
+  send_admin_notification_task, send_user_submitted_task
+)
 from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
@@ -254,6 +257,8 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
           'is_broker_of_record_signed')
     if validated_data.get('is_submitted_for_review') is True:
       obj.set_is_submitted_for_review()
+      send_admin_notification_task.delay(str(obj.quote_process.user.id))
+      send_user_submitted_task.delay(str(obj.quote_process.user.id))
     obj.save()
     return obj
 
