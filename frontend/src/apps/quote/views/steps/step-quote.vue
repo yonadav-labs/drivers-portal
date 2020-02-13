@@ -84,7 +84,7 @@
         <div class="insurance-estimated">
           <p>Monthly payment</p>
           <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimated-date">9 payments starting on
+          <span class="estimated-date">{{ depositPayments }} payments starting on
             <br>
             {{ firstPaymentDue }}
           </span>
@@ -127,7 +127,7 @@
       :monthly-payment="monthlyPayment"
       :deposit="deposit"
       :first-payment-due="firstPaymentDue"
-
+      :deposit-payments="depositPayments"
       @close="setShowPremium(false)"
       ></modal-premium>
   </quote-process-columns-layout>
@@ -159,7 +159,7 @@ import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 import { QuoteProcess, QuoteProcessCalcVariations, QuoteProcessVariationPhysical, QuoteProcessOptionsPayload } from '@/@types/quote';
 
 import { currency, beautyCurrency } from '@/utils/text'
-import { getHerefordFee } from '@/utils/quote'
+import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
 
 const quote = namespace('Quote')
 
@@ -214,6 +214,10 @@ export default class StepQuote extends Vue {
     {
       text: '25%',
       value: 25
+    },
+    {
+      text: '40%',
+      value: 40
     }
   ]
 
@@ -265,7 +269,7 @@ export default class StepQuote extends Vue {
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.internalDeposit/100)))/9;
+    return (this.total * (1-(this.internalDeposit/100)))/this.depositPayments;
   }
 
   get deposit(): number {
@@ -283,12 +287,16 @@ export default class StepQuote extends Vue {
     return this.isDepositSet ? beautyCurrency(this.deposit):'$--'
   }
 
+  get depositPayments(): number {
+    return getPaymentsByDeposit(this.internalDeposit)
+  }
+
   get firstPaymentDue(): string {
     if (!this.internalDate) {
       return '--'
     }
     const selectedDate = new Date(this.internalDate)
-    return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
+    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
   }
 
   get liabilityText(): string {

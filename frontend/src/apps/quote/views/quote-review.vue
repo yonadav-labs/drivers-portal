@@ -59,7 +59,7 @@
         <div class="insurance-estimated">
           <p>Monthly payment</p>
           <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimated-date">9 payments starting on
+          <span class="estimated-date">{{ depositPayments }} payments starting on
             <br>
             {{ firstPaymentDue }}
           </span>
@@ -98,7 +98,7 @@
       :monthly-payment="monthlyPayment"
       :deposit="deposit"
       :first-payment-due="firstPaymentDue"
-
+      :deposit-payments="depositPayments"
       @close="setShowPremium(false)"
       ></modal-premium>
   </quote-process-columns-layout>
@@ -128,7 +128,7 @@ import { QuoteProcess, QuoteProcessPayment } from '@/@types/quote';
 import { User } from '@/@types/users';
 
 import { currency, beautyCurrency } from '@/utils/text'
-import { getHerefordFee } from '@/utils/quote'
+import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
 
 const quote = namespace('Quote')
 const quotePayment = namespace('QuotePayment')
@@ -196,12 +196,16 @@ export default class StepQuoteReview extends Vue {
     return this.quoteDeposit ? beautyCurrency(this.deposit):'$--'
   }
 
+  get depositPayments(): number {
+    return getPaymentsByDeposit(this.quoteDeposit)
+  }
+
   get firstPaymentDue(): string {
     if (!this.quoteStartDate) {
       return '--'
     }
     const selectedDate = new Date(this.quoteStartDate)
-    return this.formatDate(addMonths(selectedDate, 3))
+    return this.formatDate(addMonths(selectedDate, this.depositPayments === 3 ? 9:3))
   }
 
   get liability(): string {
