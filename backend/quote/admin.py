@@ -12,7 +12,10 @@ from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
     QuoteProcessPayment
 )
-from quote.forms import AdminQuoteProcessPaymentForm
+from quote.proxy_models import (
+    SendQuoteProcessPayment
+)
+from quote.forms import AdminSendQuoteProcessPaymentForm
 
 class QuoteProcessDocumentsAccidentReportInline(NestedStackedInline):
     model = QuoteProcessDocumentsAccidentReport
@@ -71,7 +74,7 @@ class QuoteProcessDocumentsAdmin(DjangoObjectActions, NestedModelAdmin):
     def send_official_hereford_quote(self, request, obj):
       return redirect(
         (
-            f'{reverse("stable_admin:quote_quoteprocesspayment_add")}'
+            f'{reverse("stable_admin:quote_sendquoteprocesspayment_add")}'
             f'?quote_process={str(obj.quote_process_id)}'
         )
     )
@@ -91,12 +94,12 @@ class QuoteProcessPaymentQuoteProccessInline(admin.StackedInline):
   model = QuoteProcess
   read_only_fields = ('quote_amount', 'deposit', 'deductible', 'start_date')
 
-class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
+class SendQuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
   change_form_template = "admin/quote/quoteprocesspayment/change_form.html"
-  form = AdminQuoteProcessPaymentForm
+  form = AdminSendQuoteProcessPaymentForm
 
   def get_form(self, request, obj=None, **kwargs):
-    form = super(QuoteProcessPaymentAdmin, self).get_form(request, obj, **kwargs)
+    form = super(SendQuoteProcessPaymentAdmin, self).get_form(request, obj, **kwargs)
     quote_id = request.GET.get('quote_process')
     if quote_id:
       form.base_fields['quote_process'].initial = request.GET.get('quote_process')
@@ -110,4 +113,28 @@ class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
           reverse('stable_admin:quote_quoteprocess_change', args=(quote_process.id, ))
       )
 
+stable_admin.register(SendQuoteProcessPayment, SendQuoteProcessPaymentAdmin)
+
+
+class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
+    change_actions = ('create_policy', )
+
+    def create_policy(self, request, obj):
+      return redirect(
+          (
+              f'{reverse("stable_admin:policy_createpolicy_add")}'
+              f'?quote_process={str(obj.quote_process_id)}'
+              f'&user={str(obj.quote_process.user.id)}'
+          )
+      )
+
+    def get_change_actions(self, request, object_id, form_url):
+      if object_id:
+        obj = QuoteProcessPayment.objects.get(id=object_id)
+        if obj.is_paid:
+          return ('create_policy', )
+      return ()
+
+
 stable_admin.register(QuoteProcessPayment, QuoteProcessPaymentAdmin)
+admin.site.register(QuoteProcessPayment)
