@@ -218,6 +218,11 @@ export default class DashboardQuoteUploadView extends Vue {
       disabled: false
     },
     {
+      title: 'Base Letter',
+      field: 'base_letter',
+      disabled: false
+    },
+    {
       title: 'Proof of Address',
       field: 'proof_of_address',
       disabled: false
@@ -267,6 +272,12 @@ export default class DashboardQuoteUploadView extends Vue {
     return 0
   }
 
+  get requiredDocsReady(): boolean {
+    return this.docs.slice(0, 4).every(
+      doc => !!this.quoteProcessDocuments![doc.field]
+    )
+  }
+
   get depositAmount(): number {
     return this.quoteDeposit/100 * this.total
   }
@@ -306,10 +317,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get isReadyForSubmit(): boolean {
     return !!this.quoteProcessDocuments && !this.quoteProcessDocuments.is_submitted_for_review &&
-    this.isBrokerOfRecordReady && this.isAccidentReportsReady && 
-    this.docs.every(
-      doc => !!this.quoteProcessDocuments![doc.field]
-    )
+    this.isBrokerOfRecordReady && this.isAccidentReportsReady && this.requiredDocsReady
   }
 
   get isSubmittedForReview(): boolean {

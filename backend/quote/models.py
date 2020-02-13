@@ -329,6 +329,13 @@ class QuoteProcessDocuments(BaseModel):
         null=True,
         blank=True
     )
+
+    base_letter = models.FileField(
+        verbose_name='Base Letter',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
     
     proof_of_address = models.FileField(
         verbose_name='Proof of Address',
@@ -354,6 +361,7 @@ class QuoteProcessDocuments(BaseModel):
         'dmv_license_back_side',
         'tlc_license_front_side',
         'tlc_license_back_side',
+        'base_letter',
         'proof_of_address',
         'defensive_driving_certificate'
     ]
@@ -397,8 +405,11 @@ class QuoteProcessDocuments(BaseModel):
     def check_ready_for_review(self):
       broker_of_record_done = not self.requires_broker_of_record or \
         self.is_broker_of_record_signed
-      return broker_of_record_done and \
-        len(self.doc_fields) == self.get_documents_filled_count() and  \
+
+      has_dmv = self.dmv_license_front_side and self.dmv_license_back_side
+      has_tlc = self.tlc_license_front_side and self.tlc_license_back_side
+
+      return broker_of_record_done and has_dmv and has_tlc and \
         self.quoteprocessdocumentsaccidentreport_set.filter(
           accident_report__isnull=False
         ).count() >= self.get_minimum_accident_reports()

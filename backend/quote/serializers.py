@@ -211,13 +211,13 @@ class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
   class Meta:
     fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
-      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+      'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
       'requires_broker_of_record'
     )
     read_only_fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
-      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+      'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
       'requires_broker_of_record'
     )
@@ -228,7 +228,7 @@ class UpdateQuoteProcessDocumentsFileSerializer(serializers.ModelSerializer):
   class Meta:
     fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
-      'tlc_license_back_side', 'proof_of_address', 'defensive_driving_certificate',
+      'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
     )
     model = QuoteProcessDocuments
 
