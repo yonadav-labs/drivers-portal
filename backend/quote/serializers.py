@@ -258,7 +258,7 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     if validated_data.get('is_submitted_for_review') is True:
       obj.set_is_submitted_for_review()
       send_admin_notification_task.delay(str(obj.quote_process.user.id))
-      send_user_submitted_task(str(obj.quote_process.user.id))
+      send_user_submitted_task.delay(str(obj.quote_process.user.id))
     obj.save()
     return obj
 
