@@ -11,7 +11,7 @@
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimate__info">9 payments starting on
+          <span class="estimate__info">{{ depositPayments }} payments starting on
             <br>
             {{ firstPaymentDue }}
           </span>
@@ -140,7 +140,7 @@ import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
 import ModalBrokerRecord from '@/apps/dashboard/components/modals/broker-record.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
-import { getHerefordFee } from '@/utils/quote'
+import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
 
 import { Route } from 'vue-router';
 
@@ -272,11 +272,16 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get monthlyPayment(): number {
-    return (this.total * (1-(this.quoteDeposit/100)))/9;
+    const months = getPaymentsByDeposit(this.quoteDeposit)
+    return (this.total * (1-(this.quoteDeposit/100)))/this.depositPayments;
   }
 
   get herefordFee(): number {
     return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+  }
+
+  get depositPayments(): number {
+    return getPaymentsByDeposit(this.quoteDeposit)
   }
 
   get firstPaymentDue(): string {
@@ -284,7 +289,7 @@ export default class DashboardQuoteUploadView extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.startDate)
-    return format(addMonths(selectedDate, 3), 'MMM d, yyyy')
+    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
   }
 
   get startDate(): string {

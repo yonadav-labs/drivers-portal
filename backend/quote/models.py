@@ -13,7 +13,8 @@ from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
     FAULT_ACCIDENTS_CHOICES, QUOTE_STATUS_CREATED, QUOTE_STATUS_CHOICES,
-    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES, VEHICLE_OWNER_CHOICES
+    QUOTE_STATUS_DOCS, ACCIDENTS_72_CHOICES, VEHICLE_OWNER_CHOICES,
+    QUOTE_PROCESS_DEPOSIT_40
 )
 from quote.managers import QuoteProcessQuerySet
 from quote.utils import (
@@ -267,7 +268,7 @@ class QuoteProcess(BaseModel):
           variations.delete()
         if self.deposit:
           variations = get_quote_variations(self)
-          deductibles = variations.pop('deductible')
+          deductibles = variations.pop('deductible', {})
           deductible_data = deductibles[self.deductible] if self.deductible \
             else {}
           QuoteProcessVariations.objects.create(
@@ -511,7 +512,8 @@ class QuoteProcessPayment(BaseModel):
 
     def get_monthly_payment(self):
       deposit = self.quote_process.deposit
-      return (float(self.official_hereford_quote) * (1-(deposit/100)))/9
+      months = 3 if deposit == QUOTE_PROCESS_DEPOSIT_40 else 9
+      return (float(self.official_hereford_quote) * (1-(deposit/100)))/months
 
     def get_hereford_fee(self):
       return get_hereford_fee(self.quote_process.deposit)

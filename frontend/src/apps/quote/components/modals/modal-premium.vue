@@ -176,7 +176,7 @@
           <div class="insurance-estimated">
             <p>Monthly payment</p>
             <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-            <span class="estimated-date">9 payments starting on
+            <span class="estimated-date">{{ depositPayments }} payments starting on
               <br>
               {{ firstPaymentDue }}
             </span>
@@ -204,7 +204,7 @@ import IconChevronDown from '@/components/icons/icon-chevron-down.vue';
 import { QuoteProcessCalcVariations, QuoteProcessVariationPhysical } from '@/@types/quote';
 
 import { currency, beautyCurrency } from '@/utils/text'
-import { getHerefordFee } from '@/utils/quote'
+import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
 
 @Component({
   components: {
@@ -278,6 +278,9 @@ export default class ModalPremium extends Vue {
 
   @Prop({ default: '--' })
   firstPaymentDue!: string;
+
+  @Prop({ default: 9 })
+  depositPayments!: number
   
   opened = ''
 
