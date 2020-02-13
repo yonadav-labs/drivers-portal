@@ -213,7 +213,7 @@ export default class DashboardQuotePaymentView extends Vue {
 
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
-      doc => !!this.quoteProcessDocuments[doc.field]
+      doc => !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[doc.field]
     )
   }
 
