@@ -93,7 +93,7 @@ class CustomIndexDashboard(Dashboard):
                 'title': str(quote),
                 'url': reverse(
                     'stable_admin:quote_quoteprocesspayment_change',  
-                    args=[quote.quoteprocesspayment_id] ),
+                    args=[str(quote.quoteprocesspayment.id)] ),
             })
         
         self.children.append(modules.LinkList(
