@@ -1,5 +1,6 @@
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.contrib.auth.models import Group
 
 from base.constants import MAIN_TEMPLATE_ID, DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
 
@@ -7,7 +8,8 @@ from base.constants import MAIN_TEMPLATE_ID, DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
 def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
 
     subject = "This is a development test email"
-    message = EmailMessage(subject=subject, to=[receiver])
+    receiver = receiver if isinstance(receiver, list) else [receiver, ]
+    message = EmailMessage(subject=subject, to=receiver)
 
     message.merge_data = {receiver: {"firstName": "Mr.Dummy", "lastName": "Bubbles"}}
     message.template_id = DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
@@ -18,7 +20,9 @@ def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
 def send_email(
     *, receiver, context, subject, template_id, attachments=None, extra=None
 ):
-    message = EmailMessage(subject=subject, to=[receiver])
+
+    receiver = receiver if isinstance(receiver, list) else [receiver, ]
+    message = EmailMessage(subject=subject, to=receiver)
 
     message.merge_data = {receiver: {**context}}
 
@@ -97,8 +101,9 @@ def send_user_quote_ready(user, cta_url):
 
 
 def send_admin_notification_documents_submitted_email(user, cta_url):
+    emails = Group.objects.get(name="admin_emails").user_set.values_list('email', flat=True)
     return send_email(
-        receiver=settings.ADMIN_EMAIL,
+        receiver=emails,
         subject="User has submitted all of their documents",
         context={
             "subject": "User has submitted all of their documents!",
