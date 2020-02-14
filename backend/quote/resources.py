@@ -34,9 +34,10 @@ def get_quote_export(quote_process):
   header = QuoteProcessSerializer.Meta.fields + QuoteProcessVariationsSerializer.Meta.fields
   quote_data = QuoteProcessSerializer(quote_process).data
   quote_variations_data = {}
-  if quote_process.quoteprocessvariations:
+  variations = getattr(quote_process, 'quoteprocessvariations', None)
+  if variations:
     quote_variations_data = QuoteProcessVariationsSerializer(
-        quote_process.quoteprocessvariations).data
+        variations).data
   return (header, {
     **quote_data,
     **quote_variations_data
