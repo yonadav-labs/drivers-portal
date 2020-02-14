@@ -222,7 +222,7 @@ CELERY_BEAT_SCHEDULE = {
 
 # Email
 # Anymail - SendGrid
-EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'stableins <noreply@stableins.com>'
 ADMIN_EMAIL = "dani@z1.digital"
 ANYMAIL = {
