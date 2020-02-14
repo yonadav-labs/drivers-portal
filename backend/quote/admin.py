@@ -2,6 +2,7 @@ import csv
 
 from django.contrib import admin
 from django.contrib import messages
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -11,7 +12,7 @@ from nested_admin import NestedStackedInline, NestedModelAdmin
 
 from base.admin import stable_admin
 from base.tasks import send_user_quote_task
-
+from users.models import MagicLink
 
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
@@ -50,7 +51,7 @@ def export_as_csv(modeladmin, request, queryset):
 
 
 class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
-    change_actions = ('generate_quote_link', 'add_user_manually' )
+    change_actions = ('generate_dashboard_link', 'generate_quote_link', 'add_user_manually' )
     actions = (export_as_csv, )
     inlines = [QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
 
@@ -63,6 +64,8 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
         if obj.user:
             actions.remove('generate_quote_link')
             actions.remove('add_user_manually')
+        else:
+          actions.remove('generate_dashboard_link')
         return actions
     
     def add_user_manually(self, request, obj):
@@ -76,8 +79,15 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
 
     def generate_quote_link(self, request, obj):
         messages.add_message(
-            request, messages.INFO, f'Quote Page Link: stableins.com/{str(obj.id)}')
+            request, messages.INFO, f'Quote Page Link: {settings.FRONTEND_URL}/quote/{str(obj.id)}')
     generate_quote_link.label = 'Generate Quote Page Link'
+
+    def generate_dashboard_link(self, request, obj):
+        if obj.user:
+          ml, created = MagicLink.objects.active().get_or_create(user=obj.user)
+          messages.add_message(
+              request, messages.INFO, f'Dashboard Link: {ml.get_url()}')
+    generate_dashboard_link.label = 'Generate Dashboard Link'
 
 admin.site.register(QuoteProcess)
 stable_admin.register(QuoteProcess, QuoteProcessAdmin)
