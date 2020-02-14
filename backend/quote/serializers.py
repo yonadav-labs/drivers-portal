@@ -61,6 +61,7 @@ class RetrieveUpdateQuoteProcessSerializer(serializers.ModelSerializer):
     base_type = BaseType.objects.get(base_number=validated_data['base_number'])
     obj.base_type = base_type
     obj.save()
+    obj.set_quote_variations()
     return obj
 
   class Meta:
@@ -93,11 +94,13 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
 
   def create(self, validated_data):
     base_type = BaseType.objects.get(base_number=validated_data['base_number'])
-    return QuoteProcess.objects.create(
+    obj = QuoteProcess.objects.create(
       **validated_data,
       base_type=base_type,
       is_hereford="hereford" in validated_data['insurance_carrier_name'].lower()
     )
+    obj.set_quote_variations()
+    return obj
 
   class Meta:
     fields = (

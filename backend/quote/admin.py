@@ -16,7 +16,7 @@ from users.models import MagicLink
 
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
-    QuoteProcessPayment, QuoteSoftFallout
+    QuoteProcessPayment, QuoteSoftFallout, QuoteProcessVariations
 )
 from quote.forms import AdminQuoteProcessPaymentForm
 from quote.resources import get_quote_export
@@ -32,6 +32,9 @@ class QuoteProcessDocumentsInline(NestedStackedInline):
 class QuoteProcessPaymentInline(NestedStackedInline):
   model = QuoteProcessPayment
 
+
+class QuoteProcessVariationsInline(NestedStackedInline):
+  model = QuoteProcessVariations
 
 def export_as_csv(modeladmin, request, queryset):
   response = HttpResponse(content_type='text/csv')
@@ -53,7 +56,7 @@ def export_as_csv(modeladmin, request, queryset):
 class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
     change_actions = ('generate_dashboard_link', 'generate_quote_link', 'add_user_manually' )
     actions = (export_as_csv, )
-    inlines = [QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
+    inlines = [QuoteProcessVariationsInline, QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
 
     def get_change_actions(self, request, object_id, form_url):
         actions = super(QuoteProcessAdmin, self).get_change_actions(

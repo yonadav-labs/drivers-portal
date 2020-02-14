@@ -234,16 +234,15 @@ class QuoteProcess(BaseModel):
           self.save()
       
     def set_quote_variations(self):
-      if self.is_ready_for_user:
-          self._create_variations()
-          variations = self.variations
+        self._create_variations()
+        variations = self.variations
 
-          if variations:
-            self.quote_amount = self.quoteprocessvariations.liability_total
-            
-            if variations.physical_total:
-              self.quote_amount += variations.physical_total
-            self.save()
+        if variations:
+          self.quote_amount = self.quoteprocessvariations.liability_total
+          
+          if variations.physical_total:
+            self.quote_amount += variations.physical_total
+          self.save()
 
     def set_quote_status(self, status):
       self.status = status
@@ -271,18 +270,17 @@ class QuoteProcess(BaseModel):
         variations = self.variations
         if variations:
           variations.delete()
-        if self.deposit:
-          variations = get_quote_variations(self)
-          deductibles = variations.pop('deductible', {})
-          deductible_data = deductibles[self.deductible] if self.deductible \
-            else {}
-          QuoteProcessVariations.objects.create(
-            quote_process=self,
-            **{
-              **variations,
-              **deductible_data
-            }
-          )
+        variations = get_quote_variations(self)
+        deductibles = variations.pop('deductible', {})
+        deductible_data = deductibles[self.deductible] if self.deductible \
+          else {}
+        QuoteProcessVariations.objects.create(
+          quote_process=self,
+          **{
+            **variations,
+            **deductible_data
+          }
+        )
 
 
 def quote_process_document_upload_to(instance, filename):
