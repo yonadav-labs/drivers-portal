@@ -1,5 +1,8 @@
+import csv
+
 from django.contrib import admin
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 
@@ -9,11 +12,13 @@ from nested_admin import NestedStackedInline, NestedModelAdmin
 from base.admin import stable_admin
 from base.tasks import send_user_quote_task
 
+
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
     QuoteProcessPayment, QuoteSoftFallout
 )
 from quote.forms import AdminQuoteProcessPaymentForm
+from quote.resources import get_quote_export
 
 class QuoteProcessDocumentsAccidentReportInline(NestedStackedInline):
     model = QuoteProcessDocumentsAccidentReport
@@ -27,8 +32,26 @@ class QuoteProcessPaymentInline(NestedStackedInline):
   model = QuoteProcessPayment
 
 
+def export_as_csv(modeladmin, request, queryset):
+  response = HttpResponse(content_type='text/csv')
+  response['Content-Disposition'] = 'attachment; filename="quote_process.csv"'
+
+  if len(queryset):
+    header_set = False
+    writer = None
+    for quote in queryset:
+        quote_headers, export = get_quote_export(quote)
+        if not header_set:
+            writer = csv.DictWriter(response, fieldnames=quote_headers)
+            writer.writeheader()
+            header_set = True
+        writer.writerow(export)
+    return response
+
+
 class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
     change_actions = ('generate_quote_link', 'add_user_manually' )
+    actions = (export_as_csv, )
     inlines = [QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
 
     def get_change_actions(self, request, object_id, form_url):
