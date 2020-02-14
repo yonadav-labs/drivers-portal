@@ -6,7 +6,7 @@ Vue.use(Vuex);
 import QuoteModules from './quote'
 import UsersModules from './users'
 
-import { initClient, hasToken } from './api';
+import { initClient, hasToken, setAuthenticatedCookie, deleteAuthenticatedCookie } from './api';
 
 export const store = new Vuex.Store({
   strict: true,
@@ -31,6 +31,9 @@ async function initializeStore(): Promise<void> {
   await initClient();
   if (hasToken()) {
     await store.dispatch('Users/retrieveUser');
+    setAuthenticatedCookie();
+  } else {
+    deleteAuthenticatedCookie();
   }
 }
 
