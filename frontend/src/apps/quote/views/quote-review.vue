@@ -258,6 +258,8 @@ export default class StepQuoteReview extends Vue {
 }
 
  .insurance-info {
+  background-color: $white;
+  border-radius: 8px;
   font-size: $fs-lg;
   padding: 1.875rem;
 

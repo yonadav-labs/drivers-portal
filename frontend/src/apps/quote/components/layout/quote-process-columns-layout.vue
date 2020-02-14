@@ -101,7 +101,6 @@ export default class QuoteProcessLayout extends Vue {
 
       }
       .right-column {
-        background-color: $white;
         border-radius: 8px;
         margin-left: 1rem;
         margin-top: 3.75rem;
