@@ -182,6 +182,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 # Celery
 # https://www.revsys.com/tidbits/celery-and-django-and-docker-oh-my/
 
