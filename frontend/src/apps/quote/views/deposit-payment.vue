@@ -27,7 +27,7 @@
             @exit="plaidExitHandler"
             :onClick="startPlaid">
             <template v-slot:button="props">
-              <pay-button text="Bank" :info="`${plaidFee} Fee`" @click="props.onClick" color="#F76707">
+              <pay-button text="Bank" :info="`No Fee`" @click="props.onClick" color="#F76707">
                 <!-- <icon-exchange size="16" style="icon--orange"></icon-exchange> -->
               </pay-button>
             </template>
