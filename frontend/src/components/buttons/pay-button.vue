@@ -51,7 +51,6 @@ export default class PayButton extends Vue {
     span{
       font-size: $fs-lg;
       font-weight: 600;
-      margin-right: 1rem;
       line-height: 1.33;
       &.pay-button--info{
         font-size: $fs-sm;
