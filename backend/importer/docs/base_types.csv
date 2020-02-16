@@ -1,13 +1,13 @@
 NYC TLC Base License #,Radio Base Name,Base Type,Preferred Luxury Discount,Loss Control Discount
 B01065,Barrios Car Service,Livery ,Y,N
-B00256,Carmel Car and Limo,Livery ,Y,N
-B00887,Dial 7 Car and Limo Svc,Livery ,Y,N
+B00256,Carmel Car and Limo,Livery ,Y,Y
+B00887,Dial 7 Car and Limo Svc,Livery ,Y,Y
 B02111,Huang Hou Car Service Inc.,Livery ,Y,Y
-B01527,New Family Radio Disp. Inc,Livery ,Y,N
+B01527,New Family Radio Disp. Inc,Livery ,Y,Y
 B01667,New Golden Horse C/L Svc,Livery ,Y,Y
 B01768,New Superior Radio Group,Livery ,Y,Y
-B01525,Northside Luxury Inc.,Livery ,Y,N
-B00248,Yellowstone Transp. Inc.,Livery ,Y,N
+B01525,Northside Luxury Inc.,Livery ,Y,Y
+B00248,Yellowstone Transp. Inc.,Livery ,Y,Y
 B03193,"EXPERT CARE TRANSPORTATION, INC.",Black Car,N,N
 B03135,28 EXPRESS INC.,Black Car,N,N
 B03243,"CAPRICE CAR SERVICE NO.2,INC",Black Car,N,N
@@ -527,7 +527,6 @@ B00350,CHAMPION CAR & LIMO SVC. INC.,Livery ,N,N
 B02162,A B C SHUTTLE SERVICES CORPORATION,Livery ,N,N
 B02803,OUTSIDE'S CAR SERVICE INC.,Livery ,N,N
 B02279,MATAMOROS CAR SERVICE INC.,Livery ,N,N
-B00887,DIAL 7 CAR & LIMOUSINE SERVICE INC.,Livery ,N,Y
 B00850,UPTOWN TRANSIT CORP,Livery ,N,N
 B02145,NEW 2020 CAR SERVICE INC,Livery ,N,N
 B01600,R & N CAR SERVICE INC.,Livery ,N,N
