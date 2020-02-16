@@ -102,6 +102,14 @@ def get_hybrid(quote):
 
 def extra_accidents(quote):
   condition = quote.accidents_72_months == ACCIDENTS_72_ZERO
+  if condition:
+    condition = "hereford" in quote.insurance_carrier_name.lower()
+    if condition:
+      try:
+        value = int(quote.insurance_policy_number.split('-')[-1])
+        condition = value >= 3
+      except:
+        condition = False
   return 0.97 if condition else 1.0
 
 def collision_avoidance(quote):
