@@ -6,6 +6,7 @@ from importer.models import (
     ForHireVehicle,
     FHVActiveDriver,
     ImportProcessLogTask,
+    BaseType
 )
 
 
@@ -73,3 +74,4 @@ admin.site.register(MedallionDriver, MedallionDriverAdmin)
 admin.site.register(ForHireVehicle, ForHireVehicleAdmin)
 admin.site.register(FHVActiveDriver, FHVActiveDriverAdmin)
 admin.site.register(ImportProcessLogTask, ImportProcessLogTaskAdmin)
+admin.site.register(BaseType)

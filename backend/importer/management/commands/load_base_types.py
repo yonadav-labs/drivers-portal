@@ -37,13 +37,14 @@ class Command(BaseCommand):
           if first_line:
             first_line = False
             continue
+          
           _, created = BaseType.objects.update_or_create(
             base_number=row[0].strip(),
             defaults={
               'base_name': row[1].strip(),
               'base_type': BASE_TYPE_LIVERY if row[2].strip() == 'Livery' else BASE_TYPE_BLACKCAR,
-              'luxury_discount': True if row[3].strip() == 'Y' else False,
-              'loss_control_discount': True if row[4].strip() == 'Y' else False,
+              'luxury_discount': row[3].strip() == 'Y',
+              'loss_control_discount': row[4].strip() == 'Y',
             }
           )
           if created:

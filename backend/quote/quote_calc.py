@@ -85,7 +85,7 @@ def get_longevity(quote):
   return 0.97 if condition else 1.0
 
 def get_workers_compensation(quote):
-  condition = quote.base_type.base_type != BASE_TYPE_BLACKCAR
+  condition = False
   return 0.95 if condition else 1.0
 
 def get_loss_control(quote):
