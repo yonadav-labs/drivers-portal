@@ -12,4 +12,5 @@ export interface PolicyDetail extends Policy {
   tlc_number: string,
   vehicle_vin: string,
   license_plate: string,
+  [key: string]: string
 }

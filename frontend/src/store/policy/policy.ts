@@ -3,7 +3,7 @@ import { PolicyList, PolicyDetail } from '@/@types/policy';
 
 import { APIProperty, APIState } from '@/store/api'
 
-import { listPolicies, retrievePolicy } from './api.ts'
+import { listPolicies, retrievePolicy } from './api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
