@@ -31,7 +31,7 @@ class Policy(BaseModel):
         max_length=255
     )
 
-    certifcate_of_liability = models.FileField(
+    certificate_of_liability = models.FileField(
         verbose_name="Certificate of Liability",
         upload_to=policy_document_upload_to
     )
@@ -45,6 +45,12 @@ class Policy(BaseModel):
         verbose_name="Insurance Document",
         upload_to=policy_document_upload_to
     )
+
+    def save(self, *args, **kwargs):
+      created = self._state.adding is True
+      super().save(*args, **kwargs)
+      if created:
+        self.quote_process.update_status()
 
     class Meta:
         verbose_name = "Policy"
