@@ -71,6 +71,8 @@ def get_accident_prevention(quote):
 
 def get_safe_driver(quote):
   condition = quote.fault_accidents_last_months == FAULT_ACCIDENTS_ZERO
+  if condition:
+    condition = not quote.speeding_violation
   return 0.8 if condition else 1.0 
 
 def get_longevity(quote):
