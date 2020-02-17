@@ -118,7 +118,6 @@ export default class DashboardPolicyView extends Vue {
       if (!vm.policyList.length) {
         await vm.listPolicies()
       }
-      debugger;
       if (!!vm.policyList.length) {
         vm.policyId = vm.policyList[0].id;
         if (!vm.policy) {
