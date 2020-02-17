@@ -14,7 +14,8 @@ from quote.constants import (
   DMV_PLUS_THREE_YEARS,
   TLC_LESS_ONE_YEAR,
   POINTS_SEVEN_TEN,
-  POINTS_MORE_TEN
+  POINTS_MORE_TEN,
+  VEHICLE_OWNER_DRIVER
 )
 
 BODILY = 'body_injury'
@@ -105,13 +106,15 @@ def get_hybrid(quote):
 def extra_accidents(quote):
   condition = quote.accidents_72_months == ACCIDENTS_72_ZERO
   if condition:
-    condition = "hereford" in quote.insurance_carrier_name.lower()
+    condition = quote.vehicle_owner == VEHICLE_OWNER_DRIVER
     if condition:
-      try:
-        value = int(quote.insurance_policy_number.split('-')[-1])
-        condition = value >= 3
-      except:
-        condition = False
+      condition = "hereford" in quote.insurance_carrier_name.lower()
+      if condition:
+        try:
+          value = int(quote.insurance_policy_number.split('-')[-1])
+          condition = value >= 3
+        except:
+          condition = False
   return 0.97 if condition else 1.0
 
 def collision_avoidance(quote):
