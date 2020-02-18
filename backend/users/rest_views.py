@@ -54,7 +54,8 @@ class RetrieveMagicLinkView(RetrieveAPIView):
     user = instance.user
     token, _ = Token.objects.get_or_create(user=user)
     response_data = self.serializer_class(instance, context={'token': token.key}).data
-    instance.delete()
+    if not instance.valid_forever:
+      instance.delete()
     return Response(response_data)
 
 
