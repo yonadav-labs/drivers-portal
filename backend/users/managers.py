@@ -73,6 +73,6 @@ class MagicLinkQueryset(models.QuerySet):
 
     def active(self):
       return self.exclude(
-          Q(expire_on__lte=timezone.now())|
-          Q(valid_forever=True)
+        valid_forever=False,
+        expire_on__lte=timezone.now()
       )
