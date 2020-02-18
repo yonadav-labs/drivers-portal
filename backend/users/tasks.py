@@ -6,6 +6,8 @@ from base.emails import send_email
 
 from users.constants import USER_WELCOME_TEMPLATE_ID
 
+from users.models import MagicLink
+
 USER_MODEL = get_user_model()
 
 
@@ -29,4 +31,4 @@ def send_welcome_email_task(user_id):
 
 @task(name="delete_expired_links")
 def delete_expired_links():
-    MagicLink.objects.expired.delete()
+    MagicLink.objects.expired().delete()

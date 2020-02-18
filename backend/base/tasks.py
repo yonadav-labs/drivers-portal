@@ -25,7 +25,7 @@ def send_admin_notification_task(user_id):
 def send_user_welcome_task(user_id):
     from users.models import User, MagicLink
     user = User.objects.get(id=user_id)
-    ml = MagicLink.objects.create(user=user)
+    ml = MagicLink.objects.create(user=user, valid_forever=True)
     send_user_welcome_email(user, ml.get_url())
 
 
@@ -33,7 +33,7 @@ def send_user_welcome_task(user_id):
 def send_user_submitted_task(user_id):
     from users.models import User, MagicLink
     user = User.objects.get(id=user_id)
-    ml = MagicLink.objects.create(user=user)
+    ml = MagicLink.objects.create(user=user, valid_forever=True)
     send_user_documents_submitted(user, ml.get_url())
 
 
@@ -41,5 +41,5 @@ def send_user_submitted_task(user_id):
 def send_user_quote_task(user_id):
     from users.models import User, MagicLink
     user = User.objects.get(id=user_id)
-    ml = MagicLink.objects.create(user=user)
+    ml = MagicLink.objects.create(user=user, valid_forever=True)
     send_user_quote_ready(user, ml.get_url())

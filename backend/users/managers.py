@@ -66,10 +66,12 @@ class MagicLinkQueryset(models.QuerySet):
 
     def expired(self):
       return self.filter(
-          expire_on__lte=timezone.now()
+          expire_on__lte=timezone.now(),
+          valid_forever=False
       )
 
     def active(self):
       return self.exclude(
-          expire_on__lte=timezone.now()
+        valid_forever=False,
+        expire_on__lte=timezone.now()
       )
