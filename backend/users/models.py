@@ -66,6 +66,10 @@ class MagicLink(BaseModel):
         blank=True,
         null=True
     )
+    valid_forever = models.BooleanField(
+        verbose_name='valid forever',
+        default=False
+    )
 
     objects = MagicLinkQueryset.as_manager()
 

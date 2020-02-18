@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 
@@ -66,10 +67,12 @@ class MagicLinkQueryset(models.QuerySet):
 
     def expired(self):
       return self.filter(
-          expire_on__lte=timezone.now()
+          expire_on__lte=timezone.now(),
+          valid_forever=False
       )
 
     def active(self):
       return self.exclude(
-          expire_on__lte=timezone.now()
+          Q(expire_on__lte=timezone.now())|
+          Q(valid_forever=True)
       )
