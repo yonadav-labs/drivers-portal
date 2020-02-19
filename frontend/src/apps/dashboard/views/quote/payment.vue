@@ -238,7 +238,8 @@ export default class DashboardQuotePaymentView extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.startDate)
-    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    return 'March 15, 2020'
   }
 
   get oldQuote(): number {
