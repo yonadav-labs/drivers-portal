@@ -82,34 +82,64 @@ class CustomIndexDashboard(Dashboard):
             children=children,
             pre_content=("" if len(children) > 0 else "No quote process to show")
         ))
-
-    def _retrieve_payment_done(self):
+    
+    def _retrieve_payment_column(self):
         children = []
-        quote_payment_done = QuoteProcess.objects.\
-            quote_payment_done().older_first()
+        
+        pending_children = []
+        quote_payment_pending = QuoteProcess.objects.\
+            quote_payment_pending().older_first()
 
-        for quote in quote_payment_done:
-            children.append({
+        for quote in quote_payment_pending:
+            pending_children.append({
                 'title': str(quote),
                 'url': reverse(
                     'stable_admin:quote_quoteprocesspayment_change',  
                     args=[str(quote.quoteprocesspayment.id)] ),
             })
-        
-        self.children.append(modules.LinkList(
-            _('Quote Process Payment Done'),
+        children.append(modules.LinkList(
+            _('Pending'),
             draggable=False,
             deletable=False,
             collapsible=False,
-            children=children,
-            pre_content=("" if len(children) > 0 else "No quote process to show")
+            children=pending_children,
+            pre_content=("" if len(pending_children) > 0 else "No quote process to show")
+        ))
+
+        done_children = []
+        quote_payment_done = QuoteProcess.objects.\
+            quote_payment_done().older_first()
+
+        for quote in quote_payment_done:
+            done_children.append({
+                'title': str(quote),
+                'url': reverse(
+                    'stable_admin:quote_quoteprocesspayment_change',  
+                    args=[str(quote.quoteprocesspayment.id)] ),
+            })
+        children.append(modules.LinkList(
+            _('Done'),
+            draggable=False,
+            deletable=False,
+            collapsible=False,
+            children=done_children,
+            pre_content=("" if len(done_children) > 0 else "No quote process to show")
+        ))
+
+        self.children.append(modules.Group(
+            title=_('Quote Process Payment'),
+            display='stacked',
+            draggable=False,
+            deletable=False,
+            collapsible=False,
+            children=children
         ))
    
     def init_with_context(self, context):
         self._retrieve_email_entered()
         self._retrieve_in_progress()
         self._retrieve_documents_submitted()
-        self._retrieve_payment_done()
+        self._retrieve_payment_column()
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """
