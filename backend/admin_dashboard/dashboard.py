@@ -11,7 +11,7 @@ class CustomIndexDashboard(Dashboard):
     Custom index dashboard for Stable.
     """
 
-    columns = 4
+    columns = 5
 
     def _retrieve_email_entered(self):
         children = []
@@ -82,6 +82,28 @@ class CustomIndexDashboard(Dashboard):
             children=children,
             pre_content=("" if len(children) > 0 else "No quote process to show")
         ))
+    
+    def _retrieve_payment_pending(self):
+        children = []
+        quote_payment_pending = QuoteProcess.objects.\
+            quote_payment_pending().older_first()
+
+        for quote in quote_payment_pending:
+            children.append({
+                'title': str(quote),
+                'url': reverse(
+                    'stable_admin:quote_quoteprocesspayment_change',  
+                    args=[str(quote.quoteprocesspayment.id)] ),
+            })
+        
+        self.children.append(modules.LinkList(
+            _('Quote Process Payment Pending'),
+            draggable=False,
+            deletable=False,
+            collapsible=False,
+            children=children,
+            pre_content=("" if len(children) > 0 else "No quote process to show")
+        ))
 
     def _retrieve_payment_done(self):
         children = []
@@ -109,6 +131,7 @@ class CustomIndexDashboard(Dashboard):
         self._retrieve_email_entered()
         self._retrieve_in_progress()
         self._retrieve_documents_submitted()
+        self._retrieve_payment_pending()
         self._retrieve_payment_done()
 
 class CustomAppIndexDashboard(AppIndexDashboard):
