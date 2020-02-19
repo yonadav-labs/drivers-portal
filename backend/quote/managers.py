@@ -35,6 +35,12 @@ class QuoteProcessQuerySet(models.QuerySet):
             quoteprocessdocuments__is_submitted_for_review=True
         )
 
+    def quote_payment_pending(self):
+        return self.filter(
+            quoteprocesspayment__isnull=False,
+            quoteprocesspayment__payment_date__isnull=True
+        )
+
     def quote_payment_done(self):
         return self.filter(
             quoteprocesspayment__payment_date__isnull=False,
