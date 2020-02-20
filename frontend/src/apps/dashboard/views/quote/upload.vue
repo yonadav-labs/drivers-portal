@@ -430,6 +430,10 @@ export default class DashboardQuoteUploadView extends Vue {
           5000
         )
       })
+
+      client.on('close', this.retrieveQuoteProcessDocuments)
+      
+      client.on('cancel', this.retrieveQuoteProcessDocuments)
     }
   } 
 
