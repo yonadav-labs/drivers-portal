@@ -8,7 +8,8 @@ from django.utils import timezone
 
 from base.models import BaseModel
 from payment.models import StripeCharge
-
+from hellosign_app.models import HelloSignSignatureRequest
+from hellosign_app.utils import create_t_and_c_signature_request
 from quote.constants import (
     TLC_YEAR_INTERVAL_CHOICES, DMV_YEAR_INTERVAL_CHOICES, POINTS_CHOICES,
     QUOTE_PROCESS_DEPOSIT_CHOICES, QUOTE_PROCESS_DEDUCTIBLE_CHOICES,
@@ -256,14 +257,16 @@ class QuoteProcess(BaseModel):
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
-          # QuoteProcessDocuments.objects.create(
-          #     quote_process=self,
-          #     requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
-          # ) ORIGINAL
+          hsr = create_t_and_c_signature_request(
+            self.email,
+            self.tlc_name,
+            self.insurance_policy_number
+          )
           QuoteProcessDocuments.objects.create(
-              quote_process=self,
-              requires_broker_of_record=False
-          ) # HARCODED
+            hsr=hsr,
+            quote_process=self,
+            requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
+          )
 
     def _create_variations(self):
       with transaction.atomic():
@@ -304,6 +307,12 @@ class QuoteProcessDocuments(BaseModel):
     is_broker_of_record_signed = models.BooleanField(
         verbose_name='Broker of Record Change',
         default=False
+    )
+    broker_record_file = models.FileField(
+        verbose_name='Broker Record Signed',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
     )
     dmv_license_front_side = models.FileField(
         verbose_name='DMV License Front Side',
@@ -371,6 +380,13 @@ class QuoteProcessDocuments(BaseModel):
     is_submitted_for_review = models.BooleanField(
         verbose_name='Submmited for review',
         default=False
+    )
+
+    hsr = models.OneToOneField(
+      verbose_name='HelloSign Request',
+      to=HelloSignSignatureRequest,
+      on_delete=models.SET_NULL,
+      null=True
     )
 
     doc_fields = [
