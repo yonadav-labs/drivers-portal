@@ -205,7 +205,8 @@ export default class StepQuoteReview extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.quoteStartDate)
-    return this.formatDate(addMonths(selectedDate, this.depositPayments === 3 ? 9:3))
+    // return this.formatDate(addMonths(selectedDate, this.depositPayments === 3 ? 9:3))
+    return 'March 15, 2020'
   }
 
   get liability(): string {
@@ -258,6 +259,8 @@ export default class StepQuoteReview extends Vue {
 }
 
  .insurance-info {
+  background-color: $white;
+  border-radius: 8px;
   font-size: $fs-lg;
   padding: 1.875rem;
 

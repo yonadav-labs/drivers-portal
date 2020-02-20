@@ -85,6 +85,7 @@ export async function initClient(): Promise<void> {
 export function clearAuthToken(): void {
   delete client.defaults.headers.Authorization;
   localStorage.removeItem(AUTH_TOKEN_KEY);
+  deleteAuthenticatedCookie()
 }
 
 export function hasToken(): boolean {
@@ -94,4 +95,22 @@ export function hasToken(): boolean {
 export function setAuthToken(token: string): void {
   client.defaults.headers.Authorization = `Token ${token}`;
   localStorage.setItem(AUTH_TOKEN_KEY, token);
+  setAuthenticatedCookie()
+}
+
+
+function getCookieDomain(): string {
+  return process.env.VUE_APP_ENV === 'development' ? '.stableins.test':'.stableins.com'
+}
+
+export function setAuthenticatedCookie(): void {
+  const exdays = 15;
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  const expires = 'expires=' + d.toUTCString();
+  document.cookie = `authenticated=true;${expires};path=/;domain=${getCookieDomain()};`
+}
+
+export function deleteAuthenticatedCookie(): void {
+  document.cookie = `authenticated=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=${getCookieDomain()};`
 }

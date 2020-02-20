@@ -46,6 +46,8 @@ PLAID_ENV = "sandbox"
 # HelloSign
 HELLOSIGN_CLIENTID = env("HELLOSIGN_CLIENTID_STAG")
 
+FRONTEND_URL = "staging.stableins.com"
+
 # Try to import local settings, if exists
 try:
     EXTRA_APPS = ()

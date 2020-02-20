@@ -70,7 +70,7 @@
     </div>
     <div slot="right-column">
       <div class="insurance-info">
-        <p class="insurance-title">Your insurance</p>
+        <p class="insurance-title">Your projected quote</p>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
           <span>{{ total | currency }}</span>
@@ -103,6 +103,7 @@
       >Get Your Insurance Policy!
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
+      <div class="disclaimer"><div class="disclaimer__content"><span>This is a projected quote only</span> and final premium is dependent upon verification and accuracy of the information you provided.</div></div>
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
@@ -296,7 +297,8 @@ export default class StepQuote extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.internalDate)
-    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    return 'March 15, 2020'
   }
 
   get liabilityText(): string {
@@ -389,6 +391,8 @@ export default class StepQuote extends Vue {
 }
 
  .insurance-info {
+  background-color: $white;
+  border-radius: 8px;
   font-size: $fs-lg;
   padding: 1.875rem;
 
@@ -495,5 +499,24 @@ export default class StepQuote extends Vue {
 
 .questions {
   margin-top: 1rem;
+}
+
+.disclaimer {
+  background-color: $white;
+  border: 1px solid $orange;
+  border-radius: 4px;
+  color: $blue-dark;
+  margin-top: 1.5rem;
+  line-height: 24px;
+
+  .disclaimer__content {
+    background-color: rgba(247, 103, 7, 0.08);
+    border-radius: 4px;
+    padding: 0.75rem 1.25rem;
+  }
+
+  span {
+    font-weight: $fw-semibold;
+  }
 }
 </style>

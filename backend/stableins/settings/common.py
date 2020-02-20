@@ -182,6 +182,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 # Celery
 # https://www.revsys.com/tidbits/celery-and-django-and-docker-oh-my/
 
@@ -219,10 +221,12 @@ CELERY_BEAT_SCHEDULE = {
     }
 }
 
+
 # Email
 # Anymail - SendGrid
-EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'stableins <noreply@stableins.com>'
+ADMIN_EMAIL = "dani@z1.digital"
 ANYMAIL = {
     "SENDGRID_API_KEY": "{}".format(SENDGRID_API_KEY),
 }
@@ -279,3 +283,5 @@ ADMIN_TOOLS_APP_INDEX_DASHBOARD = {
     'base.admin.stable_admin': 'admin_dashboard.dashboard.CustomAppIndexDashboard',
     'django.contrib.admin.site': 'admin_dashboard.django_admin_dashboard.CustomAppIndexDashboard',
 }
+
+FRONTEND_URL = "localhost:8080"

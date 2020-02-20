@@ -14,7 +14,8 @@ from quote.constants import (
   DMV_PLUS_THREE_YEARS,
   TLC_LESS_ONE_YEAR,
   POINTS_SEVEN_TEN,
-  POINTS_MORE_TEN
+  POINTS_MORE_TEN,
+  VEHICLE_OWNER_DRIVER
 )
 
 BODILY = 'body_injury'
@@ -71,6 +72,8 @@ def get_accident_prevention(quote):
 
 def get_safe_driver(quote):
   condition = quote.fault_accidents_last_months == FAULT_ACCIDENTS_ZERO
+  if condition:
+    condition = not quote.speeding_violation
   return 0.8 if condition else 1.0 
 
 def get_longevity(quote):
@@ -85,7 +88,7 @@ def get_longevity(quote):
   return 0.97 if condition else 1.0
 
 def get_workers_compensation(quote):
-  condition = True
+  condition = False
   return 0.95 if condition else 1.0
 
 def get_loss_control(quote):
@@ -102,6 +105,16 @@ def get_hybrid(quote):
 
 def extra_accidents(quote):
   condition = quote.accidents_72_months == ACCIDENTS_72_ZERO
+  if condition:
+    condition = quote.vehicle_owner == VEHICLE_OWNER_DRIVER
+    if condition:
+      condition = "hereford" in quote.insurance_carrier_name.lower()
+      if condition:
+        try:
+          value = int(quote.insurance_policy_number.split('-')[-1])
+          condition = value >= 3
+        except:
+          condition = False
   return 0.97 if condition else 1.0
 
 def collision_avoidance(quote):

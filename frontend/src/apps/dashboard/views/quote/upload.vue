@@ -63,7 +63,7 @@
           <div class="documents__header-name documents__header-name--status">Status</div>
           <div class="documents__header-name documents__header-name--actions">Actions</div>
         </div>
-        <div class="document-row" v-for="doc in docs" :key="doc.title">
+        <div class="document-row" v-for="doc in filteredDocs" :key="doc.title">
           <div class="document-row__name">
             <span class="document-row__doc-title">{{ doc.title }}</span>
             <span class="document-row__filename" v-if="isDocUploaded(doc.field)" :title="getDocumentUrl(doc.field) | getFilename">{{ getDocumentUrl(doc.field) | getFilename }}</span>
@@ -151,7 +151,8 @@ const users = namespace('Users')
 interface DocElement {
   title: string,
   field: string,
-  disabled: boolean
+  disabled: boolean,
+  non_hereford_only?: boolean
 }
 
 type QuoteProcessDocumentsAccidentReportElm = QuoteProcessDocumentsAccidentReport & { disabled: boolean }
@@ -218,6 +219,23 @@ export default class DashboardQuoteUploadView extends Vue {
       disabled: false
     },
     {
+      title: 'Loss Run Document',
+      field: 'loss_run',
+      disabled: false,
+      non_hereford_only: true
+    },
+    {
+      title: 'Vehicle Title, Bill of Sale, or MV-50',
+      field: 'vehicle_title',
+      disabled: false,
+      non_hereford_only: true
+    },
+    {
+      title: 'Base Letter',
+      field: 'base_letter',
+      disabled: false
+    },
+    {
       title: 'Proof of Address',
       field: 'proof_of_address',
       disabled: false
@@ -233,6 +251,12 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
     return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
+  }
+
+  get filteredDocs(): DocElement[] {
+    return this.docs.filter(
+      doc => !doc.non_hereford_only || !this.quoteProcess!.is_hereford
+    )
   }
 
   get isAccidentReportsReady(): boolean {
@@ -267,6 +291,16 @@ export default class DashboardQuoteUploadView extends Vue {
     return 0
   }
 
+  get requiredDocsReady(): boolean {
+    let valid = this.docs.slice(0, 4).every(
+      doc => !!this.quoteProcessDocuments![doc.field]
+    )
+    if (valid && !this.quoteProcess!.is_hereford) {
+      valid = !!this.quoteProcessDocuments!.loss_run && !!this.quoteProcessDocuments!.vehicle_title
+    }
+    return valid
+  }
+
   get depositAmount(): number {
     return this.quoteDeposit/100 * this.total
   }
@@ -289,7 +323,8 @@ export default class DashboardQuoteUploadView extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.startDate)
-    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    return 'March 15, 2020'
   }
 
   get startDate(): string {
@@ -306,10 +341,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get isReadyForSubmit(): boolean {
     return !!this.quoteProcessDocuments && !this.quoteProcessDocuments.is_submitted_for_review &&
-    this.isBrokerOfRecordReady && this.isAccidentReportsReady && 
-    this.docs.every(
-      doc => !!this.quoteProcessDocuments![doc.field]
-    )
+    this.isBrokerOfRecordReady && this.isAccidentReportsReady && this.requiredDocsReady
   }
 
   get isSubmittedForReview(): boolean {

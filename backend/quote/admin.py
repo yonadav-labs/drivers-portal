@@ -1,5 +1,9 @@
+import csv
+
 from django.contrib import admin
 from django.contrib import messages
+from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 
@@ -7,15 +11,19 @@ from django_object_actions import DjangoObjectActions
 from nested_admin import NestedStackedInline, NestedModelAdmin
 
 from base.admin import stable_admin
+from base.tasks import send_user_quote_task
+from users.models import MagicLink
 
 from quote.models import (
     QuoteProcess, QuoteProcessDocuments, QuoteProcessDocumentsAccidentReport,
-    QuoteProcessPayment
+    QuoteProcessPayment, QuoteSoftFallout, QuoteProcessVariations
 )
 from quote.proxy_models import (
     SendQuoteProcessPayment
 )
-from quote.forms import AdminSendQuoteProcessPaymentForm
+from quote.forms import (
+  AdminSendQuoteProcessPaymentForm, AdminQuoteProcessPaymentForm)
+from quote.resources import get_quote_export
 
 class QuoteProcessDocumentsAccidentReportInline(NestedStackedInline):
     model = QuoteProcessDocumentsAccidentReport
@@ -29,9 +37,30 @@ class QuoteProcessPaymentInline(NestedStackedInline):
   model = QuoteProcessPayment
 
 
+class QuoteProcessVariationsInline(NestedStackedInline):
+  model = QuoteProcessVariations
+
+def export_as_csv(modeladmin, request, queryset):
+  response = HttpResponse(content_type='text/csv')
+  response['Content-Disposition'] = 'attachment; filename="quote_process.csv"'
+
+  if len(queryset):
+    header_set = False
+    writer = None
+    for quote in queryset:
+        quote_headers, export = get_quote_export(quote)
+        if not header_set:
+            writer = csv.DictWriter(response, fieldnames=quote_headers)
+            writer.writeheader()
+            header_set = True
+        writer.writerow(export)
+    return response
+
+
 class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
-    change_actions = ('generate_quote_link', 'add_user_manually' )
-    inlines = [QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
+    change_actions = ('generate_dashboard_link', 'generate_quote_link', 'add_user_manually' )
+    actions = (export_as_csv, )
+    inlines = [QuoteProcessVariationsInline, QuoteProcessDocumentsInline, QuoteProcessPaymentInline]
 
     def get_change_actions(self, request, object_id, form_url):
         actions = super(QuoteProcessAdmin, self).get_change_actions(
@@ -42,6 +71,8 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
         if obj.user:
             actions.remove('generate_quote_link')
             actions.remove('add_user_manually')
+        else:
+          actions.remove('generate_dashboard_link')
         return actions
     
     def add_user_manually(self, request, obj):
@@ -55,8 +86,16 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
 
     def generate_quote_link(self, request, obj):
         messages.add_message(
-            request, messages.INFO, f'Quote Page Link: stableins.com/{str(obj.id)}')
+            request, messages.INFO, f'Quote Page Link: {settings.FRONTEND_URL}/quote/{str(obj.id)}')
     generate_quote_link.label = 'Generate Quote Page Link'
+
+    def generate_dashboard_link(self, request, obj):
+        if obj.user:
+          ml, created = MagicLink.objects.active().get_or_create(
+              user=obj.user, defaults={'valid_forever': True})
+          messages.add_message(
+              request, messages.INFO, f'Dashboard Link: {ml.get_url()}')
+    generate_dashboard_link.label = 'Generate Dashboard Link'
 
 admin.site.register(QuoteProcess)
 stable_admin.register(QuoteProcess, QuoteProcessAdmin)
@@ -106,6 +145,7 @@ class SendQuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
     return form
 
   def response_add(self, request, obj):
+      send_user_quote_task.delay(str(obj.quote_process.user.id))
       messages.add_message(
           request, messages.SUCCESS, f'The Payment has been sent to the user!')
       quote_process = obj.quote_process
@@ -138,3 +178,6 @@ class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 stable_admin.register(QuoteProcessPayment, QuoteProcessPaymentAdmin)
 admin.site.register(QuoteProcessPayment)
+
+stable_admin.register(QuoteSoftFallout)
+admin.site.register(QuoteSoftFallout)

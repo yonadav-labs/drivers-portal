@@ -59,7 +59,7 @@
         </div>
       </div>
       <div class="documents documents--done">
-        <div class="document-row" v-for="doc in docs" :key="doc.title">
+        <div class="document-row" v-for="doc in filteredDocs" :key="doc.title">
           <div class="document-row__name">
             <span class="document-row__doc-title">{{ doc.title }}</span>
             <span class="document-row__filename" :title="getDocumentUrl(doc.field) | getFilename">{{ getDocumentUrl(doc.field) | getFilename }}</span>
@@ -177,6 +177,21 @@ export default class DashboardQuotePaymentView extends Vue {
       disabled: false
     },
     {
+      title: 'Loss Run Document',
+      field: 'loss_run',
+      disabled: false
+    },
+    {
+      title: 'Vehicle Title, Bill of Sale, or MV-50',
+      field: 'vehicle_title',
+      disabled: false
+    },
+    {
+      title: 'Base Letter',
+      field: 'base_letter',
+      disabled: false
+    },
+    {
       title: 'Proof of Address',
       field: 'proof_of_address',
       disabled: false
@@ -194,6 +209,12 @@ export default class DashboardQuotePaymentView extends Vue {
 
   get depositAmount(): number {
     return !!this.quoteProcessPayment ? this.quoteProcessPayment.deposit:0;
+  }
+
+  get filteredDocs(): DocElement[] {
+    return this.docs.filter(
+      doc => !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[doc.field]
+    )
   }
 
   get isPaymentDone(): boolean {
@@ -217,7 +238,8 @@ export default class DashboardQuotePaymentView extends Vue {
       return '--'
     }
     const selectedDate = new Date(this.startDate)
-    return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
+    return 'March 15, 2020'
   }
 
   get oldQuote(): number {

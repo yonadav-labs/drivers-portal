@@ -190,6 +190,11 @@ class QuoteProcess(BaseModel):
       default=QUOTE_STATUS_CREATED
     )
 
+    is_hereford = models.BooleanField(
+      verbose_name="Is Hereford",
+      default=False
+    )
+
     objects = QuoteProcessQuerySet.as_manager()
 
     class Meta:
@@ -229,16 +234,15 @@ class QuoteProcess(BaseModel):
           self.save()
       
     def set_quote_variations(self):
-      if self.is_ready_for_user:
-          self._create_variations()
-          variations = self.variations
+        self._create_variations()
+        variations = self.variations
 
-          if variations:
-            self.quote_amount = self.quoteprocessvariations.liability_total
-            
-            if variations.physical_total:
-              self.quote_amount += variations.physical_total
-            self.save()
+        if variations:
+          self.quote_amount = self.quoteprocessvariations.liability_total
+          
+          if variations.physical_total:
+            self.quote_amount += variations.physical_total
+          self.save()
 
     def set_quote_status(self, status):
       self.status = status
@@ -266,18 +270,17 @@ class QuoteProcess(BaseModel):
         variations = self.variations
         if variations:
           variations.delete()
-        if self.deposit:
-          variations = get_quote_variations(self)
-          deductibles = variations.pop('deductible', {})
-          deductible_data = deductibles[self.deductible] if self.deductible \
-            else {}
-          QuoteProcessVariations.objects.create(
-            quote_process=self,
-            **{
-              **variations,
-              **deductible_data
-            }
-          )
+        variations = get_quote_variations(self)
+        deductibles = variations.pop('deductible', {})
+        deductible_data = deductibles[self.deductible] if self.deductible \
+          else {}
+        QuoteProcessVariations.objects.create(
+          quote_process=self,
+          **{
+            **variations,
+            **deductible_data
+          }
+        )
 
 
 def quote_process_document_upload_to(instance, filename):
@@ -329,6 +332,27 @@ class QuoteProcessDocuments(BaseModel):
         null=True,
         blank=True
     )
+
+    loss_run = models.FileField(
+        verbose_name='Loss Run Document',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
+
+    vehicle_title = models.FileField(
+        verbose_name='Vehicle Title or Bill of Sale or MV-50',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
+
+    base_letter = models.FileField(
+        verbose_name='Base Letter',
+        upload_to=quote_process_document_upload_to,
+        null=True,
+        blank=True
+    )
     
     proof_of_address = models.FileField(
         verbose_name='Proof of Address',
@@ -354,6 +378,7 @@ class QuoteProcessDocuments(BaseModel):
         'dmv_license_back_side',
         'tlc_license_front_side',
         'tlc_license_back_side',
+        'base_letter',
         'proof_of_address',
         'defensive_driving_certificate'
     ]
@@ -397,8 +422,14 @@ class QuoteProcessDocuments(BaseModel):
     def check_ready_for_review(self):
       broker_of_record_done = not self.requires_broker_of_record or \
         self.is_broker_of_record_signed
-      return broker_of_record_done and \
-        len(self.doc_fields) == self.get_documents_filled_count() and  \
+
+      has_dmv = self.dmv_license_front_side and self.dmv_license_back_side
+      has_tlc = self.tlc_license_front_side and self.tlc_license_back_side
+      hereford_docs = self.quote_process.is_hereford or \
+        (self.loss_run and self.vehicle_title)
+
+      return broker_of_record_done and has_dmv and has_tlc and \
+        hereford_docs and \
         self.quoteprocessdocumentsaccidentreport_set.filter(
           accident_report__isnull=False
         ).count() >= self.get_minimum_accident_reports()

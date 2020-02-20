@@ -36,22 +36,25 @@ sentry_sdk.init(
 )
 
 # Stripe
-STRIPE_LIVE_MODE = False  # TODO: Change ME
+STRIPE_LIVE_MODE = True
 STRIPE_PUBLIC_KEY = STRIPE_LIVE_PUBLIC_KEY if STRIPE_LIVE_MODE else STRIPE_TEST_PUBLIC_KEY
 STRIPE_SECRET_KEY = STRIPE_LIVE_SECRET_KEY if STRIPE_LIVE_MODE else STRIPE_TEST_SECRET_KEY
 
 # Plaid
-# PLAID_ENV = "production" # TODO: Change me
-PLAID_ENV = "sandbox"
+PLAID_ENV = "production"
 PLAID_CLIENT_SECRET_KEY = env(
-    "PLAID_CLIENT_SANDBOX_SECRET_KEY")  # TODO: Change me
+    "PLAID_CLIENT_PRODUCTION_SECRET_KEY")
 
 # HelloSign
 HELLOSIGN_CLIENTID = env("HELLOSIGN_CLIENTID_PROD")
 
 CORS_ORIGIN_WHITELIST = [
     "app.stableins.com",
+    "http://app.stableins.com",
+    "https://app.stableins.com",
 ]
+
+FRONTEND_URL = "app.stableins.com"
 
 # Try to import local settings, if exists
 try:
