@@ -21,8 +21,7 @@ from quote.models import (
 from quote.proxy_models import (
     SendQuoteProcessPayment
 )
-from quote.forms import (
-  AdminSendQuoteProcessPaymentForm, AdminQuoteProcessPaymentForm)
+from quote.forms import AdminSendQuoteProcessPaymentForm
 from quote.resources import get_quote_export
 
 class QuoteProcessDocumentsAccidentReportInline(NestedStackedInline):
