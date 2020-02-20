@@ -172,8 +172,8 @@
             </div>
           </div>
         </div>
-        <div class="insurance-resume">
-          <div class="insurance-estimated">
+        <div class="insurance-resume" :class="{'insurance-resume--single': monthlyPayment === 0}">
+          <div class="insurance-estimated" v-if="monthlyPayment > 0">
             <p>Monthly payment</p>
             <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
             <span class="estimated-date">{{ depositPayments }} payments starting on
@@ -421,6 +421,14 @@ export default class ModalPremium extends Vue {
       margin: 0 auto;
       max-width: 23rem;
       padding: 1.25rem;
+
+      &.insurance-resume--single {
+        justify-content: center;
+        
+        .insurance-estimated {
+          width: 100%;
+        }
+      }
       
       .insurance-estimated {
         background-color: $white;

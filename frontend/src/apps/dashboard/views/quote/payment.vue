@@ -10,7 +10,7 @@
         </p>
         <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone">
+      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone && monthlyPayment > 0">
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
@@ -295,6 +295,10 @@ export default class DashboardQuotePaymentView extends Vue {
   flex-flow: row nowrap;
   justify-content: space-between;
   margin-top: 0.75rem;
+
+  .docs-header__info {
+    flex-grow: 1;
+  }
 
   .docs-header__explain {
     color: $grey-darker;
