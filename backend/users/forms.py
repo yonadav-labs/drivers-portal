@@ -39,8 +39,6 @@ class AdminManualQuoteUserForm(forms.ModelForm):
         instance = super(AdminManualQuoteUserForm, self).save(commit=False)
         if self.cleaned_data['password']:
             instance.set_password(self.cleaned_data['password'])
-            instance.set_usable_password()
-
         else:
             instance.set_unusable_password()
         instance.save()
