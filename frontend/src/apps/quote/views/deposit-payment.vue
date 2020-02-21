@@ -2,17 +2,17 @@
    <quote-process-layout v-if="!!quoteProcessPayment" :hide-breadcrumbs="true" :on-back="onBack" :hide-login="true" :simple-header="true">
     <div class="payment-info">
       <p class="form-explain">Deposit Payment</p>
-      <p class="payment-info--price">{{ depositAmount|currency }}</p>
-      <span class="payment-info--date">{{ quoteDeposit }}% of total price</span>
+      <p class="payment-info--price">{{ depositPaymentAmount|currency }}</p>
+      <span class="payment-info--date" v-if="depositAmount === depositPaymentAmount">{{ quoteDeposit }}% of total price</span>
     </div>
     <div v-if="loading" class="spinner">
       Processing payment... Please, wait.
     </div>
-    <div class="payment-error error-info" v-if="(error || fatalError || stripeError) && !loading">
+    <div class="payment-error error-info" v-if="(hasError || fatalError || stripeError) && !loading">
       <p class="error-info--title">There was an error with your payment.</p>
       <p>{{ errorDisplay }}</p>
       <p v-if="stripeError">{{ !!stripeError.response ? stripeError.response.data[0]:stripeError.message }}</p>
-      <p v-if="error && disabledBank && !fatalError">You can still pay with Credit Card</p>
+      <p v-if="hasError && disabledBank && !fatalError">You can still pay with Credit Card</p>
     </div>
 
     <div class="form-container" v-if="!fatalError && !stripeError && !creditCardFormOpened && !loading">
@@ -23,6 +23,7 @@
             <!-- <icon-credit-card size="16" style="icon--orange"></icon-credit-card> -->
           </pay-button>
           <plaid-button
+            v-if="!disabledBank"
             @success="plaidHandler"
             @exit="plaidExitHandler"
             :onClick="startPlaid">
@@ -37,7 +38,7 @@
     </div>
     <credit-card-form
       v-show="!loading && !fatalError && !stripeError && creditCardFormOpened"
-      :amount="depositAmount + stripeFeeAmount"
+      :amount="depositPaymentAmount + stripeFeeAmount"
       @success="onCreditSuccess"
       @error="onCreditError"
       @loading="loading = true"
@@ -92,6 +93,9 @@ export default class DepositPaymentView extends Vue {
   @quotePayment.Getter
   stripeError?: Error | undefined
 
+  @quotePayment.Getter
+  plaidError?: Error | undefined
+
   @users.Getter
   user?: User
 
@@ -111,12 +115,20 @@ export default class DepositPaymentView extends Vue {
   loading = false
   creditCardFormOpened = false;
 
+  get hasError(): boolean {
+    return this.error || !!this.stripeError || !!this.plaidError
+  }
+
   get quoteDeposit(): number {
     return !!this.quoteProcess ? this.quoteProcess.deposit!:0
   }
 
   get depositAmount(): number {
     return this.quoteProcessPayment.deposit
+  }
+
+  get depositPaymentAmount(): number {
+    return Number(this.quoteProcessPayment.deposit_payment_amount)
   }
 
   get stripeFeeAmount(): number {
@@ -149,7 +161,12 @@ export default class DepositPaymentView extends Vue {
       public_token,
       account_id: metadata.account_id,
     })
-    this.$router.push({ name: DashboardQuoteRouteName.PAYMENT })
+    if (!this.plaidError) {
+      this.$router.push({ name: DashboardQuoteRouteName.PAYMENT })
+    } else {
+      this.disabledBank = true;
+    }
+    this.loading = false;
   }
 
   plaidExitHandler({ result, err, metadata }: { result: string, err: any, metadata: any }): void {
@@ -177,7 +194,9 @@ export default class DepositPaymentView extends Vue {
 
   async onCreditSuccess(payload: StripeChargePayload): Promise<void> {
     await this.payDepositStripe(payload)
-    this.$router.push({ name: DashboardQuoteRouteName.PAYMENT })
+    if (!this.stripeError) {
+      this.$router.push({ name: DashboardQuoteRouteName.PAYMENT })
+    }
     this.loading = false;
   }
 
