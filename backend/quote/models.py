@@ -227,11 +227,10 @@ class QuoteProcess(BaseModel):
 
   
     def add_user(self, user):
-        if self.is_ready_for_user:
-          self.user = user
-          self._create_process_documents()
-          self.update_status()
-          self.save()
+        self.user = user
+        self._create_process_documents()
+        self.update_status()
+        self.save()
       
     def set_quote_variations(self):
         self._create_variations()
