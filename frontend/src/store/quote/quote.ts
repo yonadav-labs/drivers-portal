@@ -25,7 +25,9 @@ export default class QuoteMainVuexModule extends VuexModule {
   apiQuoteSoftFallout: APIProperty<QuoteSoftFallout> = APIState.state<QuoteSoftFallout>();
   apiQuoteProcessCalcVariations: APIProperty<QuoteProcessCalcVariations> = APIState.state<QuoteProcessCalcVariations>();
   internalEmailExist = false;
-  internalQuestionAnswers: QuestionsStep = {}
+  internalQuestionAnswers: QuestionsStep = {
+    accident_avoidance_system: false // DISABLED FOR NOW
+  }
   internalQuoteEmail = '';
   loginMagicLink = '';
   stepsCompleted = {
@@ -37,7 +39,7 @@ export default class QuoteMainVuexModule extends VuexModule {
     [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: false,
     [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: false,
     [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: false,
-    [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: false,
+    // [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: false, DISABLED FOR NOW
     [OrderedQuoteRouteName.QUESTION_DASHCAM]: false,
     [OrderedQuoteRouteName.QUESTION_HYBRID]: false,
     [OrderedQuoteRouteName.QUESTION_DWI]: false,

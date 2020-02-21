@@ -41,7 +41,7 @@ export function deconstructQuoteProcess(quoteProcess: QuoteProcess): void {
     [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: true,
     [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: true,
     [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: true,
-    [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: true,
+    // [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: true, DISABLED FOR NOW
     [OrderedQuoteRouteName.EMAIL]: true,
   })
   
