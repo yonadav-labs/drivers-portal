@@ -87,8 +87,8 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
 
     def generate_dashboard_link(self, request, obj):
         if obj.user:
-          ml, created = MagicLink.objects.active().get_or_create(
-              user=obj.user, defaults={'valid_forever': True})
+          ml, created = MagicLink.objects.get_or_create(
+              user=obj.user, valid_forever=True)
           messages.add_message(
               request, messages.INFO, f'Dashboard Link: {ml.get_url()}')
     generate_dashboard_link.label = 'Generate Dashboard Link'
