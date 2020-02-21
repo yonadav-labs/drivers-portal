@@ -293,20 +293,20 @@ class RetrieveQuoteProcessPaymentSerializer(serializers.ModelSerializer):
     return obj.get_hereford_fee()
 
   def get_stripe_fee(self, obj):
-    deposit = obj.get_deposit()
+    deposit = float(obj.deposit_payment_amount)
     return apply_stripe_fee(deposit) - deposit
 
   def get_plaid_fee(self, obj):
-    deposit = obj.get_deposit()
+    deposit = float(obj.deposit_payment_amount)
     return apply_plaid_fee(deposit) - deposit
 
   class Meta:
     fields = (
       'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
-      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee', 'deposit_payment_amount'
     )
     read_only_fields = (
       'id', 'official_hereford_quote', 'liability_amount', 'physical_amount', 'payment_date',
-      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee'
+      'deposit', 'monthly_payment', 'hereford_fee', 'stripe_fee', 'plaid_fee', 'deposit_payment_amount'
     )
     model = QuoteProcessPayment

@@ -130,10 +130,22 @@ class QuoteProcessPaymentQuoteProccessInline(admin.StackedInline):
   read_only_fields = ('quote_amount', 'deposit', 'deductible', 'start_date')
 
 class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
+  change_actions = ('view_full_quote_process', )
   change_form_template = "admin/quote/quoteprocesspayment/change_form.html"
-  form = AdminQuoteProcessPaymentForm
+  legacy_form = None
+
+  def view_full_quote_process(self, request, obj):
+      return redirect(
+          reverse('stable_admin:quote_quoteprocess_change',
+                  args=(obj.quote_process.id, ))
+      )
+  view_full_quote_process.label = 'View Full Quote Process'
 
   def get_form(self, request, obj=None, **kwargs):
+    self.form = self.legacy_form or self.form
+    if obj is None:
+      self.legacy_form = self.form
+      self.form = AdminQuoteProcessPaymentForm
     form = super(QuoteProcessPaymentAdmin, self).get_form(request, obj, **kwargs)
     quote_id = request.GET.get('quote_process')
     if quote_id:

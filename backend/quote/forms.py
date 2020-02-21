@@ -8,4 +8,7 @@ class AdminQuoteProcessPaymentForm(forms.ModelForm):
       widget=forms.HiddenInput())
       
   class Meta:
-    fields = ('quote_process', 'official_hereford_quote', 'liability_amount', 'physical_amount')
+    fields = (
+      'quote_process', 'official_hereford_quote', 'deposit_payment_amount',
+      'liability_amount', 'physical_amount'
+    )
