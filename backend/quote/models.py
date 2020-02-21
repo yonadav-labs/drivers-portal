@@ -479,6 +479,12 @@ class QuoteProcessPayment(BaseModel):
         decimal_places=2
     )
 
+    deposit_payment_amount = models.DecimalField(
+        verbose_name='Deposit Payment Amount',
+        max_digits=7,
+        decimal_places=2
+    )
+
     liability_amount = models.DecimalField(
       verbose_name='Liability Amount',
       help_text="Just in case you want to show the amount to the user",

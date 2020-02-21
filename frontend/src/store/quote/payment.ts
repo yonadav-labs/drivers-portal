@@ -24,6 +24,10 @@ export default class QuotePaymentVuexModule extends VuexModule {
     return this.apiStripeCharge.error;
   }
 
+  get plaidError(): Error | undefined {
+    return this.apiPlaidCharge.error
+  }
+
   @Mutation
   setApiQuoteProcessPaymentBlank(): void {
     this.apiQuoteProcessPayment = APIState.state<QuoteProcessPayment>();
@@ -104,6 +108,7 @@ export default class QuotePaymentVuexModule extends VuexModule {
       const response = await payDepositPlaid(charge);
       this.context.commit('setApiPlaidCharge', response);
     } catch (e) {
+      console.log(e)
       this.context.commit('setApiPlaidCharge', e);
     }
   }

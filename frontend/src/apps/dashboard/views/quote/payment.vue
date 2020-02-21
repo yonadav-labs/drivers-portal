@@ -4,7 +4,8 @@
     <h3 class="title" v-else>Your payment has been received!</h3>
     <div class="docs-header">
       <div class="docs-header__info">
-        <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready.
+        <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready. 
+          <br><span>The deposit amount due is <span class="docs-header__amount-due">{{ depositPaymentAmount | beautyCurrency }}</span>.</span>
         </p>
         <p class="docs-header__explain" v-else>Our team is preparing your new policy documents. You will be notified in {{ user.email }} when your policy is ready! 
         </p>
@@ -211,6 +212,10 @@ export default class DashboardQuotePaymentView extends Vue {
     return !!this.quoteProcessPayment ? this.quoteProcessPayment.deposit:0;
   }
 
+  get depositPaymentAmount(): number {
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit_payment_amount):0;
+  }
+
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
       doc => !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[doc.field]
@@ -303,6 +308,10 @@ export default class DashboardQuotePaymentView extends Vue {
   .docs-header__explain {
     color: $grey-darker;
     line-height: 24px;
+
+    .docs-header__amount-due {
+      color: $blue-dark;
+    }
   }
 
   .docs-header__cta {
