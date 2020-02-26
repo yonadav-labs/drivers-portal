@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'quote.apps.QuoteConfig',
     'payment.apps.PaymentConfig',
     'policy.apps.PolicyConfig',
+    'hellosign_app.apps.HellosignAppConfig',
 ]
 
 MIDDLEWARE = [
