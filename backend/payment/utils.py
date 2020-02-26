@@ -272,7 +272,7 @@ def is_quote_process_paid_or_pending(quote_process_id, user):
         return False
 
 def apply_stripe_fee(amount):
-  return (amount + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENTAGE_FEE)
+  return (float(amount) + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENTAGE_FEE)
 
 def apply_plaid_fee(amount):
-  return amount + PLAID_FEE
+  return float(amount) + PLAID_FEE

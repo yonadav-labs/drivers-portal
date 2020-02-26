@@ -55,8 +55,8 @@
         </a>
       </div>
 
-      <div class="insurance-resume">
-        <div class="insurance-estimated">
+      <div class="insurance-resume" :class="{'insurance-resume--single': monthlyPayment === 0}">
+        <div class="insurance-estimated" v-if="monthlyPayment > 0">
           <p>Monthly payment</p>
           <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
           <span class="estimated-date">{{ depositPayments }} payments starting on
@@ -73,9 +73,10 @@
       <button
         class="insurance-action active"
         @click="pay"
-      >Pay {{ deposit | beautyCurrency }}
+      >Pay {{ depositPaymentAmount | beautyCurrency }}
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
+      <div class="disclaimer" v-if="deposit !== depositPaymentAmount"><div class="disclaimer__content">Please note the current payment is not the total amount of the deposit.</div></div>
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
@@ -200,6 +201,10 @@ export default class StepQuoteReview extends Vue {
     return getPaymentsByDeposit(this.quoteDeposit)
   }
 
+  get depositPaymentAmount(): number {
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit_payment_amount):0;
+  }
+
   get firstPaymentDue(): string {
     if (!this.quoteStartDate) {
       return '--'
@@ -280,6 +285,15 @@ export default class StepQuoteReview extends Vue {
   display: flex;
   justify-content: space-between;
   padding: 1.25rem;
+
+  &.insurance-resume--single {
+    justify-content: center;
+    
+    .insurance-estimated {
+      width: 100%;
+    }
+  }
+
   .insurance-estimated {
     background-color: $white;
     border-radius: 2px;
@@ -288,6 +302,7 @@ export default class StepQuoteReview extends Vue {
     flex-direction: column;
     padding: 1rem 0.875rem 0.875rem;
     width: 9.813rem;
+    
     span {
       font-size: $fs-lg;
     }
@@ -380,6 +395,25 @@ export default class StepQuoteReview extends Vue {
       font-weight: $fw-bold;
       line-height: 1.22;
     }
+  }
+}
+
+.disclaimer {
+  background-color: $white;
+  border: 1px solid $orange;
+  border-radius: 4px;
+  color: $blue-dark;
+  margin-top: 1.5rem;
+  line-height: 24px;
+
+  .disclaimer__content {
+    background-color: rgba(247, 103, 7, 0.08);
+    border-radius: 4px;
+    padding: 0.75rem 1.25rem;
+  }
+
+  span {
+    font-weight: $fw-semibold;
   }
 }
 </style>

@@ -23,7 +23,7 @@ export enum OrderedQuoteRouteName {
   QUESTION_DRIVER_POINTS = 'quoteQuestionDriverPoints',
   QUESTION_FAULT_ACCIDENTS = 'quoteQuestionFaultAccidents',
   QUESTION_DEFENSIVE_CERTIFICATE = 'quoteQuestionDefensiveCertificate',
-  QUESTION_ACCIDENT_AVOIDANCE = 'quoteQuestionAccidentAvoidance',
+  // QUESTION_ACCIDENT_AVOIDANCE = 'quoteQuestionAccidentAvoidance', Disabled for now
   QUESTION_DASHCAM = 'quoteQuestionDashcam',
   QUESTION_HYBRID = 'quoteQuestionHybrid',
   QUESTION_DWI = 'quoteQuestionDwi',
@@ -44,12 +44,12 @@ const quoteRoutesOrder = {
   [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 5,
   [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 6,
   [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 7,
-  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 8,
-  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 9,
-  [OrderedQuoteRouteName.QUESTION_HYBRID]: 10,
-  [OrderedQuoteRouteName.QUESTION_DWI]: 11,
-  [OrderedQuoteRouteName.EMAIL]: 12,
-  [OrderedQuoteRouteName.QUOTE]: 13
+  // [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 8, Disabled for now
+  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 8,
+  [OrderedQuoteRouteName.QUESTION_HYBRID]: 9,
+  [OrderedQuoteRouteName.QUESTION_DWI]: 10,
+  [OrderedQuoteRouteName.EMAIL]: 11,
+  [OrderedQuoteRouteName.QUOTE]: 12
 }
 
 const quoteRoutesByOrder = {
@@ -61,7 +61,7 @@ const quoteRoutesByOrder = {
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]]: OrderedQuoteRouteName.QUESTION_DRIVER_POINTS,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]]: OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]]: OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE,
-  [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]]: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE,
+  // [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]]: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE, Disabled for now
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DASHCAM]]: OrderedQuoteRouteName.QUESTION_DASHCAM,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_HYBRID]]: OrderedQuoteRouteName.QUESTION_HYBRID,
   [quoteRoutesOrder[OrderedQuoteRouteName.QUESTION_DWI]]: OrderedQuoteRouteName.QUESTION_DWI,
@@ -72,16 +72,16 @@ const quoteRoutesByOrder = {
 const quoteRoutesTitles = {
   [OrderedQuoteRouteName.TLC]: 'TLC License',
   [OrderedQuoteRouteName.VIN]: `Vehicle's VIN`,
-  [OrderedQuoteRouteName.QUESTION_OWNER]: 'Driver Questions(1 of 10)',
-  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 'Driver Questions(2 of 10)',
-  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 'Driver Questions(3 of 10)',
-  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 'Driver Questions(4 of 10)',
-  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(5 of 10)',
-  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(6 of 10)',
-  [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(7 of 10)',
-  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 'Driver Questions(8 of 10)',
-  [OrderedQuoteRouteName.QUESTION_HYBRID]: 'Driver Questions(9 of 10)',
-  [OrderedQuoteRouteName.QUESTION_DWI]: 'Driver Questions(10 of 10)',
+  [OrderedQuoteRouteName.QUESTION_OWNER]: 'Driver Questions(1 of 9)',
+  [OrderedQuoteRouteName.QUESTION_LONG_TLC]: 'Driver Questions(2 of 9)',
+  [OrderedQuoteRouteName.QUESTION_LONG_DMV]: 'Driver Questions(3 of 9)',
+  [OrderedQuoteRouteName.QUESTION_DRIVER_POINTS]: 'Driver Questions(4 of 9)',
+  [OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS]: 'Driver Questions(5 of 9)',
+  [OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE]: 'Driver Questions(6 of 9)',
+  // [OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE]: 'Driver Questions(7 of 9)', DISABLED FOR NOW
+  [OrderedQuoteRouteName.QUESTION_DASHCAM]: 'Driver Questions(7 of 9)',
+  [OrderedQuoteRouteName.QUESTION_HYBRID]: 'Driver Questions(8 of 9)',
+  [OrderedQuoteRouteName.QUESTION_DWI]: 'Driver Questions(9 of 9)',
   [OrderedQuoteRouteName.EMAIL]: 'Verify Email Address',
   [OrderedQuoteRouteName.QUOTE]: 'Quote'
 }
@@ -151,7 +151,7 @@ export default [
   { path: 'question-driver-points/', component: StepQuestionDriverPoints, name: OrderedQuoteRouteName.QUESTION_DRIVER_POINTS },
   { path: 'question-fault-accidents/', component: StepQuestionFaultAccidents, name: OrderedQuoteRouteName.QUESTION_FAULT_ACCIDENTS },
   { path: 'question-defensive-certificate/', component: StepQuestionDefensiveCertificate, name: OrderedQuoteRouteName.QUESTION_DEFENSIVE_CERTIFICATE },
-  { path: 'question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE },
+  // { path: 'question-accident-avoidance/', component: StepQuestionAccidentAvoidance, name: OrderedQuoteRouteName.QUESTION_ACCIDENT_AVOIDANCE }, DISABLED FOR NOW
   { path: 'question-dashcam/', component: StepQuestionDashcam, name: OrderedQuoteRouteName.QUESTION_DASHCAM },
   { path: 'question-hybrid/', component: StepQuestionHybrid, name: OrderedQuoteRouteName.QUESTION_HYBRID },
   { path: 'question-apply/', component: StepQuestionDwi, name: OrderedQuoteRouteName.QUESTION_DWI},

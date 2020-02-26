@@ -4,13 +4,14 @@
     <h3 class="title" v-else>Your payment has been received!</h3>
     <div class="docs-header">
       <div class="docs-header__info">
-        <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready.
+        <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready. 
+          <br><span>The deposit amount due is <span class="docs-header__amount-due">{{ depositPaymentAmount | beautyCurrency }}</span>.</span>
         </p>
         <p class="docs-header__explain" v-else>Our team is preparing your new policy documents. You will be notified in {{ user.email }} when your policy is ready! 
         </p>
         <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone">
+      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone && monthlyPayment > 0">
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
@@ -211,6 +212,10 @@ export default class DashboardQuotePaymentView extends Vue {
     return !!this.quoteProcessPayment ? this.quoteProcessPayment.deposit:0;
   }
 
+  get depositPaymentAmount(): number {
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit_payment_amount):0;
+  }
+
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
       doc => !!this.quoteProcessDocuments && !!this.quoteProcessDocuments[doc.field]
@@ -296,9 +301,17 @@ export default class DashboardQuotePaymentView extends Vue {
   justify-content: space-between;
   margin-top: 0.75rem;
 
+  .docs-header__info {
+    flex-grow: 1;
+  }
+
   .docs-header__explain {
     color: $grey-darker;
     line-height: 24px;
+
+    .docs-header__amount-due {
+      color: $blue-dark;
+    }
   }
 
   .docs-header__cta {

@@ -90,8 +90,8 @@ class QuoteProcessAdmin(DjangoObjectActions, NestedModelAdmin):
 
     def generate_dashboard_link(self, request, obj):
         if obj.user:
-          ml, created = MagicLink.objects.active().get_or_create(
-              user=obj.user, defaults={'valid_forever': True})
+          ml, created = MagicLink.objects.get_or_create(
+              user=obj.user, valid_forever=True)
           messages.add_message(
               request, messages.INFO, f'Dashboard Link: {ml.get_url()}')
     generate_dashboard_link.label = 'Generate Dashboard Link'
@@ -140,7 +140,8 @@ class SendQuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
     form = super(SendQuoteProcessPaymentAdmin, self).get_form(request, obj, **kwargs)
     quote_id = request.GET.get('quote_process')
     if quote_id:
-      form.base_fields['quote_process'].initial = request.GET.get('quote_process')
+      form.base_fields['quote_process'].initial = request.GET.get(
+          'quote_process')
     return form
 
   def response_add(self, request, obj):
@@ -149,31 +150,38 @@ class SendQuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
           request, messages.SUCCESS, f'The Payment has been sent to the user!')
       quote_process = obj.quote_process
       return redirect(
-          reverse('stable_admin:quote_quoteprocess_change', args=(quote_process.id, ))
+          reverse('stable_admin:quote_quoteprocess_change',
+                  args=(quote_process.id, ))
       )
-
 stable_admin.register(SendQuoteProcessPayment, SendQuoteProcessPaymentAdmin)
 
 
 class QuoteProcessPaymentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    change_actions = ('create_policy', )
+  change_actions = ('create_policy', 'view_full_quote_process', )
 
-    def create_policy(self, request, obj):
+  def view_full_quote_process(self, request, obj):
       return redirect(
-          (
-              f'{reverse("stable_admin:policy_createpolicy_add")}'
-              f'?quote_process={str(obj.quote_process_id)}'
-              f'&user={str(obj.quote_process.user.id)}'
-          )
+          reverse('stable_admin:quote_quoteprocess_change',
+                  args=(obj.quote_process.id, ))
       )
+  view_full_quote_process.label = 'View Full Quote Process'
 
-    def get_change_actions(self, request, object_id, form_url):
-      if object_id:
-        obj = QuoteProcessPayment.objects.get(id=object_id)
-        if obj.is_paid:
-          return ('create_policy', )
-      return ()
+  def create_policy(self, request, obj):
+    return redirect(
+        (
+            f'{reverse("stable_admin:policy_createpolicy_add")}'
+            f'?quote_process={str(obj.quote_process_id)}'
+            f'&user={str(obj.quote_process.user.id)}'
+        )
+    )
 
+  def get_change_actions(self, request, object_id, form_url):
+    if object_id:
+      obj = QuoteProcessPayment.objects.get(id=object_id)
+      if not obj.is_paid:
+        return ('view_full_quote_process', )
+      return self.change_actions
+    return ()
 
 stable_admin.register(QuoteProcessPayment, QuoteProcessPaymentAdmin)
 admin.site.register(QuoteProcessPayment)

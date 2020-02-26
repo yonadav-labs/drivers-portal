@@ -7,7 +7,7 @@
         </p>
         <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
       </div>
-      <div class="docs-header__price">
+      <div class="docs-header__price" v-if="monthlyPayment > 0">
         <div class="estimate">
           <p>Monthly price</p>
           <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
