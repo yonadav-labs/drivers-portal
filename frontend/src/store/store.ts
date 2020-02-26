@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 import QuoteModules from './quote'
+import PolicyModules from './policy'
 import UsersModules from './users'
 
 import { initClient, hasToken, setAuthenticatedCookie, deleteAuthenticatedCookie } from './api';
@@ -13,6 +14,7 @@ export const store = new Vuex.Store({
   state: {},
   modules: {
     ...QuoteModules,
+    ...PolicyModules,
     ...UsersModules
   },
   actions: {

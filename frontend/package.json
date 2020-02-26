@@ -23,6 +23,7 @@
     "custom-event-polyfill": "^1.0.7",
     "date-fns": "^2.9.0",
     "element-closest-polyfill": "^1.0.0",
+    "hellosign-embedded": "^2.7.1",
     "ie11-custom-properties": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "rxjs": "^6.5.3",

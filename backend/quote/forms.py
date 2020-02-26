@@ -2,7 +2,8 @@ from django import forms
 
 from quote.models import QuoteProcess
 
-class AdminQuoteProcessPaymentForm(forms.ModelForm):
+
+class AdminSendQuoteProcessPaymentForm(forms.ModelForm):
   quote_process = forms.ModelChoiceField(
       queryset=QuoteProcess.objects.all(),
       widget=forms.HiddenInput())

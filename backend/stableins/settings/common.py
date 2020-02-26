@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'quote.apps.QuoteConfig',
     'payment.apps.PaymentConfig',
     'policy.apps.PolicyConfig',
+    'hellosign_app.apps.HellosignAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -268,6 +269,7 @@ REST_FRAMEWORK = {
 }
 
 # HelloSign
+HELLOSIGN_ENABLED = False
 HELLOSIGN_APIKEY = env("HELLOSIGN_APIKEY")
 HELLOSIGN_TESTMODE = True
 HELLOSIGN_SKIPDOMAIN = True
