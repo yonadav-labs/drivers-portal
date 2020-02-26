@@ -1,3 +1,6 @@
+from django.conf import settings
+
+from hellosign_sdk.utils.exception import Conflict
 from rest_framework import serializers
 
 from base.tasks import (
@@ -6,7 +9,7 @@ from base.tasks import (
 from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
-
+from hellosign_app.utils import get_signature_url
 from quote.models import (
   QuoteProcess, QuoteSoftFallout, QuoteProcessDocuments,
   QuoteProcessDocumentsAccidentReport,
@@ -215,19 +218,39 @@ class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     source="quoteprocessdocumentsaccidentreport_set",
     many=True
   )
+  hsr_sign_url = serializers.SerializerMethodField()
+  hsr_client_id = serializers.SerializerMethodField()
+  hsr_test_mode = serializers.SerializerMethodField()
+
+  def get_hsr_sign_url(self, obj):
+    if obj.hsr and not obj.is_broker_of_record_signed:
+      try:
+        return get_signature_url(obj.hsr.user_signature_id)
+      except Conflict:
+        return None
+    return None
+  
+  def get_hsr_client_id(self, obj):
+    return getattr(settings, 'HELLOSIGN_CLIENTID')
+
+  def get_hsr_test_mode(self, obj):
+    return getattr(settings, 'HELLOSIGN_TESTMODE', True)
+
 
   class Meta:
     fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
-      'requires_broker_of_record', 'loss_run', 'vehicle_title'
+      'requires_broker_of_record', 'loss_run', 'vehicle_title', 'hsr_sign_url', 'hsr_client_id',
+      'hsr_test_mode'
     )
     read_only_fields = (
       'id', 'dmv_license_front_side', 'dmv_license_back_side', 'tlc_license_front_side', 
       'tlc_license_back_side', 'base_letter', 'proof_of_address', 'defensive_driving_certificate',
       'is_submitted_for_review', 'accident_reports', 'is_broker_of_record_signed',
-      'requires_broker_of_record', 'loss_run', 'vehicle_title'
+      'requires_broker_of_record', 'loss_run', 'vehicle_title', 'hsr_sign_url', 'hsr_client_id',
+      'hsr_test_mode'
     )
     model = QuoteProcessDocuments
 

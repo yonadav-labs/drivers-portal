@@ -1,3 +1,4 @@
+import DashboardPolicy from '@/apps/dashboard/views/policy.vue';
 import DashboardQuote from '@/apps/dashboard/views/quote.vue';
 import DashboardQuoteUpload from '@/apps/dashboard/views/quote/upload.vue';
 import DashboardQuotePayment from '@/apps/dashboard/views/quote/payment.vue';
@@ -6,6 +7,7 @@ import { QuoteStatus } from '@/@types/quote'
 
 export enum DashboardRouteName {
   QUOTE = 'dashboardQuote',
+  POLICY = 'dashboardPolicy'
 }
 
 export enum DashboardQuoteRouteName {
@@ -15,10 +17,13 @@ export enum DashboardQuoteRouteName {
 
 export class DashboardRouter {
 
-  static getRouteForQuoteStatus(status: QuoteStatus): { name: DashboardQuoteRouteName} {
-    let route: DashboardQuoteRouteName;
+  static getRouteForQuoteStatus(status: QuoteStatus): { name: DashboardQuoteRouteName | DashboardRouteName} {
+    let route: DashboardQuoteRouteName | DashboardRouteName;
   
     switch (status) {
+      case 'done':
+        route = DashboardRouteName.POLICY
+        break;
       case 'payment':
       case 'paid':
         route = DashboardQuoteRouteName.PAYMENT
@@ -43,6 +48,9 @@ const quoteRoutes = [
 ]
 
 export default [
+  {
+    path: 'policy/', component: DashboardPolicy, name: DashboardRouteName.POLICY
+  },
   { path: 'quote/', component: DashboardQuote, name: DashboardRouteName.QUOTE, children: [
     ...quoteRoutes
   ] },

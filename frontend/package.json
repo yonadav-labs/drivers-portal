@@ -23,6 +23,7 @@
     "custom-event-polyfill": "^1.0.7",
     "date-fns": "^2.9.0",
     "element-closest-polyfill": "^1.0.0",
+    "hellosign-embedded": "^2.7.1",
     "ie11-custom-properties": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "rxjs": "^6.5.3",
@@ -36,8 +37,9 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/vuelidate": "^0.7.10",
+    "@types/hellosign-embedded": "^1.2.8",
     "@types/vue-router": "^2.0.0",
+    "@types/vuelidate": "^0.7.10",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-e2e-cypress": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
