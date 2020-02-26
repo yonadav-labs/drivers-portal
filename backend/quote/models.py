@@ -410,7 +410,7 @@ class QuoteProcessDocuments(BaseModel):
         )
 
     def save(self, *args, **kwargs):
-      created = not self.pk
+      created = self._state.adding is True
       was_submitted = self.is_submitted_for_review
       
       super().save(*args, **kwargs)
@@ -549,9 +549,13 @@ class QuoteProcessPayment(BaseModel):
 
     def save(self, *args, **kwargs):
       created = self._state.adding is True
-      was_paid = self.is_paid
+      if not created:
+        was_paid = QuoteProcessPayment.objects.get(id=self.pk).is_paid
+      else:
+        was_paid = False
       
       super().save(*args, **kwargs)
+      print(was_paid, not was_paid and self.is_paid)
       
       if created or (not was_paid and self.is_paid):
         self.quote_process.update_status()

@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.db import models
 
@@ -7,7 +9,7 @@ from quote.models import QuoteProcess
 
 def policy_document_upload_to(instance, filename):
     return os.path.join(
-        'policy', instance.email, str(instance.id), filename)
+        'policy', instance.user.email, filename)
 
 class Policy(BaseModel):
     user = models.ForeignKey(
@@ -19,7 +21,7 @@ class Policy(BaseModel):
     quote_process = models.OneToOneField(
         verbose_name="Quote Process",
         to=QuoteProcess,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True
     )
@@ -29,7 +31,7 @@ class Policy(BaseModel):
         max_length=255
     )
 
-    certifcate_of_liability = models.FileField(
+    certificate_of_liability = models.FileField(
         verbose_name="Certificate of Liability",
         upload_to=policy_document_upload_to
     )
@@ -44,21 +46,11 @@ class Policy(BaseModel):
         upload_to=policy_document_upload_to
     )
 
-    # Key Fields from quote process
-    tlc_number = models.CharField(
-        verbose_name="TLC #",
-        max_length=6
-    )
-
-    vehicle_vin = models.CharField(
-        verbose_name="VIN #",
-        max_length=511
-    )
-
-    license_plate = models.CharField(
-        verbose_name="License Plate #",
-        max_length=20
-    )
+    def save(self, *args, **kwargs):
+      created = self._state.adding is True
+      super().save(*args, **kwargs)
+      if created:
+        self.quote_process.update_status()
 
     class Meta:
         verbose_name = "Policy"

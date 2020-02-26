@@ -64,8 +64,12 @@ export default class DashboardView extends Vue {
       if (!vm.isAuthenticated) {
         vm.$router.replace(QuoteProcessRouter.getRouteByOrder(0))
       } else {
-        if (vm.user!.quote_status !== 'done' && !DashboardRouter.isDocsRoute(vm.$route.name!) ) {
-          vm.$router.replace({ name: DashboardRouteName.QUOTE })
+        if (vm.user!.quote_status !== 'done') {
+          if (!DashboardRouter.isDocsRoute(vm.$route.name!)) {
+            vm.$router.replace({ name: DashboardRouteName.QUOTE })
+          }
+        } else {
+          vm.$router.replace({ name: DashboardRouteName.POLICY })
         }
 
         if (!vm.user!.has_usable_password) {
