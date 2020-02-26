@@ -37,8 +37,9 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/vuelidate": "^0.7.10",
+    "@types/hellosign-embedded": "^1.2.8",
     "@types/vue-router": "^2.0.0",
+    "@types/vuelidate": "^0.7.10",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-e2e-cypress": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",

@@ -248,7 +248,7 @@ export default class DashboardQuoteUploadView extends Vue {
   ]
 
   isValidatingSign = false
-  intervalValidate = undefined
+  intervalValidate: number | undefined = undefined
 
   get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
     return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
@@ -415,6 +415,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   openHelloSign(): void {
     if (this.quoteProcessDocuments) {
+      // @ts-ignore
       const client = new HelloSign({
         clientId: this.quoteProcessDocuments.hsr_client_id
       })
