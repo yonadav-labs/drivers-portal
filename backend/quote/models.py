@@ -256,16 +256,22 @@ class QuoteProcess(BaseModel):
 
     def _create_process_documents(self):
         if not self.quote_process_documents:
-          hsr = create_t_and_c_signature_request(
-            self.email,
-            self.tlc_name,
-            self.insurance_policy_number
-          )
-          QuoteProcessDocuments.objects.create(
-            hsr=hsr,
-            quote_process=self,
-            requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
-          )
+          if settings.HELLOSIGN_ENABLED:
+            hsr = create_t_and_c_signature_request(
+              self.email,
+              self.tlc_name,
+              self.insurance_policy_number
+            )
+            QuoteProcessDocuments.objects.create(
+              hsr=hsr,
+              quote_process=self,
+              requires_broker_of_record="hereford" in self.insurance_carrier_name.lower()
+            )
+          else:
+            QuoteProcessDocuments.objects.create(
+              quote_process=self,
+              requires_broker_of_record=False
+            )
 
     def _create_variations(self):
       with transaction.atomic():
