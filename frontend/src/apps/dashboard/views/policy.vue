@@ -51,6 +51,7 @@ import IconPrint from '@/components/icons/icon-print.vue'
 
 import { getFilename } from '@/utils/text'
 import { Route } from 'vue-router';
+import { RouteName } from '@/router';
 
 const policy = namespace('Policy')
 
@@ -135,6 +136,9 @@ export default class DashboardPolicyView extends Vue {
         vm.policyId = vm.policyList[0].id;
         if (!vm.policy) {
           await vm.retrievePolicyById(vm.policyId)
+        }
+        if (!vm.policy) {
+          this.$router.replace({ name: RouteName.DASHBOARD })
         }
       }
     })
