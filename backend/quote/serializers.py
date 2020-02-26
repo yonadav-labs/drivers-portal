@@ -1,5 +1,7 @@
-from rest_framework import serializers
 from django.conf import settings
+
+from hellosign_sdk.utils.exception import Conflict
+from rest_framework import serializers
 
 from base.tasks import (
   send_admin_notification_task, send_user_submitted_task
@@ -222,7 +224,10 @@ class RetrieveQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
 
   def get_hsr_sign_url(self, obj):
     if obj.hsr and not obj.is_broker_of_record_signed:
-      return get_signature_url(obj.hsr.user_signature_id)
+      try:
+        return get_signature_url(obj.hsr.user_signature_id)
+      except Conflict:
+        return None
     return None
   
   def get_hsr_client_id(self, obj):
