@@ -76,7 +76,7 @@
       >Pay {{ depositPaymentAmount | beautyCurrency }}
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
-      <div class="disclaimer" v-if="depositIsModified"><div class="disclaimer__content">Please note the current payment is not the total amount of the deposit.</div></div>
+      <div class="disclaimer" v-if="!isSameDeposit"><div class="disclaimer__content">Please note the current payment is not the total amount of the deposit.</div></div>
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
@@ -177,7 +177,7 @@ export default class StepQuoteReview extends Vue {
     return !!this.quoteProcess && !!this.quoteProcess.deductible ? this.quoteProcess.deductible:0
   }
 
-  get depositIsModified(): boolean {
+  get isSameDeposit(): boolean {
     return this.deposit.toFixed(2) === this.depositPaymentAmount.toFixed(2)
   }
 

@@ -3,7 +3,7 @@
     <div class="payment-info">
       <p class="form-explain">Deposit Payment</p>
       <p class="payment-info--price">{{ depositPaymentAmount|currency }}</p>
-      <span class="payment-info--date" v-if="depositAmount === depositPaymentAmount">{{ quoteDeposit }}% of total price</span>
+      <span class="payment-info--date" v-if="isSameDeposit">{{ quoteDeposit }}% of total price</span>
     </div>
     <div v-if="loading" class="spinner">
       Processing payment... Please, wait.
@@ -121,6 +121,10 @@ export default class DepositPaymentView extends Vue {
 
   get quoteDeposit(): number {
     return !!this.quoteProcess ? this.quoteProcess.deposit!:0
+  }
+
+  get isSameDeposit(): boolean {
+    return this.quoteDeposit.toFixed(2) === this.depositPaymentAmount.toFixed(2)
   }
 
   get depositAmount(): number {
