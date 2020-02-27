@@ -391,7 +391,8 @@ class QuoteProcessDocuments(BaseModel):
       verbose_name='HelloSign Request',
       to=HelloSignSignatureRequest,
       on_delete=models.SET_NULL,
-      null=True
+      null=True,
+      blank=True
     )
 
     doc_fields = [
