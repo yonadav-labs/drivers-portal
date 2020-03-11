@@ -175,7 +175,7 @@ export default class DashboardPolicyView extends Vue {
       (p: PolicyPayment) => {
         const payment_due_date = new Date(p.payment_due_date)
         const payment_date = p.payment_date ? new Date(p.payment_date) : undefined
-        const status = p.is_paid ? 'paid' : isAfter(new Date(), payment_due_date) ? 'overdue' : 'to do'
+        const status = p.is_paid ? 'paid' : isAfter(new Date(), payment_due_date) ? 'overdue' : 'pending'
         const payment_amount = +p.payment_amount
         const fee_amount = +p.fee_amount
         let name = 'Deposit'
