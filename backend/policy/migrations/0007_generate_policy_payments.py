@@ -29,7 +29,8 @@ def generate_policy_payments(apps, schema_editor):
         payment_months = PAYMENT_MONTHS.get(policy.quote_process.deposit)
         payment_day = PAYMENT_DAY.get(policy.quote_process.deposit)
         payment_year = datetime.today().year
-        payment_amount = quote_payment.official_hereford_quote / len(payment_months)
+        if len(payment_months) > 0:
+            payment_amount = quote_payment.official_hereford_quote / len(payment_months)
         fee_amount = get_hereford_fee(policy.quote_process.deposit)
 
         for month in payment_months:
