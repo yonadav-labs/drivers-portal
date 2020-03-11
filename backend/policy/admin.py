@@ -4,11 +4,12 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 from django_object_actions import DjangoObjectActions
+from nested_admin import NestedTabularInline
 
 from base.admin import stable_admin
 
 from policy.forms import AdminPolicyForm
-from policy.models import Policy
+from policy.models import Policy, PolicyPayment
 from policy.proxy_models import CreatePolicy
 
 
@@ -41,5 +42,33 @@ class CreatePolicyAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 
 stable_admin.register(CreatePolicy, CreatePolicyAdmin)
-stable_admin.register(Policy)
+
+
+class PolicyPaymentInline(NestedTabularInline):
+    model = PolicyPayment
+    fields = (
+      'payment_due_date', 'payment_date', 'payment_amount',
+      'fee_amount', 'is_deposit', 'is_paid'
+    )
+    extra = 0
+
+
+class PolicyAdmin(admin.ModelAdmin):
+  inlines = [PolicyPaymentInline, ]
+
+  def save_model(self, request, obj, form, change):
+    # Propagate fee amount change in policy to all unpaid payments
+    if 'fee_amount' in form.changed_data:
+      obj.policypayment_set.filter(
+        is_paid=False
+      ).update(
+        fee_amount=obj.fee_amount
+      )
+    super(PolicyAdmin, self).save_model(request, obj, form, change)
+
+
+stable_admin.register(Policy, PolicyAdmin)
+
+
 admin.site.register(Policy)
+admin.site.register(PolicyPayment)
