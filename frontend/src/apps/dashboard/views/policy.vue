@@ -63,14 +63,14 @@
               >
                 <icon-dollar size='16' class='icon--white'></icon-dollar>
               </basic-button>
-              <basic-button
+              <!-- <basic-button
                 text='Auto Pay'
                 :color='colorBlue'
                 :backgroundColor='colorGreyMedium'
                 class='button--rounded'
               >
                 <icon-invoice-dollar size='16' class='icon--blue'></icon-invoice-dollar>
-              </basic-button>
+              </basic-button> -->
             </div>
           </div>
         </div>
