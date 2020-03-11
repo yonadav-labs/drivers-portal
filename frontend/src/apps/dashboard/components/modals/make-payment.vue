@@ -7,7 +7,10 @@
       <div class="modal-content">
         <div class="payment-info">
           <p class="form-explain">Payment Amount</p>
-          <p class="payment-info--price">{{ paymentAmount + paymentFee | currency }}</p>
+          <p class="payment-info--price">{{ paymentTotalAmount | currency }}</p>
+          <p v-if="creditCardFormOpened" class="payment-info--price-detail">Credit Cart Fee: <span>{{ stripeFee }}</span></p>
+          <p class="payment-info--price-detail">Hereford Fee: <span>{{ paymentFee | currency }}</span></p>
+          <p class="payment-info--price-detail">Insurance Premium: <span>{{ paymentAmount | currency }}</span></p>
         </div>
         <div v-if="loading" class="spinner">
           Processing payment... Please, wait.
@@ -128,6 +131,14 @@ export default class ModalMakePayment extends Vue {
     return currency(this.plaidFeeAmount)
   }
 
+  get paymentTotalAmount(): number {
+    let total = this.paymentAmount + this.paymentFee
+    if (this.creditCardFormOpened) {
+      total += this.stripeFeeAmount
+    }
+    return total;
+  }
+
   async plaidHandler({public_token, metadata}: {public_token: string, metadata: any}): Promise<void> {
     this.loading = true;
     await this.payPaymentPlaid({
@@ -219,6 +230,7 @@ export default class ModalMakePayment extends Vue {
     font-size: $fs-lg;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 1rem;
     span {
       font-weight: $fw-semibold;
     }
@@ -228,6 +240,7 @@ export default class ModalMakePayment extends Vue {
 .form-content--pay{
   display: flex;
   justify-content: center;
+  margin-bottom: 1.5rem;
   margin-top: 1.25rem;
 }
 
@@ -248,6 +261,18 @@ export default class ModalMakePayment extends Vue {
       font-weight: $fw-semibold;
       margin-top: 1rem;
       margin-bottom: 1rem;
+    }
+
+    &.payment-info--price-detail {
+      font-size: $fs-md;
+      font-weight: $fw-semibold;
+      margin-bottom: 0.25rem;
+
+      span {
+        font-size: $fs-md;
+        font-weight: $fw-semibold;
+        color: $blue;
+      }
     }
   }
   .payment-info--date {
