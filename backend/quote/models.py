@@ -575,7 +575,7 @@ class QuoteProcessPayment(BaseModel):
 
     def get_monthly_payment(self):
       deposit = self.quote_process.deposit
-      months = 3 if deposit == QUOTE_PROCESS_DEPOSIT_40 else 9
+      months = 2 if deposit == QUOTE_PROCESS_DEPOSIT_40 else 9
       return (float(self.official_hereford_quote) * (1-(deposit/100)))/months
 
     def get_hereford_fee(self):
