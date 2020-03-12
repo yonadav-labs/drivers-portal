@@ -65,14 +65,13 @@ class Policy(BaseModel):
 
     def _generate_policy_payments(self):
         quote_payment = self.quote_process.quoteprocesspayment
-        deposit = quote_payment.deposit_payment_amount
 
         # Deposit
         PolicyPayment.objects.create(
             policy=self,
             payment_due_date=quote_payment.payment_date,
             payment_date=quote_payment.payment_date,
-            payment_amount=deposit,
+            payment_amount=quote_payment.deposit_payment_amount,
             fee_amount=0,
             is_deposit=True,
             is_paid=True
@@ -82,9 +81,7 @@ class Policy(BaseModel):
         payment_months = PAYMENT_MONTHS.get(self.quote_process.deposit)
         payment_day = PAYMENT_DAY.get(self.quote_process.deposit)
         payment_year = datetime.today().year
-        if len(payment_months) > 0:
-            total_premium = quote_payment.official_hereford_quote
-            payment_amount = (total_premium - deposit) / len(payment_months)
+        payment_amount = quote_payment.official_hereford_quote / len(payment_months)
         fee_amount = get_hereford_fee(self.quote_process.deposit)
 
         for month in payment_months:
