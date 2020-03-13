@@ -508,6 +508,13 @@ class QuoteProcessPayment(BaseModel):
         decimal_places=2
     )
 
+    deposit_percentage = models.PositiveIntegerField(
+        verbose_name='Deposit (%)',
+        choices=QUOTE_PROCESS_DEPOSIT_CHOICES,
+        blank=True,
+        null=True
+    )
+
     liability_amount = models.DecimalField(
       verbose_name='Liability Amount',
       help_text="Just in case you want to show the amount to the user",
@@ -520,6 +527,27 @@ class QuoteProcessPayment(BaseModel):
     physical_amount = models.DecimalField(
       verbose_name='Physical Amount',
       help_text="Just in case you want to show the amount to the user",
+      max_digits=7,
+      decimal_places=2,
+      blank=True,
+      null=True
+    )
+
+    has_third_party_deposit = models.BooleanField(
+      verbose_name='Has Third Party Deposit Coverage',
+      default=False,
+      choices=((True, "Yes"), (False, "No"))
+    )
+
+    third_party_name = models.CharField(
+      verbose_name='Third Party Name',
+      max_length=255,
+      blank=True,
+      null=True
+    )
+
+    third_party_amount = models.DecimalField(
+      verbose_name='Third Party Covered Amount',
       max_digits=7,
       decimal_places=2,
       blank=True,
@@ -545,14 +573,28 @@ class QuoteProcessPayment(BaseModel):
       return self.payment_date
 
     def clean(self):
+      errors = {}
       has_liability = self.liability_amount is not None
       has_physical = self.physical_amount is not None
+      has_third_party_deposit = self.has_third_party_deposit
+
       if has_liability and not has_physical or has_physical and not has_liability:
         raise ValidationError("Both liability and phisical fields must be blank or set")
       
       if has_liability and has_physical:
         if (self.liability_amount + self.physical_amount) != self.official_hereford_quote:
           raise ValidationError("The sum of liability and physical must be equal to the official hereford quote")
+      
+      if has_third_party_deposit:
+        if not self.third_party_name:
+          errors["third_party_name"] = "This field is required."
+        if not self.third_party_amount:
+          errors["third_party_amount"] = "This field is required."
+        elif self.deposit_payment_amount - self.third_party_amount < 0:
+          errors["third_party_amount"] = "Amount cannot be greater than deposit amount."
+      
+      if len(errors) > 0:
+        raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
       created = self._state.adding is True
@@ -574,15 +616,21 @@ class QuoteProcessPayment(BaseModel):
       self.quote_process.update_status()
 
     def get_monthly_payment(self):
-      deposit = self.quote_process.deposit
-      months = 3 if deposit == QUOTE_PROCESS_DEPOSIT_40 else 9
+      deposit = self.deposit_percentage or self.quote_process.deposit
+      months = 2 if deposit == QUOTE_PROCESS_DEPOSIT_40 else 9
       return (float(self.official_hereford_quote) * (1-(deposit/100)))/months
 
     def get_hereford_fee(self):
-      return get_hereford_fee(self.quote_process.deposit)
+      deposit = self.deposit_percentage or self.quote_process.deposit
+      return get_hereford_fee(deposit)
 
     def get_deposit(self):
-      return float(self.official_hereford_quote) * (self.quote_process.deposit/100)
+      deposit = self.deposit_percentage or self.quote_process.deposit
+      total_deposit = float(self.official_hereford_quote) * (deposit/100)
+      if self.third_party_amount:
+        return total_deposit - float(self.third_party_amount)
+      else:
+        return total_deposit
 
     class Meta:
         verbose_name = 'Quote Process Payment'

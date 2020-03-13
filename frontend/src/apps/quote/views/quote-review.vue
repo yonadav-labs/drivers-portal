@@ -73,7 +73,7 @@
       <button
         class="insurance-action active"
         @click="pay"
-      >Pay {{ depositPaymentAmount | beautyCurrency }}
+      >Pay {{ depositAmount | beautyCurrency }}
         <icon-arrow-right class="icon" size="16"></icon-arrow-right>
       </button>
       <div class="disclaimer" v-if="!isSameDeposit"><div class="disclaimer__content">Please note the current payment is not the total amount of the deposit.</div></div>
@@ -207,6 +207,10 @@ export default class StepQuoteReview extends Vue {
 
   get depositPaymentAmount(): number {
     return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit_payment_amount):0;
+  }
+
+  get depositAmount(): number {
+    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit):0;
   }
 
   get firstPaymentDue(): string {
