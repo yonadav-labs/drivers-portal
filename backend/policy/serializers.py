@@ -20,11 +20,11 @@ class PolicyPaymentSerializer(serializers.ModelSerializer):
   plaid_fee = serializers.SerializerMethodField()
 
   def get_stripe_fee(self, obj):
-    amount = float(obj.payment_amount)
+    amount = float(obj.payment_amount+obj.fee_amount)
     return apply_stripe_fee(amount) - amount
 
   def get_plaid_fee(self, obj):
-    amount = float(obj.payment_amount)
+    amount = float(obj.payment_amount+obj.fee_amount)
     return apply_plaid_fee(amount) - amount
 
   class Meta:

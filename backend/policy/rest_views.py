@@ -71,11 +71,11 @@ class PayStripePolicyPaymentView(PayPolicyPaymentBaseView):
   serializer_class = StripeChargeCreateSerializer
 
   def _get_amount(self, payment):
-    return apply_stripe_fee(payment.payment_amount)
+    return apply_stripe_fee(payment.payment_amount+payment.fee_amount)
     
 
 class PayPlaidPolicyPaymentView(PayPolicyPaymentBaseView):
   serializer_class = PlaidChargeCreateSerializer
 
   def _get_amount(self, payment):
-    return apply_plaid_fee(payment.payment_amount)
+    return apply_plaid_fee(payment.payment_amount+payment.fee_amount)
