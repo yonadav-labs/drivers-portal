@@ -14,7 +14,13 @@ On Mac: [docker][2] (`docker-compose` is included).
 
     cd stable
     docker-compose up -d
-
+    
+### Load Data
+    ./manage.py manual_import_task -t vehicles
+    ./manage.py manual_import_task -t insurances
+    ./manage.py manual_import_task -t fhv_drivers
+    ./manage.py load_base_types
+    
 ### Stopping
 
     cd django-docker
