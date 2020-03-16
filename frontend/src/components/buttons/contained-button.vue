@@ -77,7 +77,6 @@ export default class ContainedButton extends Vue {
   span{
     font-size: $fs-md;
     font-weight: $fw-semibold;
-    margin-left: 1rem;
     margin-right: 1rem;
   }
   &:focus{
