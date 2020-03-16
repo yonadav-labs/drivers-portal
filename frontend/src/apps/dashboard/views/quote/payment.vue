@@ -273,7 +273,7 @@ export default class DashboardQuotePaymentView extends Vue {
   }
 
   get thirdPartyName(): string {
-    return !!this.quoteProcessPayment ? this.quoteProcessPayment.third_party_name:""
+    return !!this.quoteProcessPayment ? this.quoteProcessPayment.third_party_name:''
   }
 
   get thirdPartyAmount(): number {
