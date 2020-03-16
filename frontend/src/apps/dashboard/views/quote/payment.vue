@@ -1,14 +1,14 @@
 <template>
   <div class="docs-view" ref="main" v-if="!!quoteProcessPayment">
     <h3 class="title" v-if="!isPaymentDone">Your Official Hereford Quote is ready!</h3>
-    <h3 class="title" v-else>Your payment has been received! {{ depositAmount < 0.01 ? `(The deposit has been paid by ${thirdPartyName})` : '' }}</h3>
+    <h3 class="title" v-else>Your payment has been received! {{ depositAmount < 0.01 ? `The deposit has been paid by ${thirdPartyName}.` : '' }}</h3>
     <div class="docs-header">
       <div class="docs-header__info">
         <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready. 
           <br><span>The deposit amount due is <span class="docs-header__amount-due">{{ depositAmount | beautyCurrency }}</span>.</span>
           <br><span><span class="docs-header__amount-due">{{ thirdPartyAmount | beautyCurrency }}</span> from the deposit has been covered by <span class="docs-header__amount-due">{{ thirdPartyName }}</span>.</span>
         </p>
-        <p class="docs-header__explain" v-else>Our team is preparing your new policy documents. You will be notified in {{ user.email }} when your policy is ready! 
+        <p class="docs-header__explain" v-else>Our team is preparing your new policy documents. You will be notified at {{ user.email }} when your policy is ready! 
         </p>
         <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
