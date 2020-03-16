@@ -1,7 +1,7 @@
 <template>
   <div class="docs-view" ref="main" v-if="!!quoteProcessPayment">
     <h3 class="title" v-if="!isPaymentDone">Your Official Hereford Quote is ready!</h3>
-    <h3 class="title" v-else>Your payment has been received!</h3>
+    <h3 class="title" v-else>Your payment has been received! {{ depositAmount < 0.01 ? `(The deposit has been paid by ${thirdPartyName})` : '' }}</h3>
     <div class="docs-header">
       <div class="docs-header__info">
         <p class="docs-header__explain" v-if="!isPaymentDone">Our team has reviewed the documents provided and your Official Hereford Quote is ready. 

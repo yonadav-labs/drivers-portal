@@ -605,8 +605,9 @@ class QuoteProcessPayment(BaseModel):
       
       super().save(*args, **kwargs)
       print(was_paid, not was_paid and self.is_paid)
-      
-      if created or (not was_paid and self.is_paid):
+      if created and self.get_deposit() < 0.01:
+        self.mark_as_paid(None)
+      elif created or (not was_paid and self.is_paid):
         self.quote_process.update_status()
 
     def mark_as_paid(self, charge):
