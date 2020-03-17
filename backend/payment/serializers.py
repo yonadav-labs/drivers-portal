@@ -7,7 +7,7 @@ from payment.utils import (
 )
 
 
-class BaseStripeDepositChargeCreateSerializer:
+class BaseStripeChargeCreateSerializer:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = self.context.get("request")
@@ -70,8 +70,8 @@ class BaseStripeDepositChargeCreateSerializer:
         return create_stripe_charge(**charge_data)
 
 
-class StripeDepositChargeCreateSerializer(
-    BaseStripeDepositChargeCreateSerializer, serializers.Serializer
+class StripeChargeCreateSerializer(
+    BaseStripeChargeCreateSerializer, serializers.Serializer
 ):
     payment_type = "card"
     amount = serializers.FloatField()
@@ -89,8 +89,8 @@ class StripeDepositChargeCreateSerializer(
         return charge
 
 
-class PlaidDepositChargeCreateSerializer(
-    BaseStripeDepositChargeCreateSerializer, serializers.Serializer
+class PlaidChargeCreateSerializer(
+    BaseStripeChargeCreateSerializer, serializers.Serializer
 ):
     payment_type = "bank_account"
     _bank_token = None

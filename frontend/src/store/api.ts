@@ -32,7 +32,7 @@ export class APIState {
             state.status = 'failed'
             state.data = undefined
         } else {
-            if (data instanceof Object) {
+            if (data instanceof Object && !Array.isArray(data)) {
                 state.data = {...data}
             } else {
                 state.data = data;

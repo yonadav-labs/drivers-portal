@@ -123,6 +123,7 @@ import { required } from 'vuelidate/lib/validators'
 import BasicButton from '@/components/buttons/basic-button.vue';
 import BasicInput from '@/components/inputs/basic-input.vue';
 import BasicInputStripe from '@/components/inputs/basic-input-stripe.vue';
+import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 
 import { currency } from '@/utils/text'
 
@@ -132,7 +133,7 @@ const stripeRequiredValidator = (value: string) => !value;
 
 @Component({
   components: {
-    BasicButton, BasicInput, BasicInputStripe,
+    BasicButton, BasicInput, BasicInputStripe, IconArrowRight
   },
   filters: {
     currency,

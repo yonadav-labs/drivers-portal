@@ -4,6 +4,7 @@ from django.urls import reverse
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 
 from quote.models import QuoteProcess
+from policy.models import Policy
 
 
 class CustomIndexDashboard(Dashboard):
@@ -11,7 +12,7 @@ class CustomIndexDashboard(Dashboard):
     Custom index dashboard for Stable.
     """
 
-    columns = 4
+    columns = 5
 
     def _retrieve_email_entered(self):
         children = []
@@ -26,7 +27,7 @@ class CustomIndexDashboard(Dashboard):
             })
         
         self.children.append(modules.LinkList(
-            _('Quote Process with Email Entered.'),
+            _('Quote Process with Email Entered'),
             draggable=False,
             deletable=False,
             collapsible=False,
@@ -52,7 +53,7 @@ class CustomIndexDashboard(Dashboard):
             })
         
         self.children.append(modules.LinkList(
-            _('Quote Process with Quota Accepted.'),
+            _('Quote Process Quota Accepted'),
             draggable=False,
             deletable=False,
             collapsible=False,
@@ -75,7 +76,7 @@ class CustomIndexDashboard(Dashboard):
             })
         
         self.children.append(modules.LinkList(
-            _('Quote Process Docs Submitted for Review'),
+            _('Docs Submitted for Review'),
             draggable=False,
             deletable=False,
             collapsible=False,
@@ -134,12 +135,34 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             children=children
         ))
+
+    def _retrieve_policy_created_column(self):
+        children = []
+        policies = Policy.objects.all()
+
+        for policy in policies:
+            children.append({
+                'title': str(policy),
+                'url': reverse(
+                    'stable_admin:policy_policy_change',  
+                    args=[policy.id] ),
+            })
+        
+        self.children.append(modules.LinkList(
+            _('Created Policies'),
+            draggable=False,
+            deletable=False,
+            collapsible=False,
+            children=children,
+            pre_content=("" if len(children) > 0 else "No policy to show")
+        ))
    
     def init_with_context(self, context):
         self._retrieve_email_entered()
         self._retrieve_in_progress()
         self._retrieve_documents_submitted()
         self._retrieve_payment_column()
+        self._retrieve_policy_created_column()
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """

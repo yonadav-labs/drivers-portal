@@ -53,7 +53,8 @@
           </p>
         </div>
         <div class="broker-section__cta">
-          <contained-button color="blue" icon="pen-alt" v-if="!quoteProcessDocuments.is_broker_of_record_signed" @click="showBrokerModal = true">Sign now</contained-button>
+          <div class="broker-section__signed" v-if="isValidatingSign && !isBrokerOfRecordReady">Validating...</div>
+          <contained-button color="blue" icon="pen-alt" v-else-if="!quoteProcessDocuments.is_broker_of_record_signed" @click="openHelloSign">Sign now</contained-button>
           <div class="broker-section__signed" v-else>Signed <i><icon-check-circle size="16"></icon-check-circle></i></div>
         </div>
       </div>
@@ -108,7 +109,6 @@
     <div class="submit-review">
       <contained-button v-if="!isSubmittedForReview" class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">Submit for Review</contained-button>
     </div>
-    <modal-broker-record v-if="showBrokerModal" @close="showBrokerModal=false" @submit="signBroker"></modal-broker-record>
   </div>
 </template>
 
@@ -118,6 +118,8 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Getter, Action, namespace } from 'vuex-class';
 
 import { format, addMonths } from 'date-fns';
+
+import HelloSign from 'hellosign-embedded';
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 
@@ -136,8 +138,6 @@ import IconFileDownload from '@/components/icons/icon-file-download.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
-
-import ModalBrokerRecord from '@/apps/dashboard/components/modals/broker-record.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
@@ -162,7 +162,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt, ModalBrokerRecord
+    IconPlusCircle, IconTrashAlt
   },
   filters: {
     beautyCurrency, getFilename
@@ -247,7 +247,8 @@ export default class DashboardQuoteUploadView extends Vue {
     },
   ]
 
-  showBrokerModal = false;
+  isValidatingSign = false
+  intervalValidate: number | undefined = undefined
 
   get accidentReports(): Array<(CreatedQuoteProcessDocumentAccidentReport |QuoteProcessDocumentsAccidentReportElm) | { disabled: boolean }> {
     return (this.quoteAccidentReports as Array<CreatedQuoteProcessDocumentAccidentReport | QuoteProcessDocumentsAccidentReportElm>).concat(this.extraAccidentReports)
@@ -392,11 +393,6 @@ export default class DashboardQuoteUploadView extends Vue {
     report.disabled = false;
   }
 
-  async signBroker(): Promise<void> {
-    await this.updateQuoteProcessDocuments({ is_broker_of_record_signed: true});
-    this.showBrokerModal = false;
-  }
-
   submitForReview(): void {
     if (this.isReadyForSubmit) {
       this.updateQuoteProcessDocuments({is_submitted_for_review: true});
@@ -405,9 +401,42 @@ export default class DashboardQuoteUploadView extends Vue {
       top: 0,  
       behavior: 'smooth'
     });
-
   }
- 
+
+  validateSign(): void {
+    if (this.quoteProcessDocuments) {
+      this.isValidatingSign = !this.quoteProcessDocuments.is_broker_of_record_signed
+      if (!this.isValidatingSign) {
+        clearInterval(this.intervalValidate)
+      }
+    }
+    this.retrieveQuoteProcessDocuments()
+  }
+
+  openHelloSign(): void {
+    if (this.quoteProcessDocuments) {
+      // @ts-ignore
+      const client = new HelloSign({
+        clientId: this.quoteProcessDocuments.hsr_client_id
+      })
+      
+      client.open(this.quoteProcessDocuments.hsr_sign_url, {
+        testMode: this.quoteProcessDocuments.hsr_test_mode || true
+      })
+      
+      client.on('sign', () => {
+        this.isValidatingSign = true
+        this.intervalValidate = setInterval(
+          () => this.validateSign(),
+          5000
+        )
+      })
+
+      client.on('close', this.retrieveQuoteProcessDocuments)
+      
+      client.on('cancel', this.retrieveQuoteProcessDocuments)
+    }
+  } 
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next((vm: DashboardQuoteUploadView) => {

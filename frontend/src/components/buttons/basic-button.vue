@@ -1,5 +1,5 @@
 <template>
-  <button class="basic-button" @click="$emit('click',$event)" :disabled="disabled" :style="{color:color}">
+  <button class="basic-button" @click="$emit('click',$event)" :disabled="disabled" :style="{color:color,backgroundColor:backgroundColor}">
     <slot name="before"></slot>
     <span :style="{color:color}">{{text}}</span>
     <slot></slot>
@@ -16,6 +16,9 @@ export default class BasicButton extends Vue {
 
   @Prop({ default: '#868E96' })
   color?: string
+
+  @Prop({ default: 'transparent' })
+  backgroundColor?: string
 
   @Prop({ default: false })
   disabled?: boolean

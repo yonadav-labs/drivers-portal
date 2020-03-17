@@ -12,8 +12,8 @@ from rest_framework import status
 
 from base.tasks import send_user_welcome_task
 from payment.serializers import (
-  StripeDepositChargeCreateSerializer,
-  PlaidDepositChargeCreateSerializer
+  StripeChargeCreateSerializer,
+  PlaidChargeCreateSerializer
 )
 from payment.utils import apply_plaid_fee, apply_stripe_fee
 from users.models import User
@@ -197,14 +197,14 @@ class PayQuoteProcessPaymentBaseView(CreateAPIView):
   
 
 class StripePayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
-  serializer_class = StripeDepositChargeCreateSerializer
+  serializer_class = StripeChargeCreateSerializer
 
   def _get_amount(self, payment):
     return apply_stripe_fee(payment.deposit_payment_amount)
     
 
 class PlaidPayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
-  serializer_class = PlaidDepositChargeCreateSerializer
+  serializer_class = PlaidChargeCreateSerializer
 
   def _get_amount(self, payment):
     return apply_plaid_fee(payment.deposit_payment_amount)
