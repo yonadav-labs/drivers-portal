@@ -3,7 +3,7 @@
     <div class="dashboard-view-container">
       <dashboard-navbar></dashboard-navbar>
       <div class="dashboard-container">
-        <dashboard-menu></dashboard-menu>
+        <dashboard-menu :quote-status="user.quote_status"></dashboard-menu>
         <div class="dashboard-content">
           <router-view></router-view>
         </div>
