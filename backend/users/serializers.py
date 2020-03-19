@@ -50,6 +50,21 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
     model = User
     fields = ('id', 'email', 'password', 'has_usable_password')
     read_only_fields = ('id', 'email', )
+  
+
+class UpdateUserEmailSerializer(serializers.ModelSerializer):
+
+  def update(self, instance, validated_data):
+    email = validated_data.get('email')
+    if User.objects.filter(email=email).exists():
+      raise serializers.ValidationError('This email is already registered as user')
+    instance.email = email
+    instance.save()
+    return instance
+
+  class Meta:
+    model = User
+    fields = ('id', 'email')
 
 
 class RetrieveMagicLinkSerializer(serializers.ModelSerializer):
