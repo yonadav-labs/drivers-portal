@@ -3,12 +3,13 @@ import { QuoteStatus } from '@/@types/quote';
 import { User } from '@/@types/users';
 
 import { APIProperty, APIState, setAuthToken, clearAuthToken } from '@/store/api'
-import { getCurrentUser, getMagicLink, updateUserPassword, login } from '@/store/users/api'
+import { getCurrentUser, getMagicLink, updateUserPassword, updateUserEmail, login } from '@/store/users/api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
   apiUser: APIProperty<User> = APIState.state<User>();
   passwordErrors?: Error;
+  emailExists = false;
 
   get user(): User | undefined {
     return this.apiUser.data
@@ -24,6 +25,10 @@ export default class UsersVuexModule extends VuexModule {
 
   get userQuoteStatus(): QuoteStatus | undefined {
     return !!this.user ? this.user.quote_status:undefined
+  }
+
+  get emailAlreadyExists(): boolean {
+    return this.emailExists
   }
 
   @Mutation
@@ -49,6 +54,15 @@ export default class UsersVuexModule extends VuexModule {
   @Mutation
   setUserPartial(payload: User | Error): void {
     this.apiUser = APIState.patch(this.apiUser, payload)
+  }
+
+  @Mutation
+  setEmailExists(error: Error | undefined): void {
+    if (error === undefined) {
+      this.emailExists = false
+    } else {
+      this.emailExists = true
+    }
   }
 
   @Action
@@ -89,6 +103,17 @@ export default class UsersVuexModule extends VuexModule {
       this.context.commit('setUserPartial', user)
     } catch (e) {
       this.context.commit('setPasswordErrors', e);
+    }
+  }
+
+  @Action
+  async updateUserEmail(email: string): Promise<void> {
+    this.context.commit('setEmailExists', undefined);
+    try {
+      const user = await updateUserEmail(email)
+      this.context.commit('setUserPartial', user)
+    } catch (e) {
+      this.context.commit('setEmailExists', e);
     }
   }
 
