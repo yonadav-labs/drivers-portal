@@ -29,6 +29,41 @@
 {% if quote %}
 <fieldset class="djn-fieldset module ">
   <h2>
+    Customer Payment Terms
+  </h2>
+  <div
+    class="djn-item djn-module djn-inline-form has_original inline-related dynamic-form grp-dynamic-form djn-dynamic-form-quote-customerpaymentterms"
+    data-is-initial="true" id="customerpaymentterms-0">
+    <fieldset class="module aligned djn-module  has-inlines">
+      <div class="form-row field-deposit_amount">
+        <div class="field-deposit_amount">
+          <label>Deposit amount:</label>
+          <p id="deposit_amount"></p>
+        </div>
+      </div>
+      <div class="form-row field-months_number">
+        <div class="field-months_number">
+          <label>Number of payments:</label>
+          <p id="months_number"></p>
+        </div>
+      </div>
+      <div class="form-row field-monthly_amount">
+        <div class="field-monthly_amount">
+          <label>Monthly Payment amount:</label>
+          <p id="monthly_amount"></p>
+        </div>
+      </div>
+      <div class="form-row field-fee_amount">
+        <div class="field-fee_amount">
+          <label>Fee:</label>
+          <p id="fee_amount"></p>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</fieldset>
+<fieldset class="djn-fieldset module ">
+  <h2>
     Quote Process
   </h2>
   <div
@@ -70,29 +105,69 @@
 {% endif %}
 
 <script>
-  // Prepopulate deposit
+  let payment_months = {
+    15: 9, 20: 9, 25: 9, 40: 2, 100: 0
+  }
+  let fee = {
+    15: 30, 20: 25, 25: 20, 40: 45, 100: 0
+  }
+
   document.addEventListener("DOMContentLoaded", function(event) {
-    var depositPercentage = {{ quote.deposit }} / 100;
     var quoteInput = document.getElementById("id_official_hereford_quote");
+    var depositPercentageInput = document.getElementById("id_deposit_percentage");
     var depositInput = document.getElementById("id_deposit_payment_amount");
+    var thirdPartyAmountInput = document.getElementById("id_third_party_amount");
 
-    if (!quoteInput || !depositInput) {
-      return ;
+    var hasThirdPartyInputs = document.querySelectorAll("#id_has_third_party_deposit input[type='radio']");
+    var thirdPartyNameDiv = document.querySelector(".field-third_party_name");
+    var thirdPartyAmountDiv = document.querySelector(".field-third_party_amount");
+
+    var customerDepositAmount = document.getElementById("deposit_amount");
+    var customerMonthsNumber = document.getElementById("months_number");
+    var customerMonthlyAmount = document.getElementById("monthly_amount");
+    var customerFeeAmount = document.getElementById("fee_amount");
+
+
+    quoteInput.value = {{ quote.quote_amount }};
+    depositPercentageInput.value = {{ quote.deposit }};
+
+    if(!document.getElementById("id_has_third_party_deposit_0").checked) {
+      thirdPartyNameDiv.style.display = "none";
+      thirdPartyAmountDiv.style.display = "none";
     }
-
-    var copyInput = function () {
-      depositInput.value = quoteInput.value * depositPercentage
-    }
-
-    quoteInput.oninput = copyInput
-
-    depositInput.oninput = function () {
-      quoteInput.oninput = null;
-      
-      if (!depositInput.value) {
-        quoteInput.oninput = copyInput;
+    
+    hasThirdPartyInputs.forEach(radio => {
+      radio.oninput = function (e) {
+        if (e.target.value == "True") {
+          thirdPartyNameDiv.style.display = "block";
+          thirdPartyAmountDiv.style.display = "block";
+        } else {
+          thirdPartyNameDiv.style.display = "none";
+          thirdPartyAmountDiv.style.display = "none";
+        }
       }
+    });
+
+    var updateCustomerData = function () {
+      let totalPremium = quoteInput.value || 0;
+      let depositPerc = depositPercentageInput.value;
+      let depositTotal = quoteInput.value * depositPerc / 100;
+      let thirdPartyDeposit = thirdPartyAmountInput.value || 0;
+      let monthsNumber = payment_months[depositPerc];
+      let monthlyAmount = fee[depositPerc] ? (totalPremium - depositTotal) / monthsNumber : 0;
+      customerDepositAmount.innerHTML = `$${(depositTotal - thirdPartyDeposit).toFixed(2)}`;
+      customerMonthsNumber.innerHTML = monthsNumber;
+      customerMonthlyAmount.innerHTML = `$${monthlyAmount.toFixed(2)}`;
+      customerFeeAmount.innerHTML = `$${fee[depositPerc].toFixed(2)}`;
+      depositInput.value = depositTotal.toFixed(2);
     }
+
+    quoteInput.oninput = updateCustomerData;
+    depositPercentageInput.oninput = updateCustomerData;
+    thirdPartyAmountInput.oninput = updateCustomerData;
+
+    // Fill customer data on first load
+    updateCustomerData();
   });
 </script>
 {% endblock %}

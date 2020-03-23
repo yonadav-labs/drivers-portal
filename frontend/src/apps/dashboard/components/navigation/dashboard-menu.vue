@@ -1,7 +1,10 @@
 <template>
   <div class="container">
-    <dashboard-menu-item :disabled="true">
+    <dashboard-menu-item :selected="$route.name === mainRoute" @click="goTo(mainRoute)">
       <icon-policy size="20"></icon-policy>
+    </dashboard-menu-item>
+    <dashboard-menu-item :selected="$route.name === routeNames.SETTINGS" @click="goTo(routeNames.SETTINGS)">
+      <icon-settings size="20"></icon-settings>
     </dashboard-menu-item>
   </div>
 </template>
@@ -11,22 +14,29 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import DashboardMenuItem from '@/apps/dashboard/components/navigation/dashboard-menu-item.vue'
 import IconPolicy from '@/components/icons/icon-policy.vue'
+import IconSettings from '@/components/icons/icon-settings.vue'
 
-import { DashboardQuoteRouteName } from '@/router/dashboard'
+import { QuoteStatus } from '@/@types/quote';
+
+import { DashboardRouter, DashboardRouteName } from '@/router/dashboard'
 
 @Component({
   components: {
-    DashboardMenuItem, IconPolicy
+    DashboardMenuItem, IconPolicy, IconSettings
   }
 })
 export default class DashboardMenu extends Vue {
-    @Prop({ default: false })
-    selected!: boolean
+    @Prop()
+    quoteStatus!: QuoteStatus
 
-    routeNames = DashboardQuoteRouteName
+    routeNames = DashboardRouteName
 
-    onClick(): void {
-      this.$emit('click');
+    get mainRoute(): string {
+      return DashboardRouter.getRouteForQuoteStatus(this.quoteStatus).name
+    }
+
+    goTo(menuRoute: string): void {
+      this.$router.replace({ name: menuRoute }).catch(err => console.log(err))
     }
 }
 </script>

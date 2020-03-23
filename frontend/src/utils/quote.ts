@@ -10,7 +10,7 @@ const monthsByDeposit: Record<15 | 20 | 25 | 40 | 100, number> = {
   15: 9,
   20: 9,
   25: 9,
-  40: 3,
+  40: 2,
   100: 1 // It should be 0, but we are counting one to avoid divisons by 0
 }
 

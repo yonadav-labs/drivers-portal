@@ -2,12 +2,14 @@ import DashboardPolicy from '@/apps/dashboard/views/policy.vue';
 import DashboardQuote from '@/apps/dashboard/views/quote.vue';
 import DashboardQuoteUpload from '@/apps/dashboard/views/quote/upload.vue';
 import DashboardQuotePayment from '@/apps/dashboard/views/quote/payment.vue';
+import DashboardSettings from '@/apps/dashboard/views/settings.vue';
 
 import { QuoteStatus } from '@/@types/quote'
 
 export enum DashboardRouteName {
   QUOTE = 'dashboardQuote',
-  POLICY = 'dashboardPolicy'
+  POLICY = 'dashboardPolicy',
+  SETTINGS = 'dashboardSettings'
 }
 
 export enum DashboardQuoteRouteName {
@@ -54,6 +56,8 @@ export default [
   { path: 'quote/', component: DashboardQuote, name: DashboardRouteName.QUOTE, children: [
     ...quoteRoutes
   ] },
-
+  {
+    path: 'settings/', component: DashboardSettings, name: DashboardRouteName.SETTINGS
+  }
 ]
 
