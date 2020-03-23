@@ -23,8 +23,10 @@ def send_email(
 
     receiver = receiver if isinstance(receiver, list) else [receiver, ]
     message = EmailMessage(subject=subject, to=receiver)
+    message.merge_data = {}
 
-    message.merge_data = {receiver: {**context}}
+    for r in receiver:
+        message.merge_data[r] = {**context}
 
     message.template_id = template_id
 
@@ -42,7 +44,7 @@ def send_email(
     if attachments:
         for attachment in attachments:
             message.attach_file(attachment)
-
+    
     message.send()
 
 
