@@ -15,7 +15,7 @@ from users.models import User, MagicLink
 from users.serializers import (
   RetrieveUserExistsSerializer, RetrieveCurrentUserSerializer,
   UpdateUserPasswordSerializer, RetrieveMagicLinkSerializer,
-  LoginSerializer
+  LoginSerializer, UpdateUserEmailSerializer
 )
 
 
@@ -39,6 +39,16 @@ class UpdateUserPasswordView(UpdateAPIView):
   lookup_field = None
   permission_classes = (IsAuthenticated, )
   serializer_class = UpdateUserPasswordSerializer
+
+  def get_object(self):
+    return self.request.user
+
+
+class UpdateUserEmailView(UpdateAPIView):
+  allowed_methods = ('OPTIONS', 'PUT', )
+  lookup_field = None
+  permission_classes = (IsAuthenticated, )
+  serializer_class = UpdateUserEmailSerializer
 
   def get_object(self):
     return self.request.user
