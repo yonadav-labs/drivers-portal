@@ -31,8 +31,9 @@
                     v-model="password"
                     >
                   </basic-input>
+                  <error-message class="error" v-if="errors">Incorrect email or password</error-message>
+                  <a @click.prevent.stop="goToForgotPassword" class="forgot-password">Forgot your password?</a>
               </div>
-              <error-message class="error" v-if="errors">Incorrect email or password</error-message>
             </div>
           </div>
           <basic-button
@@ -108,6 +109,10 @@ export default class LoginView extends Vue {
     this.$router.push('/')
   }
 
+  goToForgotPassword(): void {
+    this.$router.push({ name: RouteName.FORGOT })
+  }
+
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next(
       (vm: LoginView) => {
@@ -179,6 +184,12 @@ export default class LoginView extends Vue {
     .form-input__container {
       padding-bottom: 2rem;
     }
+  }
+
+  .forgot-password {
+    color: $orange;
+    cursor: pointer;
+    font-size: $fs-sm;
   }
 }
 </style>
