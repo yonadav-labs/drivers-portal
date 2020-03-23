@@ -3,7 +3,7 @@ import { QuoteStatus } from '@/@types/quote';
 import { User } from '@/@types/users';
 
 import { APIProperty, APIState, setAuthToken, clearAuthToken } from '@/store/api'
-import { getCurrentUser, getMagicLink, updateUserPassword, login } from '@/store/users/api'
+import { getCurrentUser, getMagicLink, updateUserPassword, login, forgotPassword, getResetPasswordLink, resetPassword } from '@/store/users/api'
 
 @Module({ namespaced: true })
 export default class UsersVuexModule extends VuexModule {
@@ -102,6 +102,35 @@ export default class UsersVuexModule extends VuexModule {
       const { token } = await login(user, password)
       setAuthToken(token);
       await this.context.dispatch('retrieveUser')
+    } catch (e) {
+      // pass
+    }
+  }
+
+  @Action
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      await forgotPassword(email)
+    } catch (e) {
+      // pass
+    }
+  }
+
+  @Action
+  async resetPasswordLinkExists(id: string): Promise<boolean> {
+    try {
+      const data = await getResetPasswordLink(id)
+      return !!data
+    } catch (e) {
+      return false
+    }
+  }
+
+  @Action
+  async resetPassword(payload: {id: string, password: string }): Promise<void> {
+    const { id, password} = payload
+    try {
+      await resetPassword(id, password)
     } catch (e) {
       // pass
     }

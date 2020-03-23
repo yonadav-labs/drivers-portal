@@ -26,3 +26,18 @@ export async function login(user: string, password: string): Promise<{ id: strin
   const response = await client.post(`users/login/`, { user, password })
   return response.data
 }
+
+export async function forgotPassword(email: string): Promise<{ email: string }> {
+  const response = await client.post(`users/forgot_password/`, { email })
+  return response.data
+}
+
+export async function getResetPasswordLink(id: string): Promise<{ id: string, email: string }> {
+  const response = await client.get(`users/reset_password/${id}/`)
+  return response.data
+}
+
+export async function resetPassword(id: string, password: string): Promise<{ id: string, email: string }> {
+  const response = await client.put(`users/reset_password/${id}/`, { password })
+  return response.data
+}
