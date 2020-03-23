@@ -200,12 +200,18 @@ class StripePayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
   serializer_class = StripeChargeCreateSerializer
 
   def _get_amount(self, payment):
-    return apply_stripe_fee(payment.deposit_payment_amount)
+    deposit = payment.deposit_payment_amount
+    if payment.third_party_amount:
+      deposit = payment.deposit_payment_amount - payment.third_party_amount
+    return apply_stripe_fee(deposit)
     
 
 class PlaidPayQuoteProcessPaymentView(PayQuoteProcessPaymentBaseView):
   serializer_class = PlaidChargeCreateSerializer
 
   def _get_amount(self, payment):
-    return apply_plaid_fee(payment.deposit_payment_amount)
+    deposit = payment.deposit_payment_amount
+    if payment.third_party_amount:
+      deposit = payment.deposit_payment_amount - payment.third_party_amount
+    return apply_plaid_fee(deposit)
     

@@ -120,5 +120,9 @@ export interface QuoteProcessPayment {
   hereford_fee: number,
   stripe_fee: number,
   plaid_fee: number,
-  deposit_payment_amount: number
+  deposit_payment_amount: number,
+  deposit_percentage: number,
+  has_third_party_deposit: boolean,
+  third_party_name: string,
+  third_party_amount: number,
 }
