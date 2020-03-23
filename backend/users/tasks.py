@@ -1,12 +1,13 @@
 from celery.decorators import task
 
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from base.emails import send_email
 
 from users.constants import USER_WELCOME_TEMPLATE_ID
 
-from users.models import MagicLink
+from users.models import MagicLink, ResetPasswordLink
 
 USER_MODEL = get_user_model()
 
@@ -32,3 +33,10 @@ def send_welcome_email_task(user_id):
 @task(name="delete_expired_links")
 def delete_expired_links():
     MagicLink.objects.expired().delete()
+
+
+@task(name="delete_expired_reset_links")
+def delete_expired_reset_links():
+    ResetPasswordLink.objects.filter(
+        expire_on__lte=timezone.now(),
+    ).delete()

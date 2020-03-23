@@ -205,6 +205,11 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'users.tasks.delete_expired_links',
         'schedule': crontab(minute=15, hour=0)
     },
+    # Executes every day midnigth - 00:30
+    'DeleteExpiredResetPasswordLinks': {
+        'task': 'users.tasks.delete_expired_reset_links',
+        'schedule': crontab(minute=30, hour=0)
+    },
     # Executes every day midnigth + 1 - 01:00
     'ForHireImportTask': {
         'task': 'importer.tasks.for_hire_import_task',
@@ -225,7 +230,7 @@ CELERY_BEAT_SCHEDULE = {
 
 # Email
 # Anymail - SendGrid
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
 DEFAULT_FROM_EMAIL = 'stableins <noreply@stableins.com>'
 ADMIN_EMAIL = "dani@z1.digital"
 ANYMAIL = {

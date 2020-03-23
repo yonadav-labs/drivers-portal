@@ -116,3 +116,22 @@ def send_admin_notification_documents_submitted_email(user, cta_url):
         },
         template_id=MAIN_TEMPLATE_ID
     )
+
+
+def send_user_reset_password_email(user, cta_url):
+    return send_email(
+        receiver=user.email,
+        subject="Reset your password",
+        context={
+            "subject": "Reset your password",
+            "title": "Forgot your password?",
+            "content": (
+                "We've received a request to recover your password. If it's you who "
+                "has made this request, please use the following link to reset your "
+                "password. If it wasn't you, don't mind this email."
+            ),
+            "cta": "Reset your password",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
