@@ -2,47 +2,35 @@
   <quote-process-layout :simple-header="true" :hide-breadcrumbs="true" :on-back="onBack" :hide-login="true">
       <div class='form'>
         <p class='form__explain'>
-          Welcome back!
+          Forgot password
         </p>
-        <form id='passwordForm' @submit.prevent.stop="doLogin">
+        <form id='forgotPasswordForm' @submit.prevent.stop="doSend">
           <div class="form-input">
             <div class="form-input__container">
-                <div class='form-input__field'>
-                  <span class='form-input__label'>Email address</span>
-                  <basic-input
-                    id='tlcLicenseField'
-                    class='form-input__input'
-                    v-model="user"
-                    type='email'
-                    placeholder='your.email-here@email.com'
-                    icon="envelope"
-                    :required="true"
-                    @valid="onValidChange"
-                    >
-                    </basic-input>
-                </div>
-                <div class='form-input__field'>
-                  <span class='form-input__label'>Your password</span>
-                  <basic-input
-                    id='password'
-                    class='form-input__input'
-                    type="password"
-                    icon="lock"
-                    v-model="password"
-                    >
+              <div class='form-input__field'>
+                <span class='form-input__label'>Email address</span>
+                <basic-input
+                  id='emailField'
+                  class='form-input__input'
+                  v-model="email"
+                  type='email'
+                  placeholder='your.email-here@email.com'
+                  icon="envelope"
+                  :required="true"
+                  @valid="onValidChange"
+                  >
                   </basic-input>
-                  <error-message class="error" v-if="errors">Incorrect email or password</error-message>
-                  <a @click.prevent.stop="goToForgotPassword" class="forgot-password">Forgot your password?</a>
               </div>
             </div>
           </div>
-          <basic-button
-            text='Log In'
+          <basic-button v-if="!sent"
+            text='Send'
             :color='colorBlue'
-            :disabled="!emailValid || !password"
+            :disabled="!emailValid"
             >
             <icon-arrow-right size='16'></icon-arrow-right>
-          </basic-button>   
+          </basic-button>
+          <p v-else class="success">We have sent you an email with a link to reset your password.</p>
       </form>
     </div>
   </quote-process-layout>
@@ -57,7 +45,6 @@ import BasicButton from '@/components/buttons/basic-button.vue'
 import BasicInput from '@/components/inputs/basic-input.vue'
 import IconArrowRight from '@/components/icons/icon-arrow-right.vue'
 import QuoteProcessLayout from '@/components/layout/quote-process-layout.vue'
-import ErrorMessage from '@/components/error-message.vue'
 
 import { Colors } from '@/utils/colors'
 import { RouteName } from '@/router';
@@ -66,26 +53,22 @@ import { Route } from 'vue-router';
 
 const users = namespace('Users')
 
-// First Step 
-
 @Component({
   components: {
-    QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight,
-    ErrorMessage
+    QuoteProcessLayout, BasicButton, BasicInput, IconArrowRight
   }
 })
-export default class LoginView extends Vue {
+export default class ForgotPasswordView extends Vue {
 
   @users.Getter
   isAuthenticated!: boolean
 
   @users.Action
-  login!: (payload: {user: string, password: string}) => void;
+  forgotPassword!: (email: string) => void;
 
-  errors = false;
+  sent = false;
   emailValid = false;
-  user = ''
-  password = ''
+  email = ''
 
   get colorBlue(): string {
     return Colors.Blue
@@ -95,27 +78,18 @@ export default class LoginView extends Vue {
     this.emailValid = value;
   }
 
-  async doLogin(): Promise<void> {
-    this.errors = false;
-    await this.login({ user: this.user, password: this.password })
-    if (!this.isAuthenticated) {
-      this.errors = true;
-    } else {
-      this.$router.push({ name: RouteName.DASHBOARD })
-    }
+  async doSend(): Promise<void> {
+    await this.forgotPassword(this.email)
+    this.sent = true;
   }
 
   onBack():void {
-    this.$router.push('/')
-  }
-
-  goToForgotPassword(): void {
-    this.$router.push({ name: RouteName.FORGOT })
+    this.$router.push({ name: RouteName.LOGIN })
   }
 
   beforeRouteEnter (to: Route, from: Route, next: any): void {
     next(
-      (vm: LoginView) => {
+      (vm: ForgotPasswordView) => {
         if (vm.isAuthenticated) {
           vm.$router.push({ name: RouteName.DASHBOARD })
         }
@@ -174,22 +148,9 @@ export default class LoginView extends Vue {
     }
   }
 
-  .form__password {
-    background-color: rgba(206,212,218,0.4);
-    border-bottom-left-radius: 8px; 
-    border-bottom-right-radius: 8px; 
-    line-height: 28px;
-    text-align: left;
-
-    .form-input__container {
-      padding-bottom: 2rem;
-    }
-  }
-
-  .forgot-password {
-    color: $orange;
-    cursor: pointer;
-    font-size: $fs-sm;
+  .success {
+    color: $blue;
+    font-weight: $fw-semibold;
   }
 }
 </style>

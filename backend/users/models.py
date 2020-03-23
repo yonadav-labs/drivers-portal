@@ -78,3 +78,18 @@ class MagicLink(BaseModel):
 
     def get_url(self):
       return f"{settings.FRONTEND_URL}/magic_link/{str(self.id)}/"
+
+
+class ResetPasswordLink(BaseModel):
+    expire_on = models.DateTimeField(
+        verbose_name='expire on',
+        default=magic_link_expire
+    )
+    user = models.ForeignKey(
+        verbose_name='user',
+        to=User,
+        on_delete=models.CASCADE
+    )
+
+    def get_url(self):
+        return f"{settings.FRONTEND_URL}/reset-password/{str(self.id)}/"

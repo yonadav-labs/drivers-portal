@@ -23,8 +23,10 @@ def send_email(
 
     receiver = receiver if isinstance(receiver, list) else [receiver, ]
     message = EmailMessage(subject=subject, to=receiver)
+    message.merge_data = {}
 
-    message.merge_data = {receiver: {**context}}
+    for r in receiver:
+        message.merge_data[r] = {**context}
 
     message.template_id = template_id
 
@@ -42,7 +44,7 @@ def send_email(
     if attachments:
         for attachment in attachments:
             message.attach_file(attachment)
-
+    
     message.send()
 
 
@@ -112,6 +114,25 @@ def send_admin_notification_documents_submitted_email(user, cta_url):
                 "{} has submitted all of their documents."
             ).format(user.full_name),
             "cta": "Go to Dashboard",
+            "cta_url": cta_url
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
+
+
+def send_user_reset_password_email(user, cta_url):
+    return send_email(
+        receiver=user.email,
+        subject="Reset your password",
+        context={
+            "subject": "Reset your password",
+            "title": "Forgot your password?",
+            "content": (
+                "We've received a request to recover your password. If it's you who "
+                "has made this request, please use the following link to reset your "
+                "password. If it wasn't you, don't mind this email."
+            ),
+            "cta": "Reset your password",
             "cta_url": cta_url
         },
         template_id=MAIN_TEMPLATE_ID

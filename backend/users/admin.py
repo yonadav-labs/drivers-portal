@@ -6,7 +6,7 @@ from django.urls import reverse
 from base.admin import stable_admin
 from users.forms import AdminManualQuoteUserForm
 from users.proxy_models import ManualQuoteUser
-from users.models import User
+from users.models import User, ResetPasswordLink
 
 
 class UserAdmin(DjangoUserAdmin):
@@ -73,3 +73,4 @@ class ManualQuoteUserAdmin(admin.ModelAdmin):
         )
 
 stable_admin.register(ManualQuoteUser, ManualQuoteUserAdmin)
+stable_admin.register(ResetPasswordLink)
