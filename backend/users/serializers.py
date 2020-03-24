@@ -60,6 +60,8 @@ class UpdateUserEmailSerializer(serializers.ModelSerializer):
     email = validated_data.get('email')
     if User.objects.filter(email=email).exists():
       raise serializers.ValidationError('This email is already registered as user')
+    instance.quote_process.email = email
+    instance.quote_process.save()
     instance.email = email
     instance.save()
     return instance
