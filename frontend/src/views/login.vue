@@ -187,9 +187,12 @@ export default class LoginView extends Vue {
   }
 
   .forgot-password {
-    color: $orange;
+    align-self: center;
+    color: $blue;
     cursor: pointer;
-    font-size: $fs-sm;
+    font-size: $fs-md;
+    font-weight: $fw-semibold;
+    margin-top: 1.125rem;
   }
 }
 </style>
