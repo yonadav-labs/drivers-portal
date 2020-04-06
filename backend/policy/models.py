@@ -53,13 +53,16 @@ class Policy(BaseModel):
     def _generate_policy_payments(self):
         quote_payment = self.quote_process.quoteprocesspayment
         deposit = quote_payment.deposit_payment_amount
+        customer_deposit = deposit
+        if quote_payment.third_party_amount:
+            customer_deposit = deposit - quote_payment.third_party_amount
 
         # Deposit
         PolicyPayment.objects.create(
             policy=self,
             payment_due_date=quote_payment.payment_date,
             payment_date=quote_payment.payment_date,
-            payment_amount=deposit,
+            payment_amount=customer_deposit,
             fee_amount=0,
             is_deposit=True,
             is_paid=True,

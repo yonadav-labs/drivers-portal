@@ -3,7 +3,8 @@ from django.conf import settings
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import (
-  RetrieveAPIView, UpdateAPIView
+  RetrieveAPIView, UpdateAPIView, CreateAPIView,
+  RetrieveUpdateAPIView
 )
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
@@ -11,11 +12,12 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import User, MagicLink
+from users.models import User, MagicLink, ResetPasswordLink
 from users.serializers import (
   RetrieveUserExistsSerializer, RetrieveCurrentUserSerializer,
   UpdateUserPasswordSerializer, RetrieveMagicLinkSerializer,
-  LoginSerializer
+  LoginSerializer, UpdateUserEmailSerializer,
+  ForgotPasswordSerializer, ResetPasswordSerializer
 )
 
 
@@ -39,6 +41,16 @@ class UpdateUserPasswordView(UpdateAPIView):
   lookup_field = None
   permission_classes = (IsAuthenticated, )
   serializer_class = UpdateUserPasswordSerializer
+
+  def get_object(self):
+    return self.request.user
+
+
+class UpdateUserEmailView(UpdateAPIView):
+  allowed_methods = ('OPTIONS', 'PUT', )
+  lookup_field = None
+  permission_classes = (IsAuthenticated, )
+  serializer_class = UpdateUserEmailSerializer
 
   def get_object(self):
     return self.request.user
@@ -80,3 +92,14 @@ class LoginView(APIView):
       'id': str(user.id),
       'token': token.key
     })
+
+
+class ForgotPasswordView(CreateAPIView):
+  permission_classes = (AllowAny, )
+  serializer_class = ForgotPasswordSerializer
+
+
+class ResetPasswordView(RetrieveUpdateAPIView):
+  allowed_methods = ('OPTIONS', 'GET', 'PUT')
+  serializer_class = ResetPasswordSerializer
+  queryset = ResetPasswordLink.objects.all()

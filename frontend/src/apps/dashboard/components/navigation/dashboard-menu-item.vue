@@ -16,7 +16,9 @@ export default class DashboardMenuItem extends Vue {
   selected!: boolean
 
   onClick(): void {
-    this.$emit('click');
+    if (!this.selected) {
+      this.$emit('click');
+    }
   }
 }
 </script>
@@ -60,6 +62,8 @@ export default class DashboardMenuItem extends Vue {
   }
 
   &.selected {
+    cursor: default;
+
     .menu-item--line {
       visibility: visible;
     }

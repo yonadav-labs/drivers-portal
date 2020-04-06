@@ -10,12 +10,16 @@ import DashboardMainView from '@/apps/dashboard/views/main.vue'
 
 import LoginView from '@/views/login.vue'
 import MagicLinkView from '@/views/magic-link.vue'
+import ForgotPasswordView from '@/views/forgot-password.vue'
+import ResetPasswordView from '@/views/reset-password.vue'
 
 export enum RouteName {
   MAGIC_LINK = 'magic_link',
   DASHBOARD = 'dashboard',
   PAYMENT = 'payment',
   LOGIN = 'login',
+  FORGOT = 'forgot',
+  RESET = 'reset',
   REVIEW = 'review'
 }
 
@@ -35,6 +39,12 @@ const routes = [
     }, 
     {
       path: '/login/', component: LoginView, name: RouteName.LOGIN
+    },
+    {
+      path: '/forgot-password/', component: ForgotPasswordView, name: RouteName.FORGOT
+    },
+    {
+      path: '/reset-password/:id/', component: ResetPasswordView, name: RouteName.RESET, props: true
     },
     { path: '/', component: QuoteProcessMainView, children: [
         ...QuoteRoutes

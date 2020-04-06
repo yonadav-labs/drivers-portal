@@ -9,7 +9,7 @@ DEBUG = False
 STAGE_ENV = 'staging'
 
 ALLOWED_HOSTS = (
-    "staging.stableins.com",
+    "api.staging.stableins.com",
 )
 
 STATICFILES_DIRS = [
@@ -46,8 +46,13 @@ PLAID_ENV = "sandbox"
 # HelloSign
 HELLOSIGN_CLIENTID = env("HELLOSIGN_CLIENTID_STAG")
 
-FRONTEND_URL = "staging.stableins.com"
+FRONTEND_URL = "app.staging.stableins.com"
 
+CORS_ORIGIN_WHITELIST = [
+    "app.staging.stableins.com",
+    "http://app.staging.stableins.com",
+    "https://app.staging.stableins.com",
+]
 # Try to import local settings, if exists
 try:
     EXTRA_APPS = ()

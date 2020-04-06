@@ -15,5 +15,8 @@ class AdminPolicyForm(forms.ModelForm):
   class Meta:
     fields = (
       'quote_process', 'user', 'policy_number', 'certificate_of_liability',
-      'fh1_document', 'insurance_document',
+      'fh1_document', 'insurance_document', 'fee_amount'
     )
+    widgets = {
+      'fee_amount': forms.HiddenInput
+    }

@@ -2,7 +2,7 @@
    <quote-process-layout v-if="!!quoteProcessPayment" :hide-breadcrumbs="true" :on-back="onBack" :hide-login="true" :simple-header="true">
     <div class="payment-info">
       <p class="form-explain">Deposit Payment</p>
-      <p class="payment-info--price">{{ depositPaymentAmount|currency }}</p>
+      <p class="payment-info--price">{{ depositAmount|currency }}</p>
       <span class="payment-info--date" v-if="isSameDeposit">{{ quoteDeposit }}% of total price</span>
     </div>
     <div v-if="loading" class="spinner">
@@ -38,7 +38,7 @@
     </div>
     <credit-card-form
       v-show="!loading && !fatalError && !stripeError && creditCardFormOpened"
-      :amount="depositPaymentAmount + stripeFeeAmount"
+      :amount="depositAmount + stripeFeeAmount"
       @success="onCreditSuccess"
       @error="onCreditError"
       @loading="loading = true"

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from users.models import User, MagicLink
+from base.tasks import send_user_reset_password_task
+from users.models import User, MagicLink, ResetPasswordLink
+
 
 class RetrieveUserExistsSerializer(serializers.ModelSerializer):
 
@@ -50,6 +52,23 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
     model = User
     fields = ('id', 'email', 'password', 'has_usable_password')
     read_only_fields = ('id', 'email', )
+  
+
+class UpdateUserEmailSerializer(serializers.ModelSerializer):
+
+  def update(self, instance, validated_data):
+    email = validated_data.get('email')
+    if User.objects.filter(email=email).exists():
+      raise serializers.ValidationError('This email is already registered as user')
+    instance.quote_process.email = email
+    instance.quote_process.save()
+    instance.email = email
+    instance.save()
+    return instance
+
+  class Meta:
+    model = User
+    fields = ('id', 'email')
 
 
 class RetrieveMagicLinkSerializer(serializers.ModelSerializer):
@@ -88,3 +107,30 @@ class LoginSerializer(serializers.Serializer):
         ]
       })
     return data
+
+  
+class ForgotPasswordSerializer(serializers.Serializer):
+  email = serializers.EmailField(write_only=True)
+
+  def create(self, validated_data):
+    email = validated_data.get('email')
+    try:
+      user = User.objects.get(email=email)
+      link = ResetPasswordLink.objects.create(user=user)
+      send_user_reset_password_task.delay(str(link.id))
+    except User.DoesNotExist:
+      pass
+    return {}
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+  password = serializers.CharField(min_length=8, write_only=True)
+
+  def update(self, instance, validated_data):
+    instance.user.set_password(validated_data.get('password'))
+    instance.user.save()
+    return instance
+  
+  class Meta:
+    model = ResetPasswordLink
+    fields = ('id', 'password')

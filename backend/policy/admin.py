@@ -11,6 +11,8 @@ from base.admin import stable_admin
 from policy.forms import AdminPolicyForm
 from policy.models import Policy, PolicyPayment
 from policy.proxy_models import CreatePolicy
+from quote.models import QuoteProcess
+from quote.constants import HEREFORD_FEES
 
 
 # Register your models here.
@@ -27,6 +29,9 @@ class CreatePolicyAdmin(DjangoObjectActions, admin.ModelAdmin):
     if quote_id:
       form.base_fields['quote_process'].initial = request.GET.get(
           'quote_process')
+      quote = QuoteProcess.objects.filter(id=quote_id).first()
+      if quote:
+        form.base_fields['fee_amount'].initial = HEREFORD_FEES.get(quote.deposit)
     if user:
       form.base_fields['user'].initial = request.GET.get(
           'user')
