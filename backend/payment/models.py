@@ -49,7 +49,9 @@ class StripeCharge(BaseModel):
         blank=True
     )
     receipt_url = models.URLField(
-        verbose_name="Receipt URL"
+        verbose_name="Receipt URL",
+        null=True,
+        blank=True
     )
     product = models.UUIDField(
         # TODO: Consider a Content type link
