@@ -19,7 +19,7 @@
       <div class="divider"></div>
       <banner
         title="When would you like your policy to start? "
-        text="Choose a date up to 20 days in advance."
+        text="Choose a date up to 90 days in advance."
         :active="focus=='date'"
       >
         <input-datepicker
@@ -217,10 +217,6 @@ export default class StepQuote extends Vue {
       value: 25
     },
     {
-      text: '40%',
-      value: 40
-    },
-    {
       text: '100%',
       value: 100
     }
@@ -251,7 +247,7 @@ export default class StepQuote extends Vue {
   
   disabledDates = {
     to: new Date(),
-    from: addDays(new Date(), 20)
+    from: addDays(new Date(), 90)
   }
 
   focus = 'deposit'
