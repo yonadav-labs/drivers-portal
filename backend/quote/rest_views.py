@@ -66,7 +66,7 @@ class UpdateQuoteProcessOptionsView(UpdateAPIView):
 
   def perform_update(self, serializer):
     instance = serializer.save()
-    instance.set_quote_variations()
+    # instance.set_quote_variations()
     
 
 class UpdateQuoteProcessUserView(UpdateAPIView):
@@ -89,7 +89,7 @@ class UpdateQuoteProcessUserView(UpdateAPIView):
       obj = serializer.save()
       user = User.objects.create_passwordless_user(obj.email)
       obj.add_user(user)
-    send_user_welcome_task.delay(str(user.id))
+    # send_user_welcome_task.delay(str(user.id))
     
 
 class CreateQuoteSoftFalloutView(CreateAPIView):

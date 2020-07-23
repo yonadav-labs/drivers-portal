@@ -204,46 +204,15 @@ export default class DashboardQuoteUploadView extends Vue {
       disabled: false
     },
     {
-      title: 'DMV License Back Side',
-      field: 'dmv_license_back_side',
-      disabled: false
-    },
-    {
       title: 'TLC License Front Side',
       field: 'tlc_license_front_side',
       disabled: false
-    },
-    {
-      title: 'TLC License Back Side',
-      field: 'tlc_license_back_side',
-      disabled: false
-    },
-    {
-      title: 'Loss Run Document',
-      field: 'loss_run',
-      disabled: false,
-      non_hereford_only: true
     },
     {
       title: 'Vehicle Title, Bill of Sale, or MV-50',
       field: 'vehicle_title',
       disabled: false,
       non_hereford_only: true
-    },
-    {
-      title: 'Base Letter',
-      field: 'base_letter',
-      disabled: false
-    },
-    {
-      title: 'Proof of Address',
-      field: 'proof_of_address',
-      disabled: false
-    },
-    {
-      title: 'Defensive Driving Certificate',
-      field: 'defensive_driving_certificate',
-      disabled: false
     },
   ]
 
@@ -293,12 +262,10 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get requiredDocsReady(): boolean {
-    let valid = this.docs.slice(0, 4).every(
+    let valid = this.docs.slice(0, 2).every(
       doc => !!this.quoteProcessDocuments![doc.field]
     )
-    if (valid && !this.quoteProcess!.is_hereford) {
-      valid = !!this.quoteProcessDocuments!.loss_run && !!this.quoteProcessDocuments!.vehicle_title
-    }
+
     return valid
   }
 
