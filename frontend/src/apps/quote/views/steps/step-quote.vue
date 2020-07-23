@@ -76,7 +76,7 @@
           <span>{{ total | currency }}</span>
         </div>
         <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
-          <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>How is my premium calculated?
+          <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>Annualized premium info
         </a>
       </div>
 
@@ -107,28 +107,7 @@
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
-      :tlc-name="quoteProcess.tlc_name"
-      :tlc-number="quoteProcess.tlc_number"
-      :has-defensive="quoteProcess.defensive_driving_certificate"
-      :points="quoteProcess.driver_points_last_months"
-      :accidents="quoteProcess.fault_accidents_last_months"
-      :vehicle-vin="quoteProcess.vehicle_vin"
-      :vehicle-owner="quoteProcess.vehicle_owner"
-      :vehicle-plate="quoteProcess.license_plate"
-      :vehicle-year="quoteProcess.vehicle_year"
-      :base-name="quoteProcess.base_name"
-      :base-number="quoteProcess.base_number"
-      :insurance-name="quoteProcess.insurance_carrier_name"
-      :insurance-policy="quoteProcess.insurance_policy_number"
-      :deposit-option="internalDeposit"
-      :deductible-option="internalDeductible"
-      :variations="quoteProcessCalcVariations"
-      :physical="selectedPhysical"
       :total="total"
-      :monthly-payment="monthlyPayment"
-      :deposit="deposit"
-      :first-payment-due="firstPaymentDue"
-      :deposit-payments="depositPayments"
       @close="setShowPremium(false)"
       ></modal-premium>
   </quote-process-columns-layout>
