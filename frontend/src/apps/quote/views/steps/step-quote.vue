@@ -80,15 +80,8 @@
         </a>
       </div>
 
-      <div class="insurance-resume" :class="{'insurance-resume--single': monthlyPayment === 0}">
-        <div class="insurance-estimated" v-if="monthlyPayment > 0">
-          <p>Monthly payment</p>
-          <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimated-date">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
-        </div>
+      <div class="insurance-resume">
+        <MonthlyPayment :monthlyPaymentText="325.35" />
         <div class="insurance-estimated">
           <p>Deposit</p>
           <p class="estimated-price">{{ depositText }}</p>
@@ -133,6 +126,8 @@ import ModalPremium from '@/apps/quote/components/modals/modal-premium.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
 
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
+
 import { RouteName } from '@/router'
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
 
@@ -147,7 +142,7 @@ const quote = namespace('Quote')
 @Component({
   components: {
     Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
-    IconArrowRight, IconInfo, QuoteSummary, ModalPremium
+    IconArrowRight, IconInfo, QuoteSummary, ModalPremium, MonthlyPayment
   },
   filters: {
     currency, beautyCurrency
@@ -390,7 +385,7 @@ export default class StepQuote extends Vue {
   background-color: rgba(241, 243, 245, 0.92);
   display: flex;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1.25rem 0.5rem;
 
   &.insurance-resume--single {
     justify-content: center;
@@ -407,7 +402,7 @@ export default class StepQuote extends Vue {
     display: flex;
     flex-direction: column;
     padding: 1rem 0.875rem 0.875rem;
-    width: 9.813rem;
+    width: 9.5rem;
     
     span {
       font-size: $fs-lg;
