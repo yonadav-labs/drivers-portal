@@ -1,5 +1,5 @@
 <template>
-  <div class="montly-estimated" v-if="monthlyPayment > 0">
+  <div class="montly-estimated" v-if="!afterAugust">
     <h3>Monthly payment</h3>
 
     <div class="month-record">
@@ -26,18 +26,47 @@
     <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
     </span>
   </div>
+  <div class="montly-estimated" v-else>
+    <h3>Monthly payment</h3>
+
+    <div class="month-record">
+      <span>September 4</span>
+      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>September XX</span>
+      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>Octorber XX</span>
+      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>November XX</span>
+      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+
+    <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
+    </span>
+  </div>
 </template>
 
 <script>
   import { currency, beautyCurrency } from '@/utils/text'
   export default {
     props: {
-      monthlyPaymentText: Number
+      monthlyPaymentText: Number,
+      internalDate: [Date, String]
     },
     data() {
       return {
         monthlyPayment: 5,
         herefordFee: 67,
+      }
+    },
+    computed: {
+      afterAugust() {
+        return new Date(this.internalDate) > new Date(2020, 6, 30);
       }
     },
     filters: {

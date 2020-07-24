@@ -81,7 +81,7 @@
       </div>
 
       <div class="insurance-resume">
-        <MonthlyPayment :monthlyPaymentText="325.35" />
+        <MonthlyPayment :monthlyPaymentText="325.35" :internalDate="internalDate" />
         <div class="insurance-estimated">
           <p>Deposit</p>
           <p class="estimated-price">{{ depositText }}</p>
