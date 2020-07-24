@@ -7,16 +7,7 @@
         </p>
         <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
       </div>
-      <div class="docs-header__price" v-if="monthlyPayment > 0">
-        <div class="estimate">
-          <p>Monthly price</p>
-          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimate__info">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
-        </div>
-      </div>
+      <MonthlyPayment :monthlyPaymentText="525.35" :internalDate="startDate" />
       <div class="docs-header__deposit">
         <div class="estimate">
           <p>Deposit</p>
@@ -138,6 +129,7 @@ import IconFileDownload from '@/components/icons/icon-file-download.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
@@ -162,7 +154,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt
+    IconPlusCircle, IconTrashAlt, MonthlyPayment
   },
   filters: {
     beautyCurrency, getFilename
@@ -225,7 +217,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
-      doc => (!doc.non_hereford_only || !this.quoteProcess!.is_hereford) && this.quoteProcessDocuments![doc.field]
+      doc => (!doc.non_hereford_only || !this.quoteProcess!.is_hereford) && (this.quoteProcessDocuments![doc.field] || !this.isSubmittedForReview)
     )
   }
 

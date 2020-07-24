@@ -103,9 +103,8 @@ h3 {
   text-align: center;
   display: flex;
   flex-direction: column;
-  padding: 1rem 0.875rem 0.875rem;
   flex: 1;
-  margin-right: 0.5rem;
+  min-width: 240px;
 
   span {
     font-size: $fs-lg;

@@ -12,16 +12,7 @@
         </p>
         <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <div class="docs-header__price" v-if="!!quoteProcessPayment & !isPaymentDone && monthlyPayment > 0">
-        <div class="estimate">
-          <p>Monthly price</p>
-          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimate__info">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
-        </div>
-      </div>
+      <MonthlyPayment :monthlyPaymentText="monthlyPayment" :internalDate="startDate" />
       <div class="docs-header__deposit" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Deposit</p>
@@ -115,6 +106,7 @@ import IconFileDownload from '@/components/icons/icon-file-download.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
 
 import { Route } from 'vue-router';
 
@@ -131,7 +123,7 @@ interface DocElement {
 
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconFileDownload,
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconFileDownload, MonthlyPayment
   },
   filters: {
     beautyCurrency, getFilename

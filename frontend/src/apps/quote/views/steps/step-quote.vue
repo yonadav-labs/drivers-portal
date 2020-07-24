@@ -81,7 +81,9 @@
       </div>
 
       <div class="insurance-resume">
-        <MonthlyPayment :monthlyPaymentText="325.35" :internalDate="internalDate" />
+        <div class="monthly-payment-wrapper">
+          <MonthlyPayment :monthlyPaymentText="325.35" :internalDate="internalDate" />
+        </div>
         <div class="insurance-estimated">
           <p>Deposit</p>
           <p class="estimated-price">{{ depositText }}</p>
@@ -502,5 +504,11 @@ export default class StepQuote extends Vue {
   span {
     font-weight: $fw-semibold;
   }
+}
+
+.monthly-payment-wrapper {
+  background-color: $white;
+  padding: 1rem 0.875rem 0.875rem;
+  margin-right: 0.5rem;
 }
 </style>
