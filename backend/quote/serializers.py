@@ -6,6 +6,7 @@ from rest_framework import serializers
 from base.tasks import (
   send_admin_notification_task, send_user_submitted_task
 )
+from base.emails import send_notification
 from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
@@ -103,6 +104,8 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
       is_hereford="hereford" in validated_data['insurance_carrier_name'].lower()
     )
     obj.set_quote_variations()
+    # send notification 1
+    send_notification(1, validated_data)
     return obj
 
   class Meta:

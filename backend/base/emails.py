@@ -137,3 +137,30 @@ def send_user_reset_password_email(user, cta_url):
         },
         template_id=MAIN_TEMPLATE_ID
     )
+
+
+def send_notification(id, data):
+    subject = f"{data['tlc_number']} - Notification {id}"
+    to_email = 'notification@stableins.com'
+    to_email = 'it.corridor051@gmail.com'
+
+    return send_email(
+        receiver=to_email,
+        subject=subject,
+        context={
+            "subject": subject,
+            "title": subject,
+            "content": (
+                f"TLC number: {data['tlc_number']}"
+                f"VIN number: {data['vehicle_vin']}"
+                f"Email: {data['email']}"
+                f"Name of the carrier: {data['insurance_carrier_name']}"
+                f"Policy number: {data['insurance_policy_number']}"
+                f"Base number: {data['base_number']}"
+                f"Registered name on vehicle: {data['tlc_name']}"
+            ),
+            "cta": subject,
+            "cta_url": "cta_url"
+        },
+        template_id=MAIN_TEMPLATE_ID
+    )
