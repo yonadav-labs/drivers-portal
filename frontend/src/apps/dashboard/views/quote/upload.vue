@@ -225,7 +225,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
-      doc => !doc.non_hereford_only || !this.quoteProcess!.is_hereford
+      doc => (!doc.non_hereford_only || !this.quoteProcess!.is_hereford) && this.quoteProcessDocuments![doc.field]
     )
   }
 
