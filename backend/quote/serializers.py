@@ -104,8 +104,8 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
       is_hereford="hereford" in validated_data['insurance_carrier_name'].lower()
     )
     obj.set_quote_variations()
-    # send notification 1
-    send_notification(1, validated_data)
+    send_notification(1, obj)
+
     return obj
 
   class Meta:
@@ -292,6 +292,9 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
       send_admin_notification_task.delay(str(obj.quote_process.user.id))
       send_user_submitted_task.delay(str(obj.quote_process.user.id))
     obj.save()
+
+    send_notification(4, obj.quote_process)
+
     return obj
 
   class Meta:

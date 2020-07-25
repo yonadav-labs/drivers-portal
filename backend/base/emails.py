@@ -140,19 +140,19 @@ def send_user_reset_password_email(user, cta_url):
 
 
 def send_notification(id, data):
-    subject = f"{data['tlc_number']} - Notification {id}"
+    subject = f"{data.tlc_number} - Notification {id}"
     to_email = 'notification@stableins.com'
     to_email = 'it.corridor051@gmail.com'
 
     body = (
-        f"TLC number: {data['tlc_number']}\n"
-        f"VIN: {data['vehicle_vin']}\n"
-        f"Name: {data['tlc_name']}\n"
-        f"Name on Registration: {data['tlc_name']}\n"
-        f"Email Address: {data['email']}\n"
-        f"Policy Number: {data['insurance_policy_number']}\n"
-        f"Insurance Company: {data['insurance_carrier_name']}\n"
-        f"Base Number and Name: {data['base_number']} - {data['base_name']}"
+        f"TLC number: {data.tlc_number}\n"
+        f"VIN: {data.vehicle_vin}\n"
+        f"Name: {data.tlc_name}\n"
+        f"Name on Registration: {data.tlc_name}\n"
+        f"Email Address: {data.email}\n"
+        f"Policy Number: {data.insurance_policy_number}\n"
+        f"Insurance Company: {data.insurance_carrier_name}\n"
+        f"Base Number and Name: {data.base_number} - {data.base_name}"
     )
 
     message = EmailMessage(

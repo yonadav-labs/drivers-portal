@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from base.tasks import send_user_welcome_task
+from base.emails import send_notification
 from payment.serializers import (
   StripeChargeCreateSerializer,
   PlaidChargeCreateSerializer
@@ -119,6 +120,18 @@ class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
       quote_process__user=self.request.user 
     )
 
+  def perform_update(self, serializer):    
+    instance = serializer.save()
+
+    if 'dmv_license_front_side' in self.request.data:
+      nid = '3.1'
+    elif 'tlc_license_front_side' in self.request.data:
+      nid = '3.2'
+    else:
+      nid = '3.3'
+
+    send_notification(nid, instance.quote_process)
+
 
 class UpdateQuoteProcessDocumentsView(UpdateAPIView):
   permission_classes = (IsAuthenticated, )
@@ -129,6 +142,7 @@ class UpdateQuoteProcessDocumentsView(UpdateAPIView):
         QuoteProcessDocuments.objects,
         quote_process__user=self.request.user
     )
+
 
 # Quote Process Documents Accident Reports
 class CreateQuoteProcessDocumentsAccidentReportView(CreateAPIView):
