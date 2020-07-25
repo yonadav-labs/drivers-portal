@@ -159,8 +159,6 @@ def send_notification(id, data):
                 f"Base number: {data['base_number']}"
                 f"Registered name on vehicle: {data['tlc_name']}"
             ),
-            "cta": subject,
-            "cta_url": "cta_url"
         },
         template_id=MAIN_TEMPLATE_ID
     )
