@@ -7,7 +7,7 @@
         </p>
         <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
       </div>
-      <MonthlyPayment :monthlyPaymentText="525.35" :internalDate="startDate" />
+      <MonthlyPayment :qrsf="total" :deposit="depositAmount" :internalDeposit="quoteDeposit" :internalDate="startDate" />
       <div class="docs-header__deposit">
         <div class="estimate">
           <p>Deposit</p>
@@ -254,7 +254,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get requiredDocsReady(): boolean {
-    let valid = this.docs.slice(0, 2).every(
+    const valid = this.docs.slice(0, 2).every(
       doc => !!this.quoteProcessDocuments![doc.field]
     )
 

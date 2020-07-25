@@ -12,7 +12,8 @@
         </p>
         <contained-button v-if="!isPaymentDone" class="docs-header__cta" color="blue" icon="dollar" @click="goToPayment">Procceed to Payment</contained-button>
       </div>
-      <MonthlyPayment :monthlyPaymentText="monthlyPayment" :internalDate="startDate" />
+      <MonthlyPayment :qrsf="total" :deposit="depositPaymentAmount" :internalDeposit="depositPaymentPercentage" :internalDate="startDate" />
+
       <div class="docs-header__deposit" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Deposit</p>

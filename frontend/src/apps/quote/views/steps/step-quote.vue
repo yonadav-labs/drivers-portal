@@ -82,7 +82,7 @@
 
       <div class="insurance-resume">
         <div class="monthly-payment-wrapper">
-          <MonthlyPayment :monthlyPaymentText="325.35" :internalDate="internalDate" />
+          <MonthlyPayment :qrsf="total" :deposit="deposit" :internalDeposit="internalDeposit" :internalDate="internalDate" />
         </div>
         <div class="insurance-estimated">
           <p>Deposit</p>

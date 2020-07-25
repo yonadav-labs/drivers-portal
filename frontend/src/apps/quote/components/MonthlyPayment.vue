@@ -1,26 +1,22 @@
 <template>
-  <div class="montly-estimated" v-if="!afterAugust">
+  <div class="montly-estimated" v-if="this.internalDate !== ''">
     <h3>Monthly payment</h3>
 
     <div class="month-record">
-      <span>August 4</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span>{{ date2 }}</span>
+      <span class="estimated-price">{{ fmp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
-      <span>August XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span>September {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
-      <span>September XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span>Octorber {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
-      <span>Octorber XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-    <div class="month-record">
-      <span>November XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span>November {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
 
     <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
@@ -30,20 +26,20 @@
     <h3>Monthly payment</h3>
 
     <div class="month-record">
-      <span>September 4</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span>September XX</span>
+      <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
       <span>September XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
       <span>Octorber XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
       <span>November XX</span>
-      <span class="estimated-price">{{ monthlyPaymentText | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+      <span class="estimated-price-no-data">$--</span>
     </div>
 
     <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
@@ -53,20 +49,39 @@
 
 <script>
   import { currency, beautyCurrency } from '@/utils/text'
+  import { format, addDays, differenceInDays } from 'date-fns';
+
   export default {
     props: {
-      monthlyPaymentText: Number,
+      qrsf: Number,
+      deposit: Number,
+      internalDeposit: Number,
       internalDate: [Date, String]
     },
     data() {
       return {
-        monthlyPayment: 5,
         herefordFee: 67,
       }
     },
     computed: {
-      afterAugust() {
-        return new Date(this.internalDate) > new Date(2020, 6, 30);
+      date1() {
+        return this.internalDeposit > 15 ? 21 : 15;
+      },
+      date2() {
+        const days = this.internalDeposit > 15 ? 20 : 15;
+        return format(addDays(new Date(this.internalDate), days), 'MMMM d')
+      },
+      nodp() {
+        return differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
+      },
+      prp() {
+        return this.qrsf * (363 - this.nodp) / 363;
+      },
+      omp() {
+        return this.qrsf * (100 - this.internalDeposit) / 900;
+      },
+      fmp() {
+        return this.prp - this.deposit - this.omp * 3;
       }
     },
     filters: {
@@ -76,60 +91,48 @@
 </script>
 
 <style lang='scss' scoped>
-h3 {
-  margin-bottom: 0.7rem;
-}
-.month-record {
-  color: $blue;
-  margin-top: 0.3rem;
-  span {
-    display: inline-block;
-    width: 50%;
-
-    &:first-child {
-      text-align: center;
-      font-size: 1rem;
-    }
-
-    &:last-child {
-      text-align: left;
-      font-weight: 600;
-    }
+  h3 {
+    margin-bottom: 0.7rem;
   }
-}
-.montly-estimated {
-  background-color: $white;
-  border-radius: 2px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 240px;
+  .month-record {
+    color: $blue;
+    margin-top: 0.3rem;
+    span {
+      display: inline-block;
+      width: 50%;
 
-  span {
-    font-size: $fs-lg;
-  }
-  p {
-    text-align: center;
-    &.estimated-price {
-      color: $blue;
-      font-size: $fs-xl;
-      font-weight: $fw-semibold;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      &:first-child {
+        text-align: center;
+        font-size: 1rem;
+      }
 
-      sup {
-        font-size: $fs-sm;
-        font-weight: $fw-semibold;
+      &:last-child {
+        text-align: left;
+        font-weight: 600;
       }
     }
   }
-  .estimated-date {
-    background-color: $grey-light;
-    font-size: $fs-sm;
-    margin: 10px auto 0;
-    opacity: 0.5;
-    padding: 0.5rem;
+  .montly-estimated {
+    background-color: $white;
+    border-radius: 2px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 240px;
+
+    span {
+      font-size: $fs-lg;
+    }
+    .estimated-price-no-data {
+      text-align: center !important;
+    }
+    .estimated-date {
+      background-color: $grey-light;
+      font-size: $fs-sm;
+      margin: 10px auto 0;
+      opacity: 0.5;
+      padding: 0.5rem;
+    }
   }
-}
 </style>
