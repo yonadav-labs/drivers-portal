@@ -11,7 +11,7 @@ def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
     receiver = receiver if isinstance(receiver, list) else [receiver, ]
     message = EmailMessage(subject=subject, to=receiver)
 
-    message.merge_data = {receiver: {"firstName": "Mr.Dummy", "lastName": "Bubbles"}}
+    message.merge_data = {receiver[0]: {"firstName": "Mr.Dummy", "lastName": "Bubbles"}}
     message.template_id = DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
     message.esp_extra = {"mail_settings": {"sandbox_mode": {"enable": sandbox}}}
     message.send()
@@ -144,21 +144,29 @@ def send_notification(id, data):
     to_email = 'notification@stableins.com'
     to_email = 'it.corridor051@gmail.com'
 
-    return send_email(
-        receiver=to_email,
-        subject=subject,
-        context={
-            "subject": subject,
-            "title": subject,
-            "content": (
-                f"TLC number: {data['tlc_number']}"
-                f"VIN number: {data['vehicle_vin']}"
-                f"Email: {data['email']}"
-                f"Name of the carrier: {data['insurance_carrier_name']}"
-                f"Policy number: {data['insurance_policy_number']}"
-                f"Base number: {data['base_number']}"
-                f"Registered name on vehicle: {data['tlc_name']}"
-            ),
-        },
-        template_id=MAIN_TEMPLATE_ID
+    body = (
+        f"TLC number: {data['tlc_number']}\n"
+        f"VIN: {data['vehicle_vin']}\n"
+        f"Name: {data['tlc_name']}\n"
+        f"Name on Registration: {data['tlc_name']}\n"
+        f"Email Address: {data['email']}\n"
+        f"Policy Number: {data['insurance_policy_number']}\n"
+        f"Insurance Company: {data['insurance_carrier_name']}\n"
+        f"Base Number and Name: {data['base_number']} - {data['base_name']}"
     )
+
+    message = EmailMessage(
+        subject=subject,
+        body=body,
+        to=[to_email],
+    )
+
+    message.esp_extra = {
+        "mail_settings": {
+            "sandbox_mode": {
+                "enable": False
+            }
+        }
+    }
+
+    message.send()
