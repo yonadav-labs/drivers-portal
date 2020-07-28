@@ -293,7 +293,13 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
       send_user_submitted_task.delay(str(obj.quote_process.user.id))
     obj.save()
 
-    send_notification(4, obj.quote_process)
+    attachments = [settings.MEDIA_ROOT + '/' + obj.dmv_license_front_side.name,
+                   settings.MEDIA_ROOT + '/' + obj.tlc_license_front_side.name]
+
+    if obj.vehicle_title:
+      attachments.append(settings.MEDIA_ROOT + '/' + obj.vehicle_title.name)
+
+    send_notification(4, obj.quote_process, attachments)
 
     return obj
 

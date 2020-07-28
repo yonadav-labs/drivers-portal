@@ -26,7 +26,7 @@
       <div class="docs-header__total" v-if="!!quoteProcessPayment & !isPaymentDone">
         <div class="estimate">
           <p>Total</p>
-          <p class="estimate__price">{{ total|beautyCurrency }}</p>
+          <p class="estimate__price">{{ prp|beautyCurrency }}</p>
           <span class="estimate__info">
             Insurance Premium
           </span>
@@ -88,7 +88,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
-import { format, addMonths } from 'date-fns';
+import { format, addMonths, differenceInDays } from 'date-fns';
 
 import { DashboardQuoteRouteName } from '@/router/dashboard'
 import { RouteName } from '@/router'
@@ -259,6 +259,11 @@ export default class DashboardQuotePaymentView extends Vue {
 
   get total(): number {
     return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.official_hereford_quote):0
+  }
+
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.startDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
   }
 
   get hasThirdPartyDeposit(): boolean {

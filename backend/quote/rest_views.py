@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import ValidationError
@@ -125,12 +126,15 @@ class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
 
     if 'dmv_license_front_side' in self.request.data:
       nid = '3.1'
+      attachment = settings.MEDIA_ROOT + '/' + instance.dmv_license_front_side.name 
     elif 'tlc_license_front_side' in self.request.data:
       nid = '3.2'
+      attachment = settings.MEDIA_ROOT + '/' + instance.tlc_license_front_side.name 
     else:
       nid = '3.3'
+      attachment = settings.MEDIA_ROOT + '/' + instance.vehicle_title.name 
 
-    send_notification(nid, instance.quote_process)
+    send_notification(nid, instance.quote_process, [attachment])
 
 
 class UpdateQuoteProcessDocumentsView(UpdateAPIView):

@@ -139,20 +139,20 @@ def send_user_reset_password_email(user, cta_url):
     )
 
 
-def send_notification(id, data):
-    subject = f"{data.tlc_number} - Notification {id}"
-    to_email = 'notification@stableins.com'
+def send_notification(id, quote_process, attachments=[]):
+    subject = f"{quote_process.tlc_number} - Notification {id}"
     to_email = 'it.corridor051@gmail.com'
+    to_email = 'stable.notification@gmail.com'
 
     body = (
-        f"TLC number: {data.tlc_number}\n"
-        f"VIN: {data.vehicle_vin}\n"
-        f"Name: {data.tlc_name}\n"
-        f"Name on Registration: {data.tlc_name}\n"
-        f"Email Address: {data.email}\n"
-        f"Policy Number: {data.insurance_policy_number}\n"
-        f"Insurance Company: {data.insurance_carrier_name}\n"
-        f"Base Number and Name: {data.base_number} - {data.base_name}"
+        f"TLC number: {quote_process.tlc_number}\n"
+        f"VIN: {quote_process.vehicle_vin}\n"
+        f"Name: {quote_process.tlc_name}\n"
+        f"Name on Registration: {quote_process.tlc_name}\n"
+        f"Email Address: {quote_process.email}\n"
+        f"Policy Number: {quote_process.insurance_policy_number}\n"
+        f"Insurance Company: {quote_process.insurance_carrier_name}\n"
+        f"Base Number and Name: {quote_process.base_number} - {quote_process.base_name}"
     )
 
     message = EmailMessage(
@@ -168,5 +168,8 @@ def send_notification(id, data):
             }
         }
     }
+
+    for attachment in attachments:
+        message.attach_file(attachment)
 
     message.send()

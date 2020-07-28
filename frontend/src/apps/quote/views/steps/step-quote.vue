@@ -73,7 +73,7 @@
         <p class="insurance-title">Your projected quote</p>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
-          <span>{{ total | currency }}</span>
+          <span>{{ prp | currency }}</span>
         </div>
         <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
           <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>Annualized premium info
@@ -115,7 +115,7 @@ import { Getter, Action, namespace } from 'vuex-class';
 
 import { Route } from 'vue-router';
 
-import { addDays, addMonths, format } from 'date-fns';
+import { addDays, addMonths, differenceInDays, format } from 'date-fns';
 
 import Banner from '@/components/containers/banner.vue'
 import BasicButton from '@/components/buttons/basic-button.vue'
@@ -275,6 +275,11 @@ export default class StepQuote extends Vue {
     const selectedDate = new Date(this.internalDate)
     // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
     return 'March 15, 2020'
+  }
+
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
   }
 
   get liabilityText(): string {

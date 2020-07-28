@@ -20,7 +20,7 @@
       <div class="docs-header__total">
         <div class="estimate">
           <p>Total</p>
-          <p class="estimate__price">{{ total|beautyCurrency }}</p>
+          <p class="estimate__price">{{ prp|beautyCurrency }}</p>
           <span class="estimate__info">
             Insurance Premium
           </span>
@@ -108,7 +108,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
-import { format, addMonths } from 'date-fns';
+import { format, addMonths, differenceInDays } from 'date-fns';
 
 import HelloSign from 'hellosign-embedded';
 
@@ -272,6 +272,11 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get herefordFee(): number {
     return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+  }
+
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.startDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
   }
 
   get depositPayments(): number {

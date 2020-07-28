@@ -1,28 +1,5 @@
 <template>
-  <div class="montly-estimated" v-if="this.internalDate !== ''">
-    <h3>Monthly payment</h3>
-
-    <div class="month-record">
-      <span>{{ date2 }}</span>
-      <span class="estimated-price">{{ fmp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-    <div class="month-record">
-      <span>September {{ date1 }}</span>
-      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-    <div class="month-record">
-      <span>Octorber {{ date1 }}</span>
-      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-    <div class="month-record">
-      <span>November {{ date1 }}</span>
-      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-
-    <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
-    </span>
-  </div>
-  <div class="montly-estimated" v-else>
+  <div class="montly-estimated" v-if="this.internalDate === ''">
     <h3>Monthly payment</h3>
 
     <div class="month-record">
@@ -45,6 +22,52 @@
     <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
     </span>
   </div>
+  <div class="montly-estimated" v-else-if="this.internalDeposit === 100">
+    <h3>Monthly payment</h3>
+
+    <div class="month-record">
+      <span>{{ date2 }}</span>
+      <span class="estimated-price">$0 + $0</span>
+    </div>
+    <div class="month-record">
+      <span>September {{ date1 }}</span>
+      <span class="estimated-price">$0 + $0</span>
+    </div>
+    <div class="month-record">
+      <span>Octorber {{ date1 }}</span>
+      <span class="estimated-price">$0 + $0</span>
+    </div>
+    <div class="month-record">
+      <span>November {{ date1 }}</span>
+      <span class="estimated-price">$0 + $0</span>
+    </div>
+
+    <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
+    </span>
+  </div>
+  <div class="montly-estimated" v-else>
+    <h3>Monthly payment</h3>
+
+    <div class="month-record">
+      <span>{{ date2 }}</span>
+      <span class="estimated-price">{{ fmp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>September {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>Octorber {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+    <div class="month-record">
+      <span>November {{ date1 }}</span>
+      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
+    </div>
+
+    <span class="estimated-date">The additional charge on each monthly payment is an installment fee charged by Hereford
+    </span>
+  </div>
 </template>
 
 <script>
@@ -58,11 +81,6 @@
       internalDeposit: Number,
       internalDate: [Date, String]
     },
-    data() {
-      return {
-        herefordFee: 67,
-      }
-    },
     computed: {
       date1() {
         return this.internalDeposit > 15 ? 21 : 15;
@@ -70,6 +88,9 @@
       date2() {
         const days = this.internalDeposit > 15 ? 20 : 15;
         return format(addDays(new Date(this.internalDate), days), 'MMMM d')
+      },
+      herefordFee() {
+        return this.internalDeposit === 15 ? 30 : this.internalDeposit === 20 ? 25 : 20;
       },
       nodp() {
         return differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
