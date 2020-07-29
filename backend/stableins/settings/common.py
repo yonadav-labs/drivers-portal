@@ -188,8 +188,11 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # Celery
 # https://www.revsys.com/tidbits/celery-and-django-and-docker-oh-my/
 
-CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACKEND = 'redis://redis:6379'
+redis_url = 'redis'
+redis_url = 'localhost'
+
+CELERY_BROKER_URL = f'redis://{redis_url}:6379'
+CELERY_RESULT_BACKEND = f'redis://{redis_url}:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from base.tasks import send_user_reset_password_task
+from base.emails import send_notification
 from users.models import User, MagicLink, ResetPasswordLink
 
 
@@ -46,6 +47,9 @@ class UpdateUserPasswordSerializer(serializers.ModelSerializer):
   def update(self, instance, validated_data):
     instance.set_password(validated_data.get('password'))
     instance.save()
+
+    send_notification(2, instance.quoteprocess)
+
     return instance
 
   class Meta:

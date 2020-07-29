@@ -445,13 +445,10 @@ class QuoteProcessDocuments(BaseModel):
       broker_of_record_done = not self.requires_broker_of_record or \
         self.is_broker_of_record_signed
 
-      has_dmv = self.dmv_license_front_side and self.dmv_license_back_side
-      has_tlc = self.tlc_license_front_side and self.tlc_license_back_side
-      hereford_docs = self.quote_process.is_hereford or \
-        (self.loss_run and self.vehicle_title)
+      has_dmv = self.dmv_license_front_side
+      has_tlc = self.tlc_license_front_side
 
       return broker_of_record_done and has_dmv and has_tlc and \
-        hereford_docs and \
         self.quoteprocessdocumentsaccidentreport_set.filter(
           accident_report__isnull=False
         ).count() >= self.get_minimum_accident_reports()

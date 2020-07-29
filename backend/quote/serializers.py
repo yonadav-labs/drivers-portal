@@ -6,6 +6,7 @@ from rest_framework import serializers
 from base.tasks import (
   send_admin_notification_task, send_user_submitted_task
 )
+from base.emails import send_notification
 from importer.models import BaseType
 from payment.utils import apply_stripe_fee, apply_plaid_fee
 from users.models import User, MagicLink
@@ -103,6 +104,8 @@ class CreateQuoteProcessSerializer(serializers.ModelSerializer):
       is_hereford="hereford" in validated_data['insurance_carrier_name'].lower()
     )
     obj.set_quote_variations()
+    send_notification(1, obj)
+
     return obj
 
   class Meta:
@@ -289,6 +292,15 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
       send_admin_notification_task.delay(str(obj.quote_process.user.id))
       send_user_submitted_task.delay(str(obj.quote_process.user.id))
     obj.save()
+
+    attachments = [settings.MEDIA_ROOT + '/' + obj.dmv_license_front_side.name,
+                   settings.MEDIA_ROOT + '/' + obj.tlc_license_front_side.name]
+
+    if obj.vehicle_title:
+      attachments.append(settings.MEDIA_ROOT + '/' + obj.vehicle_title.name)
+
+    send_notification(4, obj.quote_process, attachments)
+
     return obj
 
   class Meta:

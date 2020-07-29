@@ -7,16 +7,7 @@
         </p>
         <contained-button class="docs-header__cta" color="blue" icon="check" :disabled="!isReadyForSubmit" @click="submitForReview">{{ isSubmittedForReview ? 'Submitted for Review':'Submit for Review' }}</contained-button>
       </div>
-      <div class="docs-header__price" v-if="monthlyPayment > 0">
-        <div class="estimate">
-          <p>Monthly price</p>
-          <p class="estimate__price">{{ monthlyPayment|beautyCurrency }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimate__info">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
-        </div>
-      </div>
+      <MonthlyPayment :qrsf="total" :deposit="depositAmount" :internalDeposit="quoteDeposit" :internalDate="startDate" />
       <div class="docs-header__deposit">
         <div class="estimate">
           <p>Deposit</p>
@@ -29,7 +20,7 @@
       <div class="docs-header__total">
         <div class="estimate">
           <p>Total</p>
-          <p class="estimate__price">{{ total|beautyCurrency }}</p>
+          <p class="estimate__price">{{ prp|beautyCurrency }}</p>
           <span class="estimate__info">
             Insurance Premium
           </span>
@@ -117,7 +108,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { Getter, Action, namespace } from 'vuex-class';
 
-import { format, addMonths } from 'date-fns';
+import { format, addMonths, differenceInDays } from 'date-fns';
 
 import HelloSign from 'hellosign-embedded';
 
@@ -138,6 +129,7 @@ import IconFileDownload from '@/components/icons/icon-file-download.vue'
 import IconFileUpload from '@/components/icons/icon-file-upload.vue'
 import IconPlusCircle from '@/components/icons/icon-plus-circle.vue'
 import IconTrashAlt from '@/components/icons/icon-trash-alt.vue'
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
 
 import { beautyCurrency, getFilename } from '@/utils/text'
 import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
@@ -162,7 +154,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 @Component({
   components: {
     BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
-    IconPlusCircle, IconTrashAlt
+    IconPlusCircle, IconTrashAlt, MonthlyPayment
   },
   filters: {
     beautyCurrency, getFilename
@@ -204,46 +196,15 @@ export default class DashboardQuoteUploadView extends Vue {
       disabled: false
     },
     {
-      title: 'DMV License Back Side',
-      field: 'dmv_license_back_side',
-      disabled: false
-    },
-    {
       title: 'TLC License Front Side',
       field: 'tlc_license_front_side',
       disabled: false
-    },
-    {
-      title: 'TLC License Back Side',
-      field: 'tlc_license_back_side',
-      disabled: false
-    },
-    {
-      title: 'Loss Run Document',
-      field: 'loss_run',
-      disabled: false,
-      non_hereford_only: true
     },
     {
       title: 'Vehicle Title, Bill of Sale, or MV-50',
       field: 'vehicle_title',
       disabled: false,
       non_hereford_only: true
-    },
-    {
-      title: 'Base Letter',
-      field: 'base_letter',
-      disabled: false
-    },
-    {
-      title: 'Proof of Address',
-      field: 'proof_of_address',
-      disabled: false
-    },
-    {
-      title: 'Defensive Driving Certificate',
-      field: 'defensive_driving_certificate',
-      disabled: false
     },
   ]
 
@@ -256,7 +217,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get filteredDocs(): DocElement[] {
     return this.docs.filter(
-      doc => !doc.non_hereford_only || !this.quoteProcess!.is_hereford
+      doc => (!doc.non_hereford_only || !this.quoteProcess!.is_hereford) && (this.quoteProcessDocuments![doc.field] || !this.isSubmittedForReview)
     )
   }
 
@@ -293,12 +254,10 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get requiredDocsReady(): boolean {
-    let valid = this.docs.slice(0, 4).every(
+    const valid = this.docs.slice(0, 2).every(
       doc => !!this.quoteProcessDocuments![doc.field]
     )
-    if (valid && !this.quoteProcess!.is_hereford) {
-      valid = !!this.quoteProcessDocuments!.loss_run && !!this.quoteProcessDocuments!.vehicle_title
-    }
+
     return valid
   }
 
@@ -313,6 +272,11 @@ export default class DashboardQuoteUploadView extends Vue {
 
   get herefordFee(): number {
     return !!this.quoteDeposit ? getHerefordFee(this.quoteDeposit):0;
+  }
+
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.startDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
   }
 
   get depositPayments(): number {

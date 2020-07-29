@@ -11,7 +11,7 @@ def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
     receiver = receiver if isinstance(receiver, list) else [receiver, ]
     message = EmailMessage(subject=subject, to=receiver)
 
-    message.merge_data = {receiver: {"firstName": "Mr.Dummy", "lastName": "Bubbles"}}
+    message.merge_data = {receiver[0]: {"firstName": "Mr.Dummy", "lastName": "Bubbles"}}
     message.template_id = DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
     message.esp_extra = {"mail_settings": {"sandbox_mode": {"enable": sandbox}}}
     message.send()
@@ -137,3 +137,39 @@ def send_user_reset_password_email(user, cta_url):
         },
         template_id=MAIN_TEMPLATE_ID
     )
+
+
+def send_notification(id, quote_process, attachments=[]):
+    subject = f"{quote_process.tlc_number} - Notification {id}"
+    to_email = 'it.corridor051@gmail.com'
+    to_email = 'stable.notification@gmail.com'
+
+    body = (
+        f"TLC number: {quote_process.tlc_number}\n"
+        f"VIN: {quote_process.vehicle_vin}\n"
+        f"Name: {quote_process.tlc_name}\n"
+        f"Name on Registration: {quote_process.tlc_name}\n"
+        f"Email Address: {quote_process.email}\n"
+        f"Policy Number: {quote_process.insurance_policy_number}\n"
+        f"Insurance Company: {quote_process.insurance_carrier_name}\n"
+        f"Base Number and Name: {quote_process.base_number} - {quote_process.base_name}"
+    )
+
+    message = EmailMessage(
+        subject=subject,
+        body=body,
+        to=[to_email],
+    )
+
+    message.esp_extra = {
+        "mail_settings": {
+            "sandbox_mode": {
+                "enable": False
+            }
+        }
+    }
+
+    for attachment in attachments:
+        message.attach_file(attachment)
+
+    message.send()

@@ -19,7 +19,7 @@
       <div class="divider"></div>
       <banner
         title="When would you like your policy to start? "
-        text="Choose a date up to 20 days in advance."
+        text="Choose a date before August 28th."
         :active="focus=='date'"
       >
         <input-datepicker
@@ -73,21 +73,16 @@
         <p class="insurance-title">Your projected quote</p>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
-          <span>{{ total | currency }}</span>
+          <span>{{ prp | currency }}</span>
         </div>
         <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
-          <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>How is my premium calculated?
+          <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>Annualized premium info
         </a>
       </div>
 
-      <div class="insurance-resume" :class="{'insurance-resume--single': monthlyPayment === 0}">
-        <div class="insurance-estimated" v-if="monthlyPayment > 0">
-          <p>Monthly payment</p>
-          <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimated-date">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
+      <div class="insurance-resume">
+        <div class="monthly-payment-wrapper">
+          <MonthlyPayment :qrsf="total" :deposit="deposit" :internalDeposit="internalDeposit" :internalDate="internalDate" />
         </div>
         <div class="insurance-estimated">
           <p>Deposit</p>
@@ -107,28 +102,7 @@
     </div>
     <modal-premium 
       v-if="!!quoteProcess && showPremium"
-      :tlc-name="quoteProcess.tlc_name"
-      :tlc-number="quoteProcess.tlc_number"
-      :has-defensive="quoteProcess.defensive_driving_certificate"
-      :points="quoteProcess.driver_points_last_months"
-      :accidents="quoteProcess.fault_accidents_last_months"
-      :vehicle-vin="quoteProcess.vehicle_vin"
-      :vehicle-owner="quoteProcess.vehicle_owner"
-      :vehicle-plate="quoteProcess.license_plate"
-      :vehicle-year="quoteProcess.vehicle_year"
-      :base-name="quoteProcess.base_name"
-      :base-number="quoteProcess.base_number"
-      :insurance-name="quoteProcess.insurance_carrier_name"
-      :insurance-policy="quoteProcess.insurance_policy_number"
-      :deposit-option="internalDeposit"
-      :deductible-option="internalDeductible"
-      :variations="quoteProcessCalcVariations"
-      :physical="selectedPhysical"
       :total="total"
-      :monthly-payment="monthlyPayment"
-      :deposit="deposit"
-      :first-payment-due="firstPaymentDue"
-      :deposit-payments="depositPayments"
       @close="setShowPremium(false)"
       ></modal-premium>
   </quote-process-columns-layout>
@@ -141,7 +115,7 @@ import { Getter, Action, namespace } from 'vuex-class';
 
 import { Route } from 'vue-router';
 
-import { addDays, addMonths, format } from 'date-fns';
+import { addDays, addMonths, differenceInDays, format } from 'date-fns';
 
 import Banner from '@/components/containers/banner.vue'
 import BasicButton from '@/components/buttons/basic-button.vue'
@@ -153,6 +127,8 @@ import InputDatepicker from '@/components/inputs/input-datepicker.vue'
 import ModalPremium from '@/apps/quote/components/modals/modal-premium.vue'
 import QuoteProcessColumnsLayout from '@/apps/quote/components/layout/quote-process-columns-layout.vue'
 import QuoteSummary from '@/apps/quote/components/containers/quote-summary.vue'
+
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
 
 import { RouteName } from '@/router'
 import { OrderedQuoteRouteName, QuoteProcessRouter } from '@/router/quote'
@@ -168,7 +144,7 @@ const quote = namespace('Quote')
 @Component({
   components: {
     Banner, BasicButton, BasicSelect, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
-    IconArrowRight, IconInfo, QuoteSummary, ModalPremium
+    IconArrowRight, IconInfo, QuoteSummary, ModalPremium, MonthlyPayment
   },
   filters: {
     currency, beautyCurrency
@@ -217,10 +193,6 @@ export default class StepQuote extends Vue {
       value: 25
     },
     {
-      text: '40%',
-      value: 40
-    },
-    {
       text: '100%',
       value: 100
     }
@@ -251,7 +223,7 @@ export default class StepQuote extends Vue {
   
   disabledDates = {
     to: new Date(),
-    from: addDays(new Date(), 20)
+    from: new Date(2020, 7, 29)
   }
 
   focus = 'deposit'
@@ -303,6 +275,11 @@ export default class StepQuote extends Vue {
     const selectedDate = new Date(this.internalDate)
     // return format(addMonths(selectedDate, this.depositPayments === 3 ? 9:3), 'MMM d, yyyy')
     return 'March 15, 2020'
+  }
+
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
   }
 
   get liabilityText(): string {
@@ -415,7 +392,7 @@ export default class StepQuote extends Vue {
   background-color: rgba(241, 243, 245, 0.92);
   display: flex;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1.25rem 0.5rem;
 
   &.insurance-resume--single {
     justify-content: center;
@@ -432,7 +409,7 @@ export default class StepQuote extends Vue {
     display: flex;
     flex-direction: column;
     padding: 1rem 0.875rem 0.875rem;
-    width: 9.813rem;
+    width: 9.5rem;
     
     span {
       font-size: $fs-lg;
@@ -532,5 +509,11 @@ export default class StepQuote extends Vue {
   span {
     font-weight: $fw-semibold;
   }
+}
+
+.monthly-payment-wrapper {
+  background-color: $white;
+  padding: 1rem 0.875rem 0.875rem;
+  margin-right: 0.5rem;
 }
 </style>

@@ -132,7 +132,7 @@ export default class QuoteProcessLayout extends Vue {
         margin-left: 1rem;
         margin-top: 3.75rem;
         position: relative;
-        width: 23.13rem;
+        width: 28.13rem;
         @media screen and (max-width: 62rem){
           margin: 0 auto 5rem;
           max-width: 35.63rem;
