@@ -48,21 +48,16 @@
         <p class="insurance-title">Your insurance</p>
         <div class="insurance-text insurance-text--total">
           <span>Total</span>
-          <span>{{ total | currency }}</span>
+          <span>{{ prp | currency }}</span>
         </div>
         <a href class="insurance-info--question" @click.prevent.stop="setShowPremium(true)">
           <icon-info size="16" class="insurance-info__icon icon--blue"></icon-info>How is my premium calculated?
         </a>
       </div>
 
-      <div class="insurance-resume" :class="{'insurance-resume--single': monthlyPayment === 0}">
-        <div class="insurance-estimated" v-if="monthlyPayment > 0">
-          <p>Monthly payment</p>
-          <p class="estimated-price">{{ monthlyPaymentText }}<sup v-if="herefordFee">+{{ herefordFee | beautyCurrency }}</sup></p>
-          <span class="estimated-date">{{ depositPayments }} payments starting on
-            <br>
-            {{ firstPaymentDue }}
-          </span>
+      <div class="insurance-resume">
+        <div class="monthly-payment-wrapper">
+          <MonthlyPayment :qrsf="total" :deposit="deposit" :internalDeposit="quoteDeposit" :internalDate="quoteStartDate" />
         </div>
         <div class="insurance-estimated">
           <p>Deposit</p>
@@ -112,7 +107,7 @@ import { Getter, Action, namespace } from 'vuex-class';
 
 import { Route } from 'vue-router';
 
-import { addDays, addMonths, format } from 'date-fns';
+import { addDays, addMonths, format, differenceInDays } from 'date-fns';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import DropdownInfo from '@/components/containers/dropdown-info.vue'
@@ -130,6 +125,7 @@ import { User } from '@/@types/users';
 
 import { currency, beautyCurrency } from '@/utils/text'
 import { getHerefordFee, getPaymentsByDeposit } from '@/utils/quote'
+import MonthlyPayment from '@/apps/quote/components/MonthlyPayment.vue'
 
 const quote = namespace('Quote')
 const quotePayment = namespace('QuotePayment')
@@ -139,7 +135,7 @@ const users = namespace('Users')
 @Component({
   components: {
     BasicButton, DropdownInfo, InputDatepicker, QuoteProcessColumnsLayout,
-    IconArrowRight, IconInfo, QuoteSummary, ModalPremium
+    IconArrowRight, IconInfo, QuoteSummary, ModalPremium, MonthlyPayment
   },
   filters: {
     currency, beautyCurrency
@@ -238,6 +234,11 @@ export default class StepQuoteReview extends Vue {
     return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.official_hereford_quote):0
   }
 
+  get prp(): number {
+    const nodp = differenceInDays(new Date(this.quoteStartDate), new Date(2020, 2, 2));
+    return this.total * (363 - nodp) / 363;
+  }
+
   back(): void {
     this.$router.push({ name: RouteName.DASHBOARD })
   }
@@ -292,7 +293,7 @@ export default class StepQuoteReview extends Vue {
   background-color: rgba(241, 243, 245, 0.92);
   display: flex;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1.25rem 0.5rem;
 
   &.insurance-resume--single {
     justify-content: center;
@@ -309,7 +310,7 @@ export default class StepQuoteReview extends Vue {
     display: flex;
     flex-direction: column;
     padding: 1rem 0.875rem 0.875rem;
-    width: 9.813rem;
+    width: 9.5rem;
     
     span {
       font-size: $fs-lg;
@@ -423,5 +424,11 @@ export default class StepQuoteReview extends Vue {
   span {
     font-weight: $fw-semibold;
   }
+}
+
+.monthly-payment-wrapper {
+  background-color: $white;
+  padding: 1rem 0.875rem 0.875rem;
+  margin-right: 0.5rem;
 }
 </style>
