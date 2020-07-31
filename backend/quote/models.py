@@ -160,6 +160,8 @@ class QuoteProcess(BaseModel):
         verbose_name='Email'
     )
 
+    phone = models.CharField(max_length=15, blank=True, null=True)
+
     # Step 5
     quote_amount = models.DecimalField(
         verbose_name='Quote Amount',
