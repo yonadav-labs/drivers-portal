@@ -87,7 +87,6 @@
         <div class="insurance-estimated">
           <p>Deposit</p>
           <p class="estimated-price">{{ depositText }}</p>
-          <span class="estimated-date">{{ isDepositSet ? `${internalDeposit}%`:'--%' }} of total price</span>
         </div>
       </div>
       <button
@@ -261,7 +260,7 @@ export default class StepQuote extends Vue {
   }
 
   get depositText(): string {
-    return this.isDepositSet ? beautyCurrency(this.deposit):'$--'
+    return this.isDepositSet ? this.internalDeposit == 100 ? beautyCurrency(this.prp) : beautyCurrency(this.deposit):'$--'
   }
 
   get depositPayments(): number {
