@@ -42,10 +42,11 @@ def get_quote_info(quote_process):
   deposit = quote_process.quote_amount * quote_process.deposit / 100
   omp = quote_process.quote_amount * (100 - quote_process.deposit) / 900
   fmp = prp - deposit - omp * 3
+  hereford_fee = 30 if quote_process.deposit == 15 else 25 if quote_process.deposit == 20 else 20
 
   if quote_process.deposit == 100:
     deposit = prp
-    omp = fmp = 0
+    omp = fmp = hereford_fee = 0
 
   resp = {
     'start_date': quote_process.start_date.strftime('%B %d %Y'),
@@ -60,6 +61,7 @@ def get_quote_info(quote_process):
     'monthly_payment3_amount': f'${omp:,.2f}',
     'monthly_payment4_date': f'November {date1}',
     'monthly_payment4_amount': f'${omp:,.2f}',
+    'hereford_fee': f'${hereford_fee}',
   }
 
   return resp

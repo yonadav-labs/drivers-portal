@@ -3,7 +3,7 @@
     <h3>Monthly payment</h3>
 
     <div class="month-record">
-      <span>September XX</span>
+      <span>August XX</span>
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
@@ -11,7 +11,7 @@
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
-      <span>Octorber XX</span>
+      <span>October XX</span>
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
@@ -34,7 +34,7 @@
       <span class="estimated-price">$0 + $0</span>
     </div>
     <div class="month-record">
-      <span>Octorber {{ date1 }}</span>
+      <span>October {{ date1 }}</span>
       <span class="estimated-price">$0 + $0</span>
     </div>
     <div class="month-record">
@@ -57,7 +57,7 @@
       <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
-      <span>Octorber {{ date1 }}</span>
+      <span>October {{ date1 }}</span>
       <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">

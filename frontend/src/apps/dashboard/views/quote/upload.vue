@@ -12,9 +12,6 @@
         <div class="estimate">
           <p>Deposit</p>
           <p class="estimate__price">{{ depositAmount|beautyCurrency }}</p>
-          <span class="estimate__info">
-            {{ quoteDeposit }}% of total price
-          </span>
         </div>
       </div>
       <div class="docs-header__total">
@@ -32,8 +29,9 @@
         <div class="success-message__info">
           <div class="success-message__title">Thank you for submitting all of your documents!</div>
           <p class="success-message__explain">
-            Stable has kicked off the automated underwriting process. You will be notified in {{ user.email }} when your policy is ready! 
+            Stable has kicked off the automated underwriting process. You will be notified at {{ user.email }} when your policy is ready! 
           </p>
+          <div class="success-message__title">If you do not see an email from support@stableins.com, please check your junkmail.</div>
         </div>
       </div>
       <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record" :class="{'broker-section--submitted': isSubmittedForReview}">
@@ -280,7 +278,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get depositAmount(): number {
-    return this.quoteDeposit/100 * this.total
+    return this.quoteDeposit == 100 ? this.prp : this.quoteDeposit / 100 * this.total
   }
 
   get monthlyPayment(): number {
