@@ -85,15 +85,21 @@
       date1() {
         return this.internalDeposit > 15 ? 21 : 15;
       },
+      utc_date() {
+        const date = new Date(this.internalDate); 
+        const date_utc = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+        return date_utc;
+      },
       date2() {
         const days = this.internalDeposit > 15 ? 20 : 15;
-        return format(addDays(new Date(this.internalDate), days), 'MMMM d')
+        return format(addDays(this.utc_date, days), 'MMMM d')
       },
       herefordFee() {
         return this.internalDeposit === 15 ? 30 : this.internalDeposit === 20 ? 25 : 20;
       },
       nodp() {
-        return differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
+        return differenceInDays(this.utc_date, new Date(2020, 2, 2));
       },
       prp() {
         return this.qrsf * (363 - this.nodp) / 363;

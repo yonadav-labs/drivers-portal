@@ -284,6 +284,7 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
     return validated_data
 
   def update(self, obj, validated_data):
+    obj.phone = validated_data.get('phone')
     if validated_data.get('is_broker_of_record_signed'):
       obj.is_broker_of_record_signed = validated_data.get(
           'is_broker_of_record_signed')
@@ -305,7 +306,7 @@ class UpdateQuoteProcessDocumentsSerializer(serializers.ModelSerializer):
 
   class Meta:
     fields = (
-        'id', 'is_submitted_for_review', 'is_broker_of_record_signed'
+        'id', 'is_submitted_for_review', 'is_broker_of_record_signed', 'phone'
     )
     read_only_fields = ('id', )
     model = QuoteProcessDocuments

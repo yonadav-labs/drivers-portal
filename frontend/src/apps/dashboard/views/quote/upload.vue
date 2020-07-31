@@ -70,6 +70,21 @@
             <contained-button color="grey" icon="file-download" @click="downloadDoc(getDocumentUrl(doc.field))" v-else>Download</contained-button>
           </div>
         </div>
+        <div class="document-row document-row--has-children" v-if="!isSubmittedForReview">
+          <div class="document-row__name">
+            Phone Number
+          </div>
+          <div class="document-row__status phone">
+            <basic-input
+              id='phone'
+              class='form-input__input'
+              v-model="phone"
+              type="text"
+              icon="phone"
+              >
+              </basic-input>
+          </div>
+        </div>
         <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
           <div class="document-row__name">
             Accident Reports
@@ -119,6 +134,7 @@ import { User } from '@/@types/users';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
+import BasicInput from '@/components/inputs/basic-input.vue'
 import ContainedButton from '@/components/buttons/contained-button.vue'
 
 import FileUploadHandler from '@/components/inputs/file-upload-handler.vue'
@@ -153,7 +169,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload, BasicInput,
     IconPlusCircle, IconTrashAlt, MonthlyPayment
   },
   filters: {
@@ -161,6 +177,8 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
   }
 })
 export default class DashboardQuoteUploadView extends Vue {
+  phone = '';
+
   @quote.Getter
   quoteProcess?: QuoteProcess
 
@@ -183,7 +201,7 @@ export default class DashboardQuoteUploadView extends Vue {
   updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
 
   @quoteDocs.Action
-  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
+  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean, phone?: string}) => Promise<void>
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
@@ -359,7 +377,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   submitForReview(): void {
     if (this.isReadyForSubmit) {
-      this.updateQuoteProcessDocuments({is_submitted_for_review: true});
+      this.updateQuoteProcessDocuments({is_submitted_for_review: true, phone: this.phone});
     }
     window.scroll({
       top: 0,  
@@ -638,6 +656,9 @@ export default class DashboardQuoteUploadView extends Vue {
   
     .document-row__status {
       flex-grow: 1;
+      &.phone {
+        margin-right: 1.25rem;
+      }
     }
 
     .document-row__actions {

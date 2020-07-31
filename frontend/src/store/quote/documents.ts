@@ -61,7 +61,7 @@ export default class QuoteDocumentsVuexModule extends VuexModule {
   }
 
   @Action
-  async updateQuoteProcessDocuments(payload: { is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean }): Promise<void> {
+  async updateQuoteProcessDocuments(payload: { is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean, phone?: string }): Promise<void> {
     this.context.commit('setQuoteProcessDocumentsLoading')
 
     try {

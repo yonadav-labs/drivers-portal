@@ -168,8 +168,8 @@ def send_notification(id, quote_process, attachments=[]):
         body += f"Monthly Payment 3: {quote_info['monthly_payment3_date']} - {quote_info['monthly_payment3_amount']}\n"
         body += f"Monthly Payment 3: {quote_info['monthly_payment4_date']} - {quote_info['monthly_payment4_amount']}\n"
 
-        if quote_process.phone:
-            body += f"Phone Number: {quote_process.phone}"
+        if quote_process.quoteprocessdocuments.phone:
+            body += f"Phone Number: {quote_process.quoteprocessdocuments.phone}"
 
     if id == 4:
         body += "\n\n\nPlease check your junkmail for emails from support@stableins.com."
