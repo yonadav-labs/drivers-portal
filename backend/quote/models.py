@@ -395,6 +395,8 @@ class QuoteProcessDocuments(BaseModel):
       blank=True
     )
 
+    phone = models.CharField(max_length=15, blank=True, null=True)
+
     doc_fields = [
         'dmv_license_front_side',
         'dmv_license_back_side',

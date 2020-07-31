@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 
 from base.constants import MAIN_TEMPLATE_ID, DEV_TEST_EMAIL_TEMPLATE_EMAIL_ID
+from quote.utils import get_quote_info
 
 
 def send_dev_test_email(receiver="dummy@test.com", sandbox=True):
@@ -141,7 +142,7 @@ def send_user_reset_password_email(user, cta_url):
 
 def send_notification(id, quote_process, attachments=[]):
     subject = f"{quote_process.tlc_number} - Notification {id}"
-    to_email = 'it.corridor051@gmail.com'
+    to_email = 'jason.5001001@gmail.com'
     to_email = 'stable.notification@gmail.com'
 
     body = (
@@ -152,8 +153,23 @@ def send_notification(id, quote_process, attachments=[]):
         f"Email Address: {quote_process.email}\n"
         f"Policy Number: {quote_process.insurance_policy_number}\n"
         f"Insurance Company: {quote_process.insurance_carrier_name}\n"
-        f"Base Number and Name: {quote_process.base_number} - {quote_process.base_name}"
+        f"Base Number and Name: {quote_process.base_number} - {quote_process.base_name}\n\n"
+        f"Dash Cam: {'Yes' if quote_process.dash_cam else 'No'}\n"
     )
+
+    if id != 1:
+        quote_info = get_quote_info(quote_process)
+        body += f"Start Date: {quote_info['start_date']}\n"
+        body += f"Annualized Premium: {quote_info['annualized_premium']}\n"
+        body += f"ProRated Premium: {quote_info['prorated_premium']}\n"
+        body += f"Deposit Amount: {quote_process.deposit}% and {quote_info['deposit_amount']}\n"
+        body += f"Monthly Payment 1: {quote_info['monthly_payment1_date']} - {quote_info['monthly_payment1_amount']}+{quote_info['hereford_fee']}\n"
+        body += f"Monthly Payment 2: {quote_info['monthly_payment2_date']} - {quote_info['monthly_payment2_amount']}+{quote_info['hereford_fee']}\n"
+        body += f"Monthly Payment 3: {quote_info['monthly_payment3_date']} - {quote_info['monthly_payment3_amount']}+{quote_info['hereford_fee']}\n"
+        body += f"Monthly Payment 3: {quote_info['monthly_payment4_date']} - {quote_info['monthly_payment4_amount']}+{quote_info['hereford_fee']}\n"
+
+        if quote_process.quoteprocessdocuments.phone:
+            body += f"Phone Number: {quote_process.quoteprocessdocuments.phone}"
 
     message = EmailMessage(
         subject=subject,

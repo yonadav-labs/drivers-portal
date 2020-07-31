@@ -12,9 +12,6 @@
         <div class="estimate">
           <p>Deposit</p>
           <p class="estimate__price">{{ depositAmount|beautyCurrency }}</p>
-          <span class="estimate__info">
-            {{ quoteDeposit }}% of total price
-          </span>
         </div>
       </div>
       <div class="docs-header__total">
@@ -32,8 +29,9 @@
         <div class="success-message__info">
           <div class="success-message__title">Thank you for submitting all of your documents!</div>
           <p class="success-message__explain">
-            Stable has kicked off the automated underwriting process. You will be notified in {{ user.email }} when your policy is ready! 
+            Stable has kicked off the automated underwriting process. You will be notified at {{ user.email }} when your policy is ready! 
           </p>
+          <div class="success-message__title">If you do not see an email from support@stableins.com, please check your junkmail.</div>
         </div>
       </div>
       <div class="broker-section" v-if="quoteProcessDocuments.requires_broker_of_record" :class="{'broker-section--submitted': isSubmittedForReview}">
@@ -68,6 +66,21 @@
             <button-icon class="document-row__action-icon" @click="removeDoc(doc)" :disabled="!isDocUploaded(doc.field)" title="Remove" v-if="!isSubmittedForReview"><icon-cross></icon-cross></button-icon>
             <file-upload-handler @change="(file) => uploadDoc(doc, file)" :disabled="!isBrokerOfRecordReady || doc.disabled" v-if="!isSubmittedForReview"><contained-button color="grey" icon="file-upload" :disabled="!isBrokerOfRecordReady || doc.disabled">Upload</contained-button></file-upload-handler>
             <contained-button color="grey" icon="file-download" @click="downloadDoc(getDocumentUrl(doc.field))" v-else>Download</contained-button>
+          </div>
+        </div>
+        <div class="document-row document-row--has-children" v-if="!isSubmittedForReview">
+          <div class="document-row__name">
+            Phone Number
+          </div>
+          <div class="document-row__status phone">
+            <basic-input
+              id='phone'
+              class='form-input__input'
+              v-model="phone"
+              type="text"
+              icon="phone"
+              >
+              </basic-input>
           </div>
         </div>
         <div class="document-row document-row--has-children" v-if="minimumAccidentReports > 0">
@@ -119,6 +132,7 @@ import { User } from '@/@types/users';
 
 import BasicButton from '@/components/buttons/basic-button.vue'
 import ButtonIcon from '@/components/buttons/button-icon.vue'
+import BasicInput from '@/components/inputs/basic-input.vue'
 import ContainedButton from '@/components/buttons/contained-button.vue'
 
 import FileUploadHandler from '@/components/inputs/file-upload-handler.vue'
@@ -153,7 +167,7 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
 
 @Component({
   components: {
-    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload,
+    BasicButton, ButtonIcon, ContainedButton, FileUploadHandler, IconCheckCircle, IconCross, IconFileDownload, IconFileUpload, BasicInput,
     IconPlusCircle, IconTrashAlt, MonthlyPayment
   },
   filters: {
@@ -161,6 +175,8 @@ type CreatedQuoteProcessDocumentAccidentReport = Omit<QuoteProcessDocumentsAccid
   }
 })
 export default class DashboardQuoteUploadView extends Vue {
+  phone = '';
+
   @quote.Getter
   quoteProcess?: QuoteProcess
 
@@ -183,7 +199,7 @@ export default class DashboardQuoteUploadView extends Vue {
   updateQuoteProcessDocumentsFile!: (payload: {field: string, file: File | ''}) => Promise<void>
 
   @quoteDocs.Action
-  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean}) => Promise<void>
+  updateQuoteProcessDocuments!: (payload: {is_broker_of_record_signed?: boolean, is_submitted_for_review?: boolean, phone?: string}) => Promise<void>
 
   @quoteDocs.Action
   updateQuoteProcessDocumentsAccidentReport!: (payload: {id: string, file: File | ''}) => Promise<void>
@@ -262,7 +278,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get depositAmount(): number {
-    return this.quoteDeposit/100 * this.total
+    return this.quoteDeposit == 100 ? this.prp : this.quoteDeposit / 100 * this.total
   }
 
   get monthlyPayment(): number {
@@ -359,7 +375,7 @@ export default class DashboardQuoteUploadView extends Vue {
 
   submitForReview(): void {
     if (this.isReadyForSubmit) {
-      this.updateQuoteProcessDocuments({is_submitted_for_review: true});
+      this.updateQuoteProcessDocuments({is_submitted_for_review: true, phone: this.phone});
     }
     window.scroll({
       top: 0,  
@@ -638,6 +654,9 @@ export default class DashboardQuoteUploadView extends Vue {
   
     .document-row__status {
       flex-grow: 1;
+      &.phone {
+        margin-right: 1.25rem;
+      }
     }
 
     .document-row__actions {

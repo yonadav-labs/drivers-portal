@@ -70,9 +70,9 @@ export async function updateQuoteProcessDocumentsFile(field:string, file: File |
   return response.data
 }
 
-export async function updateQuoteProcessDocuments(payload: {is_submitted_for_review?: boolean, is_broker_of_record_signed?: boolean}): Promise<{ id: string, is_submitted_for_review: boolean}> {
-  const { is_submitted_for_review, is_broker_of_record_signed } = payload;
-  const response = await client.patch(`quote/quote_process_documents/update/`, { is_submitted_for_review, is_broker_of_record_signed })
+export async function updateQuoteProcessDocuments(payload: {is_submitted_for_review?: boolean, is_broker_of_record_signed?: boolean, phone?: string}): Promise<{ id: string, is_submitted_for_review: boolean, phone: string}> {
+  const { is_submitted_for_review, is_broker_of_record_signed, phone } = payload;
+  const response = await client.patch(`quote/quote_process_documents/update/`, { is_submitted_for_review, is_broker_of_record_signed, phone })
   return response.data
 }
 

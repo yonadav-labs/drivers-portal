@@ -18,9 +18,6 @@
         <div class="estimate">
           <p>Deposit</p>
           <p class="estimate__price">{{ depositPaymentAmount|beautyCurrency }}</p>
-          <span class="estimate__info">
-            {{ depositPaymentPercentage }}% of total price
-          </span>
         </div>
       </div>
       <div class="docs-header__total" v-if="!!quoteProcessPayment & !isPaymentDone">
@@ -207,7 +204,7 @@ export default class DashboardQuotePaymentView extends Vue {
   }
 
   get depositPaymentAmount(): number {
-    return !!this.quoteProcessPayment ? Number(this.quoteProcessPayment.deposit_payment_amount):0;
+    return !!this.quoteProcessPayment ? this.depositPaymentPercentage == 100 ? this.prp : Number(this.quoteProcessPayment.deposit_payment_amount):0;
   }
 
   get filteredDocs(): DocElement[] {

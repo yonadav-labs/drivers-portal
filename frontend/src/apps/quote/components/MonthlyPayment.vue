@@ -3,7 +3,7 @@
     <h3>Monthly payment</h3>
 
     <div class="month-record">
-      <span>September XX</span>
+      <span>August XX</span>
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
@@ -11,7 +11,7 @@
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
-      <span>Octorber XX</span>
+      <span>October XX</span>
       <span class="estimated-price-no-data">$--</span>
     </div>
     <div class="month-record">
@@ -34,7 +34,7 @@
       <span class="estimated-price">$0 + $0</span>
     </div>
     <div class="month-record">
-      <span>Octorber {{ date1 }}</span>
+      <span>October {{ date1 }}</span>
       <span class="estimated-price">$0 + $0</span>
     </div>
     <div class="month-record">
@@ -57,7 +57,7 @@
       <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
-      <span>Octorber {{ date1 }}</span>
+      <span>October {{ date1 }}</span>
       <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
@@ -85,15 +85,21 @@
       date1() {
         return this.internalDeposit > 15 ? 21 : 15;
       },
+      utc_date() {
+        const date = new Date(this.internalDate); 
+        const date_utc = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+        return date_utc;
+      },
       date2() {
         const days = this.internalDeposit > 15 ? 20 : 15;
-        return format(addDays(new Date(this.internalDate), days), 'MMMM d')
+        return format(addDays(this.utc_date, days), 'MMMM d')
       },
       herefordFee() {
         return this.internalDeposit === 15 ? 30 : this.internalDeposit === 20 ? 25 : 20;
       },
       nodp() {
-        return differenceInDays(new Date(this.internalDate), new Date(2020, 2, 2));
+        return differenceInDays(this.utc_date, new Date(2020, 2, 2));
       },
       prp() {
         return this.qrsf * (363 - this.nodp) / 363;

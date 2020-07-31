@@ -124,17 +124,22 @@ class UpdateQuoteProcessDocumentsFileView(UpdateAPIView):
   def perform_update(self, serializer):    
     instance = serializer.save()
 
+    attachment = None
     if 'dmv_license_front_side' in self.request.data:
-      nid = '3.1'
-      attachment = settings.MEDIA_ROOT + '/' + instance.dmv_license_front_side.name 
+      if instance.dmv_license_front_side:
+        nid = '3.1'
+        attachment = settings.MEDIA_ROOT + '/' + instance.dmv_license_front_side.name 
     elif 'tlc_license_front_side' in self.request.data:
-      nid = '3.2'
-      attachment = settings.MEDIA_ROOT + '/' + instance.tlc_license_front_side.name 
+      if instance.tlc_license_front_side:
+        nid = '3.2'
+        attachment = settings.MEDIA_ROOT + '/' + instance.tlc_license_front_side.name 
     else:
-      nid = '3.3'
-      attachment = settings.MEDIA_ROOT + '/' + instance.vehicle_title.name 
+      if instance.vehicle_title:
+        nid = '3.3'
+        attachment = settings.MEDIA_ROOT + '/' + instance.vehicle_title.name 
 
-    send_notification(nid, instance.quote_process, [attachment])
+    if attachment:
+      send_notification(nid, instance.quote_process, [attachment])
 
 
 class UpdateQuoteProcessDocumentsView(UpdateAPIView):
