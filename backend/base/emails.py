@@ -141,11 +141,11 @@ def send_user_reset_password_email(user, cta_url):
 
 
 def send_notification(id, quote_process, attachments=[]):
-    subject = f"{quote_process.tlc_number} - Notification {id}"
-    to_email = 'jason.5001001@gmail.com'
+    subject = f"{quote_process.tlc_number}"
     to_email = 'stable.notification@gmail.com'
 
     body = (
+        f"Notification {id}\n\n"
         f"TLC number: {quote_process.tlc_number}\n"
         f"VIN: {quote_process.vehicle_vin}\n"
         f"Name: {quote_process.tlc_name}\n"
