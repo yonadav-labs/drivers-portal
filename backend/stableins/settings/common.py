@@ -198,32 +198,32 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
-    # Executes every day midnigth - 00:00
+    # Executes every day midnight - 00:00
     # 'MedallionImportTask': {
     #     'task': 'importer.tasks.medallion_import_task',
     #     'schedule': crontab(minute=0, hour=0)
     # },
-    # Executes every day midnigth - 00:15
+    # Executes every day midnight - 00:15
     'DeleteExpiredMagicLinks': {
         'task': 'users.tasks.delete_expired_links',
         'schedule': crontab(minute=15, hour=0)
     },
-    # Executes every day midnigth - 00:30
+    # Executes every day midnight - 00:30
     'DeleteExpiredResetPasswordLinks': {
         'task': 'users.tasks.delete_expired_reset_links',
         'schedule': crontab(minute=30, hour=0)
     },
-    # Executes every day midnigth + 1 - 01:00
+    # Executes every day midnight + 1 - 01:00
     'ForHireImportTask': {
         'task': 'importer.tasks.for_hire_import_task',
         'schedule': crontab(minute=0, hour=1)
     },
-    # Executes every day midnigth + 2 - 02:00
+    # Executes every day midnight + 2 - 02:00
     'VehicleInsuranceImportTask': {
         'task': 'importer.tasks.vehicle_insurance_import_task',
         'schedule': crontab(minute=0, hour=2)
     },
-    # Executes every day midnigth + 3 - 02:00
+    # Executes every day midnight + 3 - 02:00
     'FHVActiveDriverImportTask': {
         'task': 'importer.tasks.fhv_active_driver_import_task',
         'schedule': crontab(minute=0, hour=3)
