@@ -166,7 +166,7 @@ def send_notification(id, quote_process, attachments=[]):
         body += f"Monthly Payment 1: {quote_info['monthly_payment1_date']} - {quote_info['monthly_payment1_amount']}+{quote_info['hereford_fee']}\n"
         body += f"Monthly Payment 2: {quote_info['monthly_payment2_date']} - {quote_info['monthly_payment2_amount']}+{quote_info['hereford_fee']}\n"
         body += f"Monthly Payment 3: {quote_info['monthly_payment3_date']} - {quote_info['monthly_payment3_amount']}+{quote_info['hereford_fee']}\n"
-        body += f"Monthly Payment 3: {quote_info['monthly_payment4_date']} - {quote_info['monthly_payment4_amount']}+{quote_info['hereford_fee']}\n"
+        body += f"Monthly Payment 4: {quote_info['monthly_payment4_date']} - {quote_info['monthly_payment4_amount']}+{quote_info['hereford_fee']}\n"
 
         if quote_process.quoteprocessdocuments.phone:
             body += f"Phone Number: {quote_process.quoteprocessdocuments.phone}"
