@@ -137,7 +137,7 @@ export default class StepTLC extends Vue {
   }
 
   async onNext(): Promise<void> {
-    EF.conversion({
+    window.EF.conversion({
       aid: 122,
     });
 
