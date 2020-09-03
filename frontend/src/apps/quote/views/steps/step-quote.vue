@@ -222,7 +222,7 @@ export default class StepQuote extends Vue {
   
   disabledDates = {
     to: new Date(),
-    from: new Date(2020, 7, 29)
+    from: new Date(2020, 8, 29)
   }
 
   focus = 'deposit'
