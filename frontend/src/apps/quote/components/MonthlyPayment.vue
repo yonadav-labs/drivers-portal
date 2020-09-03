@@ -96,7 +96,7 @@
         return this.qrsf * (100 - this.internalDeposit) / 900;
       },
       fmp() {
-        return this.prp - this.deposit - this.omp * 3;
+        return this.prp - this.deposit - this.omp * 2;
       }
     },
     filters: {
