@@ -19,7 +19,7 @@
       <div class="divider"></div>
       <banner
         title="When would you like your policy to start? "
-        text="Choose a date before August 28th."
+        text="Choose a date before October 28th."
         :active="focus=='date'"
       >
         <input-datepicker
@@ -222,7 +222,7 @@ export default class StepQuote extends Vue {
   
   disabledDates = {
     to: new Date(),
-    from: new Date(2020, 8, 29)
+    from: new Date(2020, 9, 29)
   }
 
   focus = 'deposit'
@@ -260,7 +260,7 @@ export default class StepQuote extends Vue {
   }
 
   get depositText(): string {
-    return this.isDepositSet ? this.internalDeposit == 100 ? beautyCurrency(this.prp) : beautyCurrency(this.deposit):'$--'
+    return this.isDepositSet ? this.internalDeposit === 100 ? beautyCurrency(this.prp) : beautyCurrency(this.deposit):'$--'
   }
 
   get depositPayments(): number {

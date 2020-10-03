@@ -3,10 +3,6 @@
     <h3>Monthly payment</h3>
 
     <div class="month-record">
-      <span>September XX</span>
-      <span class="estimated-price-no-data">$--</span>
-    </div>
-    <div class="month-record">
       <span>October XX</span>
       <span class="estimated-price-no-data">$--</span>
     </div>
@@ -26,10 +22,6 @@
       <span class="estimated-price">$0 + $0</span>
     </div>
     <div class="month-record">
-      <span>October {{ date1 }}</span>
-      <span class="estimated-price">$0 + $0</span>
-    </div>
-    <div class="month-record">
       <span>November {{ date1 }}</span>
       <span class="estimated-price">$0 + $0</span>
     </div>
@@ -43,10 +35,6 @@
     <div class="month-record">
       <span>{{ date2 }}</span>
       <span class="estimated-price">{{ fmp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
-    </div>
-    <div class="month-record">
-      <span>October {{ date1 }}</span>
-      <span class="estimated-price">{{ omp | beautyCurrency }}+{{ herefordFee | beautyCurrency }}</span>
     </div>
     <div class="month-record">
       <span>November {{ date1 }}</span>
@@ -96,7 +84,7 @@
         return this.qrsf * (100 - this.internalDeposit) / 900;
       },
       fmp() {
-        return this.prp - this.deposit - this.omp * 2;
+        return this.prp - this.deposit - this.omp;
       }
     },
     filters: {

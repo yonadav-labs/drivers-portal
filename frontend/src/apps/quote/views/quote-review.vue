@@ -193,7 +193,7 @@ export default class StepQuoteReview extends Vue {
   }
 
   get depositText(): string {
-    return this.quoteDeposit ? this.quoteDeposit == 100 ? beautyCurrency(this.prp) : beautyCurrency(this.deposit):'$--'
+    return this.quoteDeposit ? this.quoteDeposit === 100 ? beautyCurrency(this.prp) : beautyCurrency(this.deposit):'$--'
   }
 
   get depositPayments(): number {

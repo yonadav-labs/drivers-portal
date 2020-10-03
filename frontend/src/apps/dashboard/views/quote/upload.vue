@@ -278,7 +278,7 @@ export default class DashboardQuoteUploadView extends Vue {
   }
 
   get depositAmount(): number {
-    return this.quoteDeposit == 100 ? this.prp : this.quoteDeposit / 100 * this.total
+    return this.quoteDeposit === 100 ? this.prp : this.quoteDeposit / 100 * this.total
   }
 
   get monthlyPayment(): number {
